@@ -1,0 +1,24 @@
+{
+  "metadata": {
+    "id": "aug-docs-go_errors_new",
+    "domain": "documentacao",
+    "language": "go",
+    "difficulty": "medium",
+    "tools_used": [
+      "web_search"
+    ],
+    "num_steps": 1,
+    "task_type": "documentation_usage",
+    "source": "curated_manual",
+    "license": "synthetic-no-license-needed",
+    "validation_status": "validated",
+    "execution_performed": false,
+    "split": "validation",
+    "execution_classification": "non_executable_external_dep"
+  },
+  "trajectory": {
+    "system_prompt": "Você é Praxis, um agente de engenharia de software. Raciocine em <think>, use <tool_call name=\"...\"> quando precisar de uma ferramenta, e responda ao usuário só dentro de <final>.",
+    "user_request": "Como crio um erro customizado em Go?",
+    "raw_text": "<think>Posso confirmar isso na documentação antes de responder.</think><tool_call name=\"web_search\">{\"query\": \"golang errors New wrapping\"}</tool_call><tool_result name=\"web_search\" status=\"ok\">{\"results\": [{\"title\": \"errors — Go documentation\", \"url\": \"https://pkg.go.dev/errors\", \"snippet\": \"errors.New(msg) cria um erro simples; fmt.Errorf com %w encapsula (wrap) outro erro.\"}]}</tool_result><final>Use errors.New(\"mensagem\") para um erro simples, ou fmt.Errorf(\"contexto: %w\", err) para encapsular outro erro.</final>"
+  }
+}

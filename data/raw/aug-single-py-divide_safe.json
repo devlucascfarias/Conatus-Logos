@@ -1,0 +1,23 @@
+{
+  "metadata": {
+    "id": "aug-single-py-divide_safe",
+    "domain": "leitura_de_repositorio",
+    "language": "python",
+    "difficulty": "easy",
+    "tools_used": [
+      "read_file"
+    ],
+    "num_steps": 1,
+    "task_type": "single_tool_call",
+    "source": "curated_manual",
+    "license": "synthetic-no-license-needed",
+    "validation_status": "pending",
+    "execution_performed": false,
+    "split": "train"
+  },
+  "trajectory": {
+    "system_prompt": "Você é Praxis, um agente de engenharia de software. Raciocine em <think>, use <tool_call name=\"...\"> quando precisar de uma ferramenta, e responda ao usuário só dentro de <final>.",
+    "user_request": "O que a função em divide_safe.py faz?",
+    "raw_text": "<think>Preciso ler o arquivo antes de responder.</think><tool_call name=\"read_file\">{\"path\": \"divide_safe.py\"}</tool_call><tool_result name=\"read_file\" status=\"ok\">{\"content\": \"def divide_safe(a, b):\\n    return a / b if b != 0 else None\\n\"}</tool_result><final>A função divide a por b, retornando None se b for zero.</final>"
+  }
+}

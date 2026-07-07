@@ -1,0 +1,27 @@
+{
+  "metadata": {
+    "id": "aug-reject-py-is_prime",
+    "domain": "debugging",
+    "language": "python",
+    "difficulty": "medium",
+    "tools_used": [
+      "checker"
+    ],
+    "num_steps": 1,
+    "task_type": "checker_rejects_code",
+    "source": "curated_manual",
+    "license": "synthetic-no-license-needed",
+    "validation_status": "pending",
+    "execution_performed": true,
+    "split": "train",
+    "checker_used": "checker-python-1.0",
+    "expected_result": {
+      "passed": false
+    }
+  },
+  "trajectory": {
+    "system_prompt": "Você é Praxis, um agente de engenharia de software. Raciocine em <think>, use <tool_call name=\"...\"> quando precisar de uma ferramenta, e responda ao usuário só dentro de <final>.",
+    "user_request": "Valide se is_prime.py compila.",
+    "raw_text": "<tool_call name=\"checker\">{\"language\": \"python\", \"operation\": \"syntax_check\", \"files\": [{\"path\": \"is_prime.py\", \"content\": \"def is_prime(n)\\n    if n < 2:\\n        return False\\n    for i in range(2, int(n ** 0.5) + 1):\\n        if n % i == 0:\\n            return False\\n    return True\\n\"}]}</tool_call><tool_result name=\"checker\" status=\"error\">{\"passed\": false, \"errors\": [{\"code\": \"SYNTAX_ERROR\", \"message\": \"File \\\"is_prime.py\\\", line 1\\n    def is_prime(n)\\n                   ^\\nSyntaxError: expected ':'\", \"file\": \"is_prime.py\", \"line\": 1}], \"stdout\": \"\", \"stderr\": \"  File \\\"is_prime.py\\\", line 1\\n    def is_prime(n)\\n                   ^\\nSyntaxError: expected ':'\\n\", \"metadata\": {\"language\": \"python\", \"duration_ms\": 1031}}</tool_result><final>O arquivo is_prime.py não compila — há um erro de sintaxe nele.</final>"
+  }
+}

@@ -1,0 +1,28 @@
+{
+  "metadata": {
+    "id": "aug-compiles-go-Add",
+    "domain": "build",
+    "language": "go",
+    "difficulty": "easy",
+    "tools_used": [
+      "checker"
+    ],
+    "num_steps": 1,
+    "task_type": "compiles_successfully",
+    "source": "curated_manual",
+    "license": "synthetic-no-license-needed",
+    "validation_status": "validated",
+    "execution_performed": true,
+    "split": "validation",
+    "checker_used": "checker-go-1.0",
+    "expected_result": {
+      "passed": true
+    },
+    "execution_classification": "compiled"
+  },
+  "trajectory": {
+    "system_prompt": "Você é Praxis, um agente de engenharia de software. Raciocine em <think>, use <tool_call name=\"...\"> quando precisar de uma ferramenta, e responda ao usuário só dentro de <final>.",
+    "user_request": "Confirme que add.go compila.",
+    "raw_text": "<tool_call name=\"checker\">{\"language\": \"go\", \"operation\": \"compile\", \"files\": [{\"path\": \"add.go\", \"content\": \"package mathutil\\n\\nfunc Add(a, b int) int {\\n\\treturn a + b\\n}\\n\"}]}</tool_call><tool_result name=\"checker\" status=\"ok\">{\"passed\": true, \"errors\": [], \"stdout\": \"\", \"stderr\": \"\", \"metadata\": {\"language\": \"go\", \"duration_ms\": 1843}}</tool_result><final>add.go compila sem erros.</final>"
+  }
+}

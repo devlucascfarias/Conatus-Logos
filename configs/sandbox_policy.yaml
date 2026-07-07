@@ -1,0 +1,76 @@
+# Política de segurança do sandbox (seção 7 do PLAN.md).
+# Consumida por src/security/policy.py — nenhum valor deve ser hardcoded no código.
+
+version: 1
+
+resource_limits:
+  default_timeout_ms: 10000
+  checker_compile_and_test_timeout_ms: 60000
+  max_output_bytes: 65536          # trunca stdout/stderr antes de voltar ao contexto do modelo
+  max_memory_bytes: 1073741824     # 1 GiB, aplicado via resource.setrlimit quando disponível (Linux)
+
+filesystem:
+  # read_file/write_file/list_files resolvem sempre relativo ao workspace da sessão;
+  # qualquer ".." ou caminho absoluto que escape do workspace é rejeitado (FILE_NOT_FOUND).
+  workspace_root_env: "PRAXIS_WORKSPACE_ROOT"   # se ausente, usa tempfile.mkdtemp() por sessão
+
+shell:
+  # Allowlist de binários (seção 7.5) — comando fora daqui nunca executa (UNSAFE_COMMAND).
+  allowlist_binaries:
+    - python
+    - python3
+    - pip
+    - go
+    - pytest
+    - ls
+    - cat
+    - grep
+    - git
+    - ruff
+    - gofmt
+  # Subcomandos permitidos quando o binário é "git" (somente leitura).
+  git_allowed_subcommands:
+    - status
+    - diff
+    - log
+  # Padrões sempre bloqueados, mesmo que o binário base esteja na allowlist.
+  denylist_patterns:
+    - "rm -rf"
+    - "rm -r -f"
+    - "sudo"
+    - "curl"
+    - "wget"
+    - "dd "
+    - "mkfs"
+    - "shutdown"
+    - "reboot"
+    - "chmod 777"
+    - ">/dev"
+    - "git push"
+    - "git reset --hard"
+    - "git clean"
+
+network:
+  shell_network_enabled: false
+  package_install_enabled: false     # instalação dinâmica de pacotes desabilitada na fase 1 (seção 7.9)
+  # Única exceção de rede do sistema: a ferramenta web_search, restrita ao host abaixo (seção 7.6).
+  web_search_allowed_hosts:
+    - "ollama.com"
+
+confirmation:
+  # Política padrão do harness de desenvolvimento (seção 7.7). A CLI futura troca isso
+  # por um prompt real ao usuário humano.
+  mode: "deny_all_destructive"   # "deny_all_destructive" | "auto_approve_safe"
+
+secrets:
+  # Allowlist de env vars propagadas ao subprocess do sandbox (allowlist, não denylist — seção 7.8).
+  allowed_env_passthrough:
+    - "PATH"
+    - "HOME"
+    - "GOPATH"
+    - "GOCACHE"
+  redaction_patterns:
+    - "sk-[A-Za-z0-9]{20,}"
+    - "gh[pousr]_[A-Za-z0-9]{20,}"
+    - "eyJ[A-Za-z0-9_-]{10,}\\.[A-Za-z0-9_-]{10,}\\.[A-Za-z0-9_-]{10,}"   # JWT-like
+    - "[A-Za-z0-9]{32}\\.[A-Za-z0-9_-]{20,}"                              # chaves estilo Ollama

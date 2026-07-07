@@ -1,0 +1,28 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+.pytest_cache/
+*.egg-info/
+.venv/
+venv/
+
+# Outputs de treino/execução (checkpoints, logs, adapters — grandes, não versionados)
+outputs/checkpoints/
+outputs/logs/
+outputs/adapter/
+outputs/*.json
+
+# Notebooks — checkpoints do Jupyter
+.ipynb_checkpoints/
+
+# Segredos — nunca versionar valores reais de chave/API (seção 7.8/5.4 do PLAN.md)
+.env
+*.env.local
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Estado interno do harness do Claude Code, não faz parte do projeto
+.claude/

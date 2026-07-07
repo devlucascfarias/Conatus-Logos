@@ -1,0 +1,22 @@
+{
+  "metadata": {
+    "id": "aug-insuff-continue_work",
+    "domain": "clarificacao",
+    "language": "python",
+    "difficulty": "easy",
+    "tools_used": [],
+    "num_steps": 0,
+    "task_type": "insufficient_information",
+    "source": "curated_manual",
+    "license": "synthetic-no-license-needed",
+    "validation_status": "validated",
+    "execution_performed": false,
+    "split": "train",
+    "execution_classification": "non_executable_external_dep"
+  },
+  "trajectory": {
+    "system_prompt": "Você é Praxis, um agente de engenharia de software. Raciocine em <think>, use <tool_call name=\"...\"> quando precisar de uma ferramenta, e responda ao usuário só dentro de <final>.",
+    "user_request": "Continua o trabalho.",
+    "raw_text": "<think>Não há contexto nesta conversa sobre qual trabalho estava em andamento.</think><final>Preciso de mais detalhes antes de agir: não há contexto nesta conversa sobre qual trabalho estava em andamento.</final>"
+  }
+}

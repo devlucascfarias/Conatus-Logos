@@ -1,0 +1,61 @@
+# Configuração de treino para NVIDIA L4 / Google Colab (seções 11 e 12 do PLAN.md).
+# Valores são baseline experimental (seção 11.2), não definitivos — ajustar após profiling
+# real de VRAM na primeira execução (célula 9 do notebook, torch.cuda.max_memory_allocated()).
+
+version: 1
+
+model:
+  base_model: "ibm-granite/granite-4.1-8b"
+  load_in_4bit: true
+  bnb_4bit_quant_type: "nf4"
+  bnb_4bit_compute_dtype: "bfloat16"
+  bnb_4bit_use_double_quant: true
+
+lora:
+  r: 16
+  alpha: 32
+  dropout: 0.05
+  # Ajustar após inspecionar named_modules() do Granite-4.1-8B (risco registrado na seção 17).
+  target_modules:
+    - "q_proj"
+    - "k_proj"
+    - "v_proj"
+    - "o_proj"
+    - "gate_proj"
+    - "up_proj"
+    - "down_proj"
+
+data:
+  train_path: "data/train"
+  validation_path: "data/validation"
+  sequence_length: 4096
+  group_by_length: true    # D8 — sem sequence packing na v1
+
+training:
+  batch_size_per_device: 1
+  gradient_accumulation_steps: 16
+  learning_rate: 2.0e-4
+  lr_scheduler_type: "cosine"
+  warmup_ratio: 0.03
+  num_train_epochs: 3
+  max_steps: 3000            # fallback explícito (seção 11.2) — sessões do Colab podem cair no meio de uma epoch
+  optim: "paged_adamw_8bit"
+  gradient_checkpointing: true
+  seed: 42
+
+evaluation:
+  eval_steps: 150            # ~5% de max_steps
+  save_steps: 150
+  save_total_limit: 3
+
+paths:
+  # Todos os paths abaixo são relativos à raiz do projeto, ou absolutos quando montados via Drive.
+  output_dir: "outputs/checkpoints"
+  logs_dir: "outputs/logs"
+  adapter_dir: "outputs/adapter"
+  drive_mount_point: "/content/drive"   # usado só quando run_on_colab=true
+
+runtime:
+  run_on_colab: true
+  require_gpu_name_contains: "L4"       # célula 1 do notebook aborta se nvidia-smi não bater com isto
+  mixed_precision: "bf16"

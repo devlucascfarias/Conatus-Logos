@@ -1,0 +1,21 @@
+{
+  "metadata": {
+    "id": "aug-insuff-apply_the_fix",
+    "domain": "clarificacao",
+    "language": "python",
+    "difficulty": "easy",
+    "tools_used": [],
+    "num_steps": 0,
+    "task_type": "insufficient_information",
+    "source": "curated_manual",
+    "license": "synthetic-no-license-needed",
+    "validation_status": "pending",
+    "execution_performed": false,
+    "split": "train"
+  },
+  "trajectory": {
+    "system_prompt": "Você é Praxis, um agente de engenharia de software. Raciocine em <think>, use <tool_call name=\"...\"> quando precisar de uma ferramenta, e responda ao usuário só dentro de <final>.",
+    "user_request": "Aplica a correção que discutimos ontem.",
+    "raw_text": "<think>Não há histórico de uma correção discutida anteriormente nesta sessão.</think><final>Preciso de mais detalhes antes de agir: não há histórico de uma correção discutida anteriormente nesta sessão.</final>"
+  }
+}

@@ -1,0 +1,24 @@
+{
+  "metadata": {
+    "id": "aug-single-go-Sum",
+    "domain": "leitura_de_repositorio",
+    "language": "go",
+    "difficulty": "easy",
+    "tools_used": [
+      "read_file"
+    ],
+    "num_steps": 1,
+    "task_type": "single_tool_call",
+    "source": "curated_manual",
+    "license": "synthetic-no-license-needed",
+    "validation_status": "validated",
+    "execution_performed": false,
+    "split": "train",
+    "execution_classification": "static_only"
+  },
+  "trajectory": {
+    "system_prompt": "Você é Praxis, um agente de engenharia de software. Raciocine em <think>, use <tool_call name=\"...\"> quando precisar de uma ferramenta, e responda ao usuário só dentro de <final>.",
+    "user_request": "O que a função Sum em sum.go faz?",
+    "raw_text": "<think>Preciso ler o arquivo antes de responder.</think><tool_call name=\"read_file\">{\"path\": \"sum.go\"}</tool_call><tool_result name=\"read_file\" status=\"ok\">{\"content\": \"package sliceutil\\n\\nfunc Sum(nums []int) int {\\n\\ttotal := 0\\n\\tfor _, n := range nums {\\n\\t\\ttotal += n\\n\\t}\\n\\treturn total\\n}\\n\"}</tool_result><final>A função soma todos os elementos de um slice.</final>"
+  }
+}

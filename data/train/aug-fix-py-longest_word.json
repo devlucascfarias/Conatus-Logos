@@ -1,0 +1,28 @@
+{
+  "metadata": {
+    "id": "aug-fix-py-longest_word",
+    "domain": "debugging",
+    "language": "python",
+    "difficulty": "medium",
+    "tools_used": [
+      "checker"
+    ],
+    "num_steps": 1,
+    "task_type": "model_fixes_after_error",
+    "source": "curated_manual",
+    "license": "synthetic-no-license-needed",
+    "validation_status": "validated",
+    "execution_performed": true,
+    "split": "train",
+    "checker_used": "checker-python-1.0",
+    "expected_result": {
+      "passed": true
+    },
+    "execution_classification": "interpreted"
+  },
+  "trajectory": {
+    "system_prompt": "Você é Praxis, um agente de engenharia de software. Raciocine em <think>, use <tool_call name=\"...\"> quando precisar de uma ferramenta, e responda ao usuário só dentro de <final>.",
+    "user_request": "Corrija longest_word.py até compilar.",
+    "raw_text": "<tool_call name=\"checker\">{\"language\": \"python\", \"operation\": \"syntax_check\", \"files\": [{\"path\": \"longest_word.py\", \"content\": \"def longest_word(s):\\nreturn max(s.split(), key=len)\\n\"}]}</tool_call><tool_result name=\"checker\" status=\"error\">{\"passed\": false, \"errors\": [{\"code\": \"SYNTAX_ERROR\", \"message\": \"Sorry: IndentationError: expected an indented block after function definition on line 1 (longest_word.py, line 2)\", \"file\": \"longest_word.py\"}], \"stdout\": \"\", \"stderr\": \"Sorry: IndentationError: expected an indented block after function definition on line 1 (longest_word.py, line 2)\", \"metadata\": {\"language\": \"python\", \"duration_ms\": 1063}}</tool_result><think>Identifiquei o problema de indentação. Vou corrigir e validar de novo.</think><tool_call name=\"checker\">{\"language\": \"python\", \"operation\": \"syntax_check\", \"files\": [{\"path\": \"longest_word.py\", \"content\": \"def longest_word(s):\\n    return max(s.split(), key=len)\\n\"}]}</tool_call><tool_result name=\"checker\" status=\"ok\">{\"passed\": true, \"errors\": [], \"stdout\": \"\", \"stderr\": \"\", \"metadata\": {\"language\": \"python\", \"duration_ms\": 1344}}</tool_result><final>Corrigi longest_word.py — agora compila sem erros.</final>"
+  }
+}

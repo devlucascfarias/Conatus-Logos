@@ -1,0 +1,11 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "praxis://tools/list_files/1.0",
+  "title": "list_files",
+  "type": "object",
+  "properties": {
+    "path": {"type": "string", "default": "."},
+    "glob": {"type": "string"},
+    "max_depth": {"type": "integer", "default": 3}
+  }
+}

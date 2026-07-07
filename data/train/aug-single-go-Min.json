@@ -1,0 +1,24 @@
+{
+  "metadata": {
+    "id": "aug-single-go-Min",
+    "domain": "leitura_de_repositorio",
+    "language": "go",
+    "difficulty": "easy",
+    "tools_used": [
+      "read_file"
+    ],
+    "num_steps": 1,
+    "task_type": "single_tool_call",
+    "source": "curated_manual",
+    "license": "synthetic-no-license-needed",
+    "validation_status": "validated",
+    "execution_performed": false,
+    "split": "train",
+    "execution_classification": "static_only"
+  },
+  "trajectory": {
+    "system_prompt": "Você é Praxis, um agente de engenharia de software. Raciocine em <think>, use <tool_call name=\"...\"> quando precisar de uma ferramenta, e responda ao usuário só dentro de <final>.",
+    "user_request": "O que a função Min em min.go faz?",
+    "raw_text": "<think>Preciso ler o arquivo antes de responder.</think><tool_call name=\"read_file\">{\"path\": \"min.go\"}</tool_call><tool_result name=\"read_file\" status=\"ok\">{\"content\": \"package mathutil\\n\\nfunc Min(a, b int) int {\\n\\tif a < b {\\n\\t\\treturn a\\n\\t}\\n\\treturn b\\n}\\n\"}</tool_result><final>A função retorna o menor entre dois inteiros.</final>"
+  }
+}

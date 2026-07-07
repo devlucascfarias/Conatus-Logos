@@ -1,0 +1,9 @@
+# Dependências do harness de referência, checker, dataset pipeline e testes (M0-M4, M6).
+# Dependências de treino (M5, só necessárias dentro do notebook/Colab) ficam em
+# requirements-train.txt para não obrigar quem só roda harness/checker a instalar
+# transformers/bitsandbytes/etc.
+
+jsonschema>=4.20
+PyYAML>=6.0
+requests>=2.31
+pytest>=8.0

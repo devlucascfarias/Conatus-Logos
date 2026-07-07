@@ -1,0 +1,12 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "praxis://tools/search_code/1.0",
+  "title": "search_code",
+  "type": "object",
+  "required": ["pattern"],
+  "properties": {
+    "pattern": {"type": "string", "minLength": 1},
+    "path": {"type": "string", "default": "."},
+    "regex": {"type": "boolean", "default": false}
+  }
+}

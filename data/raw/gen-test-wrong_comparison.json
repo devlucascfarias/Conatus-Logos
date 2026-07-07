@@ -1,0 +1,27 @@
+{
+  "metadata": {
+    "id": "gen-test-wrong_comparison",
+    "domain": "testing",
+    "language": "python",
+    "difficulty": "medium",
+    "tools_used": [
+      "checker"
+    ],
+    "num_steps": 1,
+    "task_type": "test_fails",
+    "source": "curated_manual",
+    "license": "synthetic-no-license-needed",
+    "validation_status": "pending",
+    "execution_performed": true,
+    "split": "train",
+    "checker_used": "checker-python-1.0",
+    "expected_result": {
+      "passed": false
+    }
+  },
+  "trajectory": {
+    "system_prompt": "Você é Praxis, um agente de engenharia de software. Raciocine em <think>, use <tool_call name=\"...\"> quando precisar de uma ferramenta, e responda ao usuário só dentro de <final>.",
+    "user_request": "Rode os testes de calc.py.",
+    "raw_text": "<tool_call name=\"checker\">{\"language\": \"python\", \"operation\": \"compile_and_test\", \"files\": [{\"path\": \"calc.py\", \"content\": \"def is_positive(n):\\n    return n < 0\\n\"}, {\"path\": \"test_calc.py\", \"content\": \"from calc import is_positive\\n\\ndef test_is_positive():\\n    assert is_positive(5) is True\\n\"}]}</tool_call><tool_result name=\"checker\" status=\"error\">{\"passed\": false, \"errors\": [{\"code\": \"TEST_FAILURE\", \"message\": \"assertion falhou\"}], \"stdout\": \"\", \"stderr\": \"\", \"metadata\": {\"language\": \"python\", \"duration_ms\": 300}}</tool_result><final>O teste falhou — o comportamento não bate com o esperado.</final>"
+  }
+}

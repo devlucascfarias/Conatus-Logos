@@ -1,0 +1,27 @@
+{
+  "metadata": {
+    "id": "aug-fix-py-count_vowels",
+    "domain": "debugging",
+    "language": "python",
+    "difficulty": "medium",
+    "tools_used": [
+      "checker"
+    ],
+    "num_steps": 1,
+    "task_type": "model_fixes_after_error",
+    "source": "curated_manual",
+    "license": "synthetic-no-license-needed",
+    "validation_status": "pending",
+    "execution_performed": true,
+    "split": "train",
+    "checker_used": "checker-python-1.0",
+    "expected_result": {
+      "passed": true
+    }
+  },
+  "trajectory": {
+    "system_prompt": "Você é Praxis, um agente de engenharia de software. Raciocine em <think>, use <tool_call name=\"...\"> quando precisar de uma ferramenta, e responda ao usuário só dentro de <final>.",
+    "user_request": "Corrija count_vowels.py até compilar.",
+    "raw_text": "<tool_call name=\"checker\">{\"language\": \"python\", \"operation\": \"syntax_check\", \"files\": [{\"path\": \"count_vowels.py\", \"content\": \"def count_vowels(s):\\nreturn sum(1 for c in s.lower() if c in 'aeiou')\\n\"}]}</tool_call><tool_result name=\"checker\" status=\"error\">{\"passed\": false, \"errors\": [{\"code\": \"SYNTAX_ERROR\", \"message\": \"Sorry: IndentationError: expected an indented block after function definition on line 1 (count_vowels.py, line 2)\", \"file\": \"count_vowels.py\"}], \"stdout\": \"\", \"stderr\": \"Sorry: IndentationError: expected an indented block after function definition on line 1 (count_vowels.py, line 2)\", \"metadata\": {\"language\": \"python\", \"duration_ms\": 1047}}</tool_result><think>Identifiquei o problema de indentação. Vou corrigir e validar de novo.</think><tool_call name=\"checker\">{\"language\": \"python\", \"operation\": \"syntax_check\", \"files\": [{\"path\": \"count_vowels.py\", \"content\": \"def count_vowels(s):\\n    return sum(1 for c in s.lower() if c in 'aeiou')\\n\"}]}</tool_call><tool_result name=\"checker\" status=\"ok\">{\"passed\": true, \"errors\": [], \"stdout\": \"\", \"stderr\": \"\", \"metadata\": {\"language\": \"python\", \"duration_ms\": 1358}}</tool_result><final>Corrigi count_vowels.py — agora compila sem erros.</final>"
+  }
+}

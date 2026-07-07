@@ -1,0 +1,27 @@
+{
+  "metadata": {
+    "id": "aug-reject-go-Max",
+    "domain": "debugging",
+    "language": "go",
+    "difficulty": "medium",
+    "tools_used": [
+      "checker"
+    ],
+    "num_steps": 1,
+    "task_type": "checker_rejects_code",
+    "source": "curated_manual",
+    "license": "synthetic-no-license-needed",
+    "validation_status": "pending",
+    "execution_performed": true,
+    "split": "train",
+    "checker_used": "checker-go-1.0",
+    "expected_result": {
+      "passed": false
+    }
+  },
+  "trajectory": {
+    "system_prompt": "Você é Praxis, um agente de engenharia de software. Raciocine em <think>, use <tool_call name=\"...\"> quando precisar de uma ferramenta, e responda ao usuário só dentro de <final>.",
+    "user_request": "Valide se max.go compila.",
+    "raw_text": "<tool_call name=\"checker\">{\"language\": \"go\", \"operation\": \"compile\", \"files\": [{\"path\": \"max.go\", \"content\": \"package mathutil\\n\\nfunc Max(a, b int) int {\\n\\tif a > b {\\n\\t\\treturn a\\n\\t}\\n\\treturn b\\n\\n\"}]}</tool_call><tool_result name=\"checker\" status=\"error\">{\"passed\": false, \"errors\": [{\"code\": \"COMPILATION_ERROR\", \"message\": \"syntax error: unexpected EOF, expected }\", \"file\": \".\\\\max.go\", \"line\": 9}], \"stdout\": \"\", \"stderr\": \"# praxis_check\\n.\\\\max.go:9:1: syntax error: unexpected EOF, expected }\\n\", \"metadata\": {\"language\": \"go\", \"duration_ms\": 813}}</tool_result><final>O arquivo max.go não compila — há um erro de compilação nele.</final>"
+  }
+}

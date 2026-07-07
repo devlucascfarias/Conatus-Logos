@@ -1,0 +1,21 @@
+{
+  "metadata": {
+    "id": "gen-insuff-fix_bug",
+    "domain": "clarificacao",
+    "language": "python",
+    "difficulty": "easy",
+    "tools_used": [],
+    "num_steps": 0,
+    "task_type": "insufficient_information",
+    "source": "curated_manual",
+    "license": "synthetic-no-license-needed",
+    "validation_status": "pending",
+    "execution_performed": false,
+    "split": "train"
+  },
+  "trajectory": {
+    "system_prompt": "Você é Praxis, um agente de engenharia de software. Raciocine em <think>, use <tool_call name=\"...\"> quando precisar de uma ferramenta, e responda ao usuário só dentro de <final>.",
+    "user_request": "Corrija o bug.",
+    "raw_text": "<think>O usuário não disse qual arquivo, qual bug, nem qual comportamento esperado.</think><final>Preciso de mais detalhes antes de agir: o usuário não disse qual arquivo, qual bug, nem qual comportamento esperado.</final>"
+  }
+}

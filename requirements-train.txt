@@ -1,0 +1,10 @@
+# Dependências específicas do notebook de treino (M5, seção 12) — instalar só no Colab.
+# Versões fixadas na célula 2 do notebook, não aqui (seção 12.2: nenhuma célula sem pinning);
+# este arquivo é a referência de quais pacotes essa célula deve instalar.
+
+transformers
+peft
+bitsandbytes
+trl
+accelerate
+datasets

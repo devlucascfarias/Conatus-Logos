@@ -1,0 +1,11 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "praxis://tools/apply_patch/1.0",
+  "title": "apply_patch",
+  "type": "object",
+  "required": ["path", "diff"],
+  "properties": {
+    "path": {"type": "string", "minLength": 1},
+    "diff": {"type": "string", "description": "unified diff"}
+  }
+}

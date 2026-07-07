@@ -1,0 +1,23 @@
+{
+  "metadata": {
+    "id": "aug-explain-go-Abs",
+    "domain": "explicacao",
+    "language": "go",
+    "difficulty": "medium",
+    "tools_used": [
+      "read_file"
+    ],
+    "num_steps": 1,
+    "task_type": "code_explanation",
+    "source": "curated_manual",
+    "license": "synthetic-no-license-needed",
+    "validation_status": "pending",
+    "execution_performed": false,
+    "split": "train"
+  },
+  "trajectory": {
+    "system_prompt": "Você é Praxis, um agente de engenharia de software. Raciocine em <think>, use <tool_call name=\"...\"> quando precisar de uma ferramenta, e responda ao usuário só dentro de <final>.",
+    "user_request": "Explique o que o código em abs.go faz.",
+    "raw_text": "<tool_call name=\"read_file\">{\"path\": \"abs.go\"}</tool_call><tool_result name=\"read_file\" status=\"ok\">{\"content\": \"package mathutil\\n\\nfunc Abs(n int) int {\\n\\tif n < 0 {\\n\\t\\treturn -n\\n\\t}\\n\\treturn n\\n}\\n\"}</tool_result><final>Essa função calcula o valor absoluto de n.</final>"
+  }
+}

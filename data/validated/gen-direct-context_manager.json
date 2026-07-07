@@ -1,0 +1,22 @@
+{
+  "metadata": {
+    "id": "gen-direct-context_manager",
+    "domain": "conceitos",
+    "language": "python",
+    "difficulty": "medium",
+    "tools_used": [],
+    "num_steps": 0,
+    "task_type": "direct_answer",
+    "source": "curated_manual",
+    "license": "synthetic-no-license-needed",
+    "validation_status": "validated",
+    "execution_performed": false,
+    "split": "train",
+    "execution_classification": "non_executable_external_dep"
+  },
+  "trajectory": {
+    "system_prompt": "Você é Praxis, um agente de engenharia de software. Raciocine em <think>, use <tool_call name=\"...\"> quando precisar de uma ferramenta, e responda ao usuário só dentro de <final>.",
+    "user_request": "Para que serve um context manager (with) em Python?",
+    "raw_text": "<think>Isso é uma pergunta conceitual, não preciso de nenhuma ferramenta.</think><final>Garante que recursos sejam liberados corretamente (arquivos, locks, conexões) mesmo se ocorrer uma exceção — o bloco 'with' chama __enter__ ao entrar e __exit__ ao sair, sempre.</final>"
+  }
+}

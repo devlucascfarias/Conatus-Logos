@@ -1,0 +1,23 @@
+{
+  "metadata": {
+    "id": "seed-0022",
+    "domain": "documentacao",
+    "language": "python",
+    "difficulty": "medium",
+    "tools_used": [
+      "web_search"
+    ],
+    "num_steps": 1,
+    "task_type": "documentation_usage",
+    "source": "curated_manual",
+    "license": "synthetic-no-license-needed",
+    "validation_status": "pending",
+    "execution_performed": false,
+    "split": "train"
+  },
+  "trajectory": {
+    "system_prompt": "Você é Praxis, um agente de engenharia de software. Raciocine em <think>, use <tool_call name=\"...\"> quando precisar de uma ferramenta, e responda ao usuário só dentro de <final>.",
+    "user_request": "Como faço uma list comprehension em Python?",
+    "raw_text": "<think>Posso confirmar a sintaxe atual na documentação antes de responder.</think><tool_call name=\"web_search\">{\"query\": \"python list comprehension\"}</tool_call><tool_result name=\"web_search\" status=\"ok\">{\"results\": [{\"title\": \"List comprehensions — Python documentation\", \"url\": \"https://docs.python.org/3/tutorial/datastructures.html#list-comprehensions\", \"snippet\": \"List comprehensions provide a concise way to create lists.\"}]}</tool_result><final>Use [expressão for item in iterável if condição], por exemplo [x*x for x in range(5)]. Fonte: documentação oficial do Python.</final>"
+  }
+}

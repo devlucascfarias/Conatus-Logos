@@ -1,0 +1,40 @@
+{
+  "total": 556,
+  "by_language": {
+    "python": 383,
+    "go": 173
+  },
+  "by_task_type": {
+    "ambiguous_request": 13,
+    "test_authoring": 17,
+    "compiles_successfully": 26,
+    "complexity_analysis": 22,
+    "project_configuration": 12,
+    "debugging": 16,
+    "direct_answer": 25,
+    "documentation_usage": 12,
+    "code_explanation": 32,
+    "model_fixes_after_error": 41,
+    "forbidden_operation": 13,
+    "insufficient_information": 13,
+    "invalid_call_then_correction": 11,
+    "language_migration": 23,
+    "multi_tool_call": 89,
+    "multi_file_read_and_edit": 6,
+    "refactor": 7,
+    "checker_rejects_code": 41,
+    "single_tool_call": 89,
+    "test_fails": 24,
+    "test_passes": 14,
+    "tool_unavailable": 10
+  },
+  "by_difficulty": {
+    "easy": 193,
+    "medium": 335,
+    "hard": 28
+  },
+  "by_validation_status": {
+    "validated": 556
+  },
+  "rejection_rate": 0.0
+}

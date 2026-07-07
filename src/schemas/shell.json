@@ -1,0 +1,17 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "praxis://tools/shell/1.0",
+  "title": "shell",
+  "type": "object",
+  "required": ["command"],
+  "properties": {
+    "command": {"type": "string", "minLength": 1},
+    "cwd": {"type": "string", "default": "."},
+    "timeout_ms": {
+      "type": "integer",
+      "minimum": 100,
+      "maximum": 30000,
+      "default": 10000
+    }
+  }
+}

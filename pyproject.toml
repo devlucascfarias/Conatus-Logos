@@ -1,0 +1,9 @@
+[project]
+name = "praxis-sft"
+version = "0.1.0"
+description = "Praxis-SFT v2 — modelo especializado em engenharia de software via QLoRA sobre ibm-granite/granite-4.1-8b"
+requires-python = ">=3.10"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["."]

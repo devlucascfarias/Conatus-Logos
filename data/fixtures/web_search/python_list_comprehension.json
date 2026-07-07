@@ -1,0 +1,12 @@
+[
+  {
+    "title": "List comprehensions — Python documentation",
+    "url": "https://docs.python.org/3/tutorial/datastructures.html#list-comprehensions",
+    "snippet": "List comprehensions provide a concise way to create lists. A list comprehension consists of brackets containing an expression followed by a for clause."
+  },
+  {
+    "title": "PEP 202 -- List Comprehensions",
+    "url": "https://peps.python.org/pep-0202/",
+    "snippet": "This PEP introduces a syntactic construct called 'list comprehensions' that allows lists to be constructed from other iterables."
+  }
+]

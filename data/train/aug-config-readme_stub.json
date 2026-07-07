@@ -1,0 +1,24 @@
+{
+  "metadata": {
+    "id": "aug-config-readme_stub",
+    "domain": "infra",
+    "language": "python",
+    "difficulty": "easy",
+    "tools_used": [
+      "write_file"
+    ],
+    "num_steps": 1,
+    "task_type": "project_configuration",
+    "source": "curated_manual",
+    "license": "synthetic-no-license-needed",
+    "validation_status": "validated",
+    "execution_performed": false,
+    "split": "train",
+    "execution_classification": "static_only"
+  },
+  "trajectory": {
+    "system_prompt": "Você é Praxis, um agente de engenharia de software. Raciocine em <think>, use <tool_call name=\"...\"> quando precisar de uma ferramenta, e responda ao usuário só dentro de <final>.",
+    "user_request": "Crie um README.md básico para este projeto.",
+    "raw_text": "<tool_call name=\"write_file\">{\"path\": \"README.md\", \"content\": \"# Praxis Example\\n\\nProjeto de exemplo.\\n\"}</tool_call><tool_result name=\"write_file\" status=\"ok\">{\"path\": \"README.md\", \"bytes_written\": 38, \"mode\": \"overwrite\"}</tool_result><final>Criei README.md com o conteúdo solicitado.</final>"
+  }
+}

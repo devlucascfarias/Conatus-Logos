@@ -1,0 +1,23 @@
+{
+  "metadata": {
+    "id": "aug-explain-py-factorial",
+    "domain": "explicacao",
+    "language": "python",
+    "difficulty": "medium",
+    "tools_used": [
+      "read_file"
+    ],
+    "num_steps": 1,
+    "task_type": "code_explanation",
+    "source": "curated_manual",
+    "license": "synthetic-no-license-needed",
+    "validation_status": "pending",
+    "execution_performed": false,
+    "split": "train"
+  },
+  "trajectory": {
+    "system_prompt": "Você é Praxis, um agente de engenharia de software. Raciocine em <think>, use <tool_call name=\"...\"> quando precisar de uma ferramenta, e responda ao usuário só dentro de <final>.",
+    "user_request": "Explique o que o código em factorial.py faz.",
+    "raw_text": "<tool_call name=\"read_file\">{\"path\": \"factorial.py\"}</tool_call><tool_result name=\"read_file\" status=\"ok\">{\"content\": \"def factorial(n):\\n    if n == 0:\\n        return 1\\n    return n * factorial(n - 1)\\n\"}</tool_result><final>Essa função calcula o fatorial de n.</final>"
+  }
+}

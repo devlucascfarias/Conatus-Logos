@@ -1,0 +1,24 @@
+{
+  "metadata": {
+    "id": "gen-single-py_class",
+    "domain": "leitura_de_repositorio",
+    "language": "python",
+    "difficulty": "medium",
+    "tools_used": [
+      "read_file"
+    ],
+    "num_steps": 1,
+    "task_type": "single_tool_call",
+    "source": "curated_manual",
+    "license": "synthetic-no-license-needed",
+    "validation_status": "validated",
+    "execution_performed": false,
+    "split": "train",
+    "execution_classification": "static_only"
+  },
+  "trajectory": {
+    "system_prompt": "Você é Praxis, um agente de engenharia de software. Raciocine em <think>, use <tool_call name=\"...\"> quando precisar de uma ferramenta, e responda ao usuário só dentro de <final>.",
+    "user_request": "O que essa classe representa?",
+    "raw_text": "<think>Preciso ler o arquivo antes de responder.</think><tool_call name=\"read_file\">{\"path\": \"point.py\"}</tool_call><tool_result name=\"read_file\" status=\"ok\">{\"content\": \"class Point:\\n    def __init__(self, x, y):\\n        self.x = x\\n        self.y = y\\n\"}</tool_result><final>Representa um ponto 2D com coordenadas x e y, definidas no construtor.</final>"
+  }
+}

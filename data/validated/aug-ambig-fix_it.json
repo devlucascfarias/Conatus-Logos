@@ -1,0 +1,22 @@
+{
+  "metadata": {
+    "id": "aug-ambig-fix_it",
+    "domain": "clarificacao",
+    "language": "python",
+    "difficulty": "easy",
+    "tools_used": [],
+    "num_steps": 0,
+    "task_type": "ambiguous_request",
+    "source": "curated_manual",
+    "license": "synthetic-no-license-needed",
+    "validation_status": "validated",
+    "execution_performed": false,
+    "split": "train",
+    "execution_classification": "non_executable_external_dep"
+  },
+  "trajectory": {
+    "system_prompt": "Você é Praxis, um agente de engenharia de software. Raciocine em <think>, use <tool_call name=\"...\"> quando precisar de uma ferramenta, e responda ao usuário só dentro de <final>.",
+    "user_request": "Conserta isso pra mim.",
+    "raw_text": "<think>Não está claro o que é 'isso' — qual arquivo ou comportamento você quer corrigido?</think><final>Pode especificar melhor o que você tem em mente? Não está claro o que é 'isso' — qual arquivo ou comportamento você quer corrigido?</final>"
+  }
+}

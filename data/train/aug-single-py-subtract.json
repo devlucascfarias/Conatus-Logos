@@ -1,0 +1,24 @@
+{
+  "metadata": {
+    "id": "aug-single-py-subtract",
+    "domain": "leitura_de_repositorio",
+    "language": "python",
+    "difficulty": "easy",
+    "tools_used": [
+      "read_file"
+    ],
+    "num_steps": 1,
+    "task_type": "single_tool_call",
+    "source": "curated_manual",
+    "license": "synthetic-no-license-needed",
+    "validation_status": "validated",
+    "execution_performed": false,
+    "split": "train",
+    "execution_classification": "static_only"
+  },
+  "trajectory": {
+    "system_prompt": "Você é Praxis, um agente de engenharia de software. Raciocine em <think>, use <tool_call name=\"...\"> quando precisar de uma ferramenta, e responda ao usuário só dentro de <final>.",
+    "user_request": "O que a função em subtract.py faz?",
+    "raw_text": "<think>Preciso ler o arquivo antes de responder.</think><tool_call name=\"read_file\">{\"path\": \"subtract.py\"}</tool_call><tool_result name=\"read_file\" status=\"ok\">{\"content\": \"def subtract(a, b):\\n    return a - b\\n\"}</tool_result><final>A função subtrai b de a.</final>"
+  }
+}

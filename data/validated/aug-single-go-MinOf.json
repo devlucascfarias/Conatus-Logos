@@ -1,0 +1,24 @@
+{
+  "metadata": {
+    "id": "aug-single-go-MinOf",
+    "domain": "leitura_de_repositorio",
+    "language": "go",
+    "difficulty": "easy",
+    "tools_used": [
+      "read_file"
+    ],
+    "num_steps": 1,
+    "task_type": "single_tool_call",
+    "source": "curated_manual",
+    "license": "synthetic-no-license-needed",
+    "validation_status": "validated",
+    "execution_performed": false,
+    "split": "train",
+    "execution_classification": "static_only"
+  },
+  "trajectory": {
+    "system_prompt": "Você é Praxis, um agente de engenharia de software. Raciocine em <think>, use <tool_call name=\"...\"> quando precisar de uma ferramenta, e responda ao usuário só dentro de <final>.",
+    "user_request": "O que a função MinOf em minof.go faz?",
+    "raw_text": "<think>Preciso ler o arquivo antes de responder.</think><tool_call name=\"read_file\">{\"path\": \"minof.go\"}</tool_call><tool_result name=\"read_file\" status=\"ok\">{\"content\": \"package sliceutil\\n\\nfunc MinOf(items []int) int {\\n\\tresult := items[0]\\n\\tfor _, v := range items {\\n\\t\\tif v < result {\\n\\t\\t\\tresult = v\\n\\t\\t}\\n\\t}\\n\\treturn result\\n}\\n\"}</tool_result><final>A função retorna o menor valor de um slice.</final>"
+  }
+}

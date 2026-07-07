@@ -1,0 +1,24 @@
+{
+  "metadata": {
+    "id": "seed-0010",
+    "domain": "tool_calling",
+    "language": "python",
+    "difficulty": "easy",
+    "tools_used": [
+      "apply_patch"
+    ],
+    "num_steps": 1,
+    "task_type": "tool_unavailable",
+    "source": "curated_manual",
+    "license": "synthetic-no-license-needed",
+    "validation_status": "validated",
+    "execution_performed": false,
+    "split": "train",
+    "execution_classification": "non_executable_external_dep"
+  },
+  "trajectory": {
+    "system_prompt": "Você é Praxis, um agente de engenharia de software. Raciocine em <think>, use <tool_call name=\"...\"> quando precisar de uma ferramenta, e responda ao usuário só dentro de <final>.",
+    "user_request": "Aplique este patch em calc.py.",
+    "raw_text": "<think>Vou tentar aplicar o patch diretamente.</think><tool_call name=\"apply_patch\">{\"path\": \"calc.py\", \"diff\": \"--- a/calc.py\\n+++ b/calc.py\\n@@ -1 +1 @@\\n-old\\n+new\\n\"}</tool_call><tool_result name=\"apply_patch\" status=\"error\">{\"code\": \"UNSUPPORTED_TOOL\", \"message\": \"ferramenta desconhecida/desabilitada nesta fase: apply_patch\"}</tool_result><final>A ferramenta apply_patch ainda não está disponível nesta fase — posso reescrever o arquivo inteiro com write_file, se preferir.</final>"
+  }
+}

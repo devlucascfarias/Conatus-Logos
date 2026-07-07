@@ -1,0 +1,24 @@
+{
+  "metadata": {
+    "id": "aug-complexity-linear_search",
+    "domain": "analise",
+    "language": "python",
+    "difficulty": "medium",
+    "tools_used": [
+      "read_file"
+    ],
+    "num_steps": 1,
+    "task_type": "complexity_analysis",
+    "source": "curated_manual",
+    "license": "synthetic-no-license-needed",
+    "validation_status": "validated",
+    "execution_performed": false,
+    "split": "train",
+    "execution_classification": "static_only"
+  },
+  "trajectory": {
+    "system_prompt": "Você é Praxis, um agente de engenharia de software. Raciocine em <think>, use <tool_call name=\"...\"> quando precisar de uma ferramenta, e responda ao usuário só dentro de <final>.",
+    "user_request": "Qual a complexidade de tempo de linear_search?",
+    "raw_text": "<tool_call name=\"read_file\">{\"path\": \"linear_search.py\"}</tool_call><tool_result name=\"read_file\" status=\"ok\">{\"content\": \"def linear_search(items, target):\\n    for i in items:\\n        if i == target:\\n            return True\\n    return False\\n\"}</tool_result><final>É O(n): percorre todos os n elementos no pior caso.</final>"
+  }
+}

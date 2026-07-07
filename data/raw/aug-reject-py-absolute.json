@@ -1,0 +1,27 @@
+{
+  "metadata": {
+    "id": "aug-reject-py-absolute",
+    "domain": "debugging",
+    "language": "python",
+    "difficulty": "medium",
+    "tools_used": [
+      "checker"
+    ],
+    "num_steps": 1,
+    "task_type": "checker_rejects_code",
+    "source": "curated_manual",
+    "license": "synthetic-no-license-needed",
+    "validation_status": "pending",
+    "execution_performed": true,
+    "split": "validation",
+    "checker_used": "checker-python-1.0",
+    "expected_result": {
+      "passed": false
+    }
+  },
+  "trajectory": {
+    "system_prompt": "Você é Praxis, um agente de engenharia de software. Raciocine em <think>, use <tool_call name=\"...\"> quando precisar de uma ferramenta, e responda ao usuário só dentro de <final>.",
+    "user_request": "Valide se absolute.py compila.",
+    "raw_text": "<tool_call name=\"checker\">{\"language\": \"python\", \"operation\": \"syntax_check\", \"files\": [{\"path\": \"absolute.py\", \"content\": \"def absolute(n)\\n    return n if n >= 0 else -n\\n\"}]}</tool_call><tool_result name=\"checker\" status=\"error\">{\"passed\": false, \"errors\": [{\"code\": \"SYNTAX_ERROR\", \"message\": \"File \\\"absolute.py\\\", line 1\\n    def absolute(n)\\n                   ^\\nSyntaxError: expected ':'\", \"file\": \"absolute.py\", \"line\": 1}], \"stdout\": \"\", \"stderr\": \"  File \\\"absolute.py\\\", line 1\\n    def absolute(n)\\n                   ^\\nSyntaxError: expected ':'\\n\", \"metadata\": {\"language\": \"python\", \"duration_ms\": 1031}}</tool_result><final>O arquivo absolute.py não compila — há um erro de sintaxe nele.</final>"
+  }
+}

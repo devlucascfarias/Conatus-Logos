@@ -1,0 +1,27 @@
+{
+  "metadata": {
+    "id": "aug-testfail-remove_duplicates",
+    "domain": "testing",
+    "language": "python",
+    "difficulty": "medium",
+    "tools_used": [
+      "checker"
+    ],
+    "num_steps": 1,
+    "task_type": "test_fails",
+    "source": "curated_manual",
+    "license": "synthetic-no-license-needed",
+    "validation_status": "pending",
+    "execution_performed": true,
+    "split": "train",
+    "checker_used": "checker-python-1.0",
+    "expected_result": {
+      "passed": false
+    }
+  },
+  "trajectory": {
+    "system_prompt": "Você é Praxis, um agente de engenharia de software. Raciocine em <think>, use <tool_call name=\"...\"> quando precisar de uma ferramenta, e responda ao usuário só dentro de <final>.",
+    "user_request": "Rode os testes de remove_duplicates em calc.py.",
+    "raw_text": "<tool_call name=\"checker\">{\"language\": \"python\", \"operation\": \"compile_and_test\", \"files\": [{\"path\": \"calc.py\", \"content\": \"def remove_duplicates(lista):\\n    return list(dict.fromkeys(lista))\\n\"}, {\"path\": \"test_calc.py\", \"content\": \"from calc import remove_duplicates\\n\\ndef test_remove_duplicates():\\n    assert remove_duplicates([1, 1, 2, 2, 3]) == [999]\\n\"}]}</tool_call><tool_result name=\"checker\" status=\"error\">{\"passed\": false, \"errors\": [{\"code\": \"TEST_FAILURE\", \"message\": \"F                                                                        [100%]\\n================================== FAILURES ===================================\\n___________________________ test_remove_duplicates ____________________________\\n\\n    def test_remove_duplicates():\\n>       assert remove_duplicates([1, 1, 2, 2, 3]) == [999]\\nE       assert [1, 2, 3] == [999]\\nE         \\nE         At index 0 diff: 1 != 999\\nE         Left contains 2 more items, first extra item: 2\\nE         Use -v to get more diff\\n\\ntest_calc.py:4: AssertionError\\n=========================== short test summary info ===========================\\nFAILED test_calc.py::test_remove_duplicates - assert [1, 2, 3] == [999]\\n1 failed in 0.59s\\nC:\\\\Users\\\\Pichau\\\\AppData\\\\Local\\\\Programs\\\\Python\\\\Python310\\\\lib\\\\site-packages\\\\pytest_asyncio\\\\plugin.py:247: PytestDeprecationWarning: The configuration option \\\"asyncio_default_fixture_loop_scope\\\" is unset.\\nThe event loop scope for asynchronous fixtures will default to the fixture caching scope. Future versions of pytest-asyncio will default the loop scope for asynchronous fixtures to function scope. Set the default fixture loop scope explicitly in order to avoid unexpected behavior in the future. Valid fixture loop scopes are: \\\"function\\\", \\\"class\\\", \\\"module\\\", \\\"package\\\", \\\"session\\\"\\n\\n  warnings.warn(PytestDeprecationWarning(_DEFAULT_FIXTURE_LOOP_SCOPE_UNSET))\"}], \"stdout\": \"F                                                                        [100%]\\n================================== FAILURES ===================================\\n___________________________ test_remove_duplicates ____________________________\\n\\n    def test_remove_duplicates():\\n>       assert remove_duplicates([1, 1, 2, 2, 3]) == [999]\\nE       assert [1, 2, 3] == [999]\\nE         \\nE         At index 0 diff: 1 != 999\\nE         Left contains 2 more items, first extra item: 2\\nE         Use -v to get more diff\\n\\ntest_calc.py:4: AssertionError\\n=========================== short test summary info ===========================\\nFAILED test_calc.py::test_remove_duplicates - assert [1, 2, 3] == [999]\\n1 failed in 0.59s\\n\", \"stderr\": \"C:\\\\Users\\\\Pichau\\\\AppData\\\\Local\\\\Programs\\\\Python\\\\Python310\\\\lib\\\\site-packages\\\\pytest_asyncio\\\\plugin.py:247: PytestDeprecationWarning: The configuration option \\\"asyncio_default_fixture_loop_scope\\\" is unset.\\nThe event loop scope for asynchronous fixtures will default to the fixture caching scope. Future versions of pytest-asyncio will default the loop scope for asynchronous fixtures to function scope. Set the default fixture loop scope explicitly in order to avoid unexpected behavior in the future. Valid fixture loop scopes are: \\\"function\\\", \\\"class\\\", \\\"module\\\", \\\"package\\\", \\\"session\\\"\\n\\n  warnings.warn(PytestDeprecationWarning(_DEFAULT_FIXTURE_LOOP_SCOPE_UNSET))\\n\", \"metadata\": {\"language\": \"python\", \"duration_ms\": 5250}}</tool_result><final>O teste falhou — o comportamento não bate com o esperado.</final>"
+  }
+}

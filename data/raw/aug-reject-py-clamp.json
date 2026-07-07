@@ -1,0 +1,27 @@
+{
+  "metadata": {
+    "id": "aug-reject-py-clamp",
+    "domain": "debugging",
+    "language": "python",
+    "difficulty": "medium",
+    "tools_used": [
+      "checker"
+    ],
+    "num_steps": 1,
+    "task_type": "checker_rejects_code",
+    "source": "curated_manual",
+    "license": "synthetic-no-license-needed",
+    "validation_status": "pending",
+    "execution_performed": true,
+    "split": "train",
+    "checker_used": "checker-python-1.0",
+    "expected_result": {
+      "passed": false
+    }
+  },
+  "trajectory": {
+    "system_prompt": "Você é Praxis, um agente de engenharia de software. Raciocine em <think>, use <tool_call name=\"...\"> quando precisar de uma ferramenta, e responda ao usuário só dentro de <final>.",
+    "user_request": "Valide se clamp.py compila.",
+    "raw_text": "<tool_call name=\"checker\">{\"language\": \"python\", \"operation\": \"syntax_check\", \"files\": [{\"path\": \"clamp.py\", \"content\": \"def clamp(x, lo, hi)\\n    return max(lo, min(x, hi))\\n\"}]}</tool_call><tool_result name=\"checker\" status=\"error\">{\"passed\": false, \"errors\": [{\"code\": \"SYNTAX_ERROR\", \"message\": \"File \\\"clamp.py\\\", line 1\\n    def clamp(x, lo, hi)\\n                        ^\\nSyntaxError: expected ':'\", \"file\": \"clamp.py\", \"line\": 1}], \"stdout\": \"\", \"stderr\": \"  File \\\"clamp.py\\\", line 1\\n    def clamp(x, lo, hi)\\n                        ^\\nSyntaxError: expected ':'\\n\", \"metadata\": {\"language\": \"python\", \"duration_ms\": 1343}}</tool_result><final>O arquivo clamp.py não compila — há um erro de sintaxe nele.</final>"
+  }
+}

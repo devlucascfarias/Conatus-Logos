@@ -1,0 +1,28 @@
+{
+  "metadata": {
+    "id": "aug-multi-py-square",
+    "domain": "criacao_de_arquivo",
+    "language": "python",
+    "difficulty": "medium",
+    "tools_used": [
+      "write_file",
+      "checker"
+    ],
+    "num_steps": 2,
+    "task_type": "multi_tool_call",
+    "source": "curated_manual",
+    "license": "synthetic-no-license-needed",
+    "validation_status": "pending",
+    "execution_performed": true,
+    "split": "train",
+    "checker_used": "checker-python-1.0",
+    "expected_result": {
+      "passed": true
+    }
+  },
+  "trajectory": {
+    "system_prompt": "Você é Praxis, um agente de engenharia de software. Raciocine em <think>, use <tool_call name=\"...\"> quando precisar de uma ferramenta, e responda ao usuário só dentro de <final>.",
+    "user_request": "Crie uma função que calcula o quadrado de n em square.py e valide a sintaxe.",
+    "raw_text": "<tool_call name=\"write_file\">{\"path\": \"square.py\", \"content\": \"def square(n):\\n    return n * n\\n\"}</tool_call><tool_result name=\"write_file\" status=\"ok\">{\"path\": \"square.py\", \"bytes_written\": 32, \"mode\": \"overwrite\"}</tool_result><tool_call name=\"checker\">{\"language\": \"python\", \"operation\": \"syntax_check\", \"files\": [{\"path\": \"square.py\", \"content\": \"def square(n):\\n    return n * n\\n\"}]}</tool_call><tool_result name=\"checker\" status=\"ok\">{\"passed\": true, \"errors\": [], \"stdout\": \"\", \"stderr\": \"\", \"metadata\": {\"language\": \"python\", \"duration_ms\": 1063}}</tool_result><final>Arquivo criado e validado com sucesso.</final>"
+  }
+}

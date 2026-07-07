@@ -1,0 +1,28 @@
+{
+  "metadata": {
+    "id": "aug-reject-py-sum_digits",
+    "domain": "debugging",
+    "language": "python",
+    "difficulty": "medium",
+    "tools_used": [
+      "checker"
+    ],
+    "num_steps": 1,
+    "task_type": "checker_rejects_code",
+    "source": "curated_manual",
+    "license": "synthetic-no-license-needed",
+    "validation_status": "validated",
+    "execution_performed": true,
+    "split": "validation",
+    "checker_used": "checker-python-1.0",
+    "expected_result": {
+      "passed": false
+    },
+    "execution_classification": "interpreted"
+  },
+  "trajectory": {
+    "system_prompt": "Você é Praxis, um agente de engenharia de software. Raciocine em <think>, use <tool_call name=\"...\"> quando precisar de uma ferramenta, e responda ao usuário só dentro de <final>.",
+    "user_request": "Valide se sum_digits.py compila.",
+    "raw_text": "<tool_call name=\"checker\">{\"language\": \"python\", \"operation\": \"syntax_check\", \"files\": [{\"path\": \"sum_digits.py\", \"content\": \"def sum_digits(n)\\n    return sum(int(d) for d in str(abs(n)))\\n\"}]}</tool_call><tool_result name=\"checker\" status=\"error\">{\"passed\": false, \"errors\": [{\"code\": \"SYNTAX_ERROR\", \"message\": \"File \\\"sum_digits.py\\\", line 1\\n    def sum_digits(n)\\n                     ^\\nSyntaxError: expected ':'\", \"file\": \"sum_digits.py\", \"line\": 1}], \"stdout\": \"\", \"stderr\": \"  File \\\"sum_digits.py\\\", line 1\\n    def sum_digits(n)\\n                     ^\\nSyntaxError: expected ':'\\n\", \"metadata\": {\"language\": \"python\", \"duration_ms\": 1359}}</tool_result><final>O arquivo sum_digits.py não compila — há um erro de sintaxe nele.</final>"
+  }
+}

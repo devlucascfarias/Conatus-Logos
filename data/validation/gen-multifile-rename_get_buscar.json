@@ -1,0 +1,27 @@
+{
+  "metadata": {
+    "id": "gen-multifile-rename_get_buscar",
+    "domain": "refatoracao",
+    "language": "python",
+    "difficulty": "medium",
+    "tools_used": [
+      "read_file",
+      "read_file",
+      "write_file",
+      "write_file"
+    ],
+    "num_steps": 4,
+    "task_type": "multi_file_read_and_edit",
+    "source": "curated_manual",
+    "license": "synthetic-no-license-needed",
+    "validation_status": "validated",
+    "execution_performed": false,
+    "split": "validation",
+    "execution_classification": "static_only"
+  },
+  "trajectory": {
+    "system_prompt": "Você é Praxis, um agente de engenharia de software. Raciocine em <think>, use <tool_call name=\"...\"> quando precisar de uma ferramenta, e responda ao usuário só dentro de <final>.",
+    "user_request": "Renomeie get para buscar em repo.py e atualize app.py.",
+    "raw_text": "<tool_call name=\"read_file\">{\"path\": \"repo.py\"}</tool_call><tool_result name=\"read_file\" status=\"ok\">{\"content\": \"def get(id):\\n    return id\\n\"}</tool_result><tool_call name=\"read_file\">{\"path\": \"app.py\"}</tool_call><tool_result name=\"read_file\" status=\"ok\">{\"content\": \"from repo import get\\nprint(get(1))\\n\"}</tool_result><tool_call name=\"write_file\">{\"path\": \"repo.py\", \"content\": \"def buscar(id):\\n    return id\\n\"}</tool_call><tool_result name=\"write_file\" status=\"ok\">{\"path\": \"repo.py\", \"bytes_written\": 30, \"mode\": \"overwrite\"}</tool_result><tool_call name=\"write_file\">{\"path\": \"app.py\", \"content\": \"from repo import buscar\\nprint(buscar(1))\\n\"}</tool_call><tool_result name=\"write_file\" status=\"ok\">{\"path\": \"app.py\", \"bytes_written\": 41, \"mode\": \"overwrite\"}</tool_result><final>Renomeei a função e atualizei todos os lugares que a chamavam.</final>"
+  }
+}

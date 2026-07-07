@@ -1,0 +1,27 @@
+{
+  "metadata": {
+    "id": "aug-multifile-rename_calc_compute",
+    "domain": "refatoracao",
+    "language": "python",
+    "difficulty": "medium",
+    "tools_used": [
+      "read_file",
+      "read_file",
+      "write_file",
+      "write_file"
+    ],
+    "num_steps": 4,
+    "task_type": "multi_file_read_and_edit",
+    "source": "curated_manual",
+    "license": "synthetic-no-license-needed",
+    "validation_status": "validated",
+    "execution_performed": false,
+    "split": "train",
+    "execution_classification": "static_only"
+  },
+  "trajectory": {
+    "system_prompt": "Você é Praxis, um agente de engenharia de software. Raciocine em <think>, use <tool_call name=\"...\"> quando precisar de uma ferramenta, e responda ao usuário só dentro de <final>.",
+    "user_request": "Renomeie calc para compute em ops.py e atualize runner.py.",
+    "raw_text": "<tool_call name=\"read_file\">{\"path\": \"ops.py\"}</tool_call><tool_result name=\"read_file\" status=\"ok\">{\"content\": \"def calc(a, b):\\n    return a + b\\n\"}</tool_result><tool_call name=\"read_file\">{\"path\": \"runner.py\"}</tool_call><tool_result name=\"read_file\" status=\"ok\">{\"content\": \"from ops import calc\\nprint(calc(1, 2))\\n\"}</tool_result><tool_call name=\"write_file\">{\"path\": \"ops.py\", \"content\": \"def compute(a, b):\\n    return a + b\\n\"}</tool_call><tool_result name=\"write_file\" status=\"ok\">{\"path\": \"ops.py\", \"bytes_written\": 36, \"mode\": \"overwrite\"}</tool_result><tool_call name=\"write_file\">{\"path\": \"runner.py\", \"content\": \"from ops import compute\\nprint(compute(1, 2))\\n\"}</tool_call><tool_result name=\"write_file\" status=\"ok\">{\"path\": \"runner.py\", \"bytes_written\": 45, \"mode\": \"overwrite\"}</tool_result><final>Renomeei a função e atualizei todos os lugares que a chamavam.</final>"
+  }
+}
