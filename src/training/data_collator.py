@@ -11,6 +11,17 @@ tokeniza e aplica a máscara de loss por segmento ANTES de entregar ao `SFTTrain
 evita que o `SFTTrainer` re-tokenize com seu próprio pipeline (que não sabe nada sobre a
 gramática canônica nem sobre mascarar `<tool_result>`).
 
+D-train-prompt-mask: `build_pretokenized_dataset` tokeniza o texto COMPLETO
+(system_prompt + user_request + `<raw_text>`), usando exatamente o mesmo template de
+`Trajectory.render_for_model()` (harness/trajectory.py) — nunca só `raw_text` isolado. Um bug
+anterior tokenizava apenas `raw_text`, então o modelo nunca via system_prompt/user_request
+durante o treino; na inferência real (via `run_agent_loop`), o prompt SEMPRE inclui esse
+prefixo — confirmado no Colab: o modelo treinado ignorava o pedido do usuário e alucinava
+`<final>` sem chamar nenhuma ferramenta, e degenerava em loops de repetição after um
+`<tool_result status="error">`, porque o formato de inferência era inédito para ele. O prefixo
+inteiro (tudo antes de `raw_text`) fica com loss mascarado (`prefix_len` em
+`compute_loss_mask`) — só o texto gerado pelo assistente (menos `<tool_result>`, D7) treina.
+
 Import deste módulo nunca falha por falta de `transformers`/`datasets` — só a construção do
 collator ou a chamada de `build_pretokenized_dataset`."""
 
@@ -21,16 +32,33 @@ from typing import Any
 from .loss_masking import IGNORE_INDEX, apply_loss_mask, compute_loss_mask
 
 
-def build_pretokenized_dataset(raw_texts: list[str], tokenizer: Any, max_length: int) -> Any:
-    """Tokeniza cada trajetória e aplica a máscara de loss por segmento (D7), retornando um
-    `datasets.Dataset` com colunas `input_ids`/`labels` — a presença de `input_ids` é o que
-    faz o `SFTTrainer` pular sua própria tokenização (ver D-sfttrainer-v2 acima)."""
+def _render_prefix(system_prompt: str, user_request: str) -> str:
+    """Mesmo template de `Trajectory.render_for_model()` (harness/trajectory.py), até o ponto
+    onde `raw_text` começaria — reaproveitado aqui via uma trajetória com `raw_text=""` para
+    garantir que treino e inferência NUNCA divirjam nesse formato (D-train-prompt-mask)."""
+    from src.harness.trajectory import Trajectory
+
+    return Trajectory(system_prompt=system_prompt, user_request=user_request).render_for_model()
+
+
+def build_pretokenized_dataset(trajectories: list[dict[str, Any]], tokenizer: Any, max_length: int) -> Any:
+    """Tokeniza cada trajetória completa (prompt + `raw_text`) e aplica a máscara de loss por
+    segmento (D7) só sobre `raw_text`, retornando um `datasets.Dataset` com colunas
+    `input_ids`/`labels` — a presença de `input_ids` é o que faz o `SFTTrainer` pular sua
+    própria tokenização (ver D-sfttrainer-v2 acima).
+
+    `trajectories` é uma lista de dicts com chaves `system_prompt`, `user_request`, `raw_text`
+    (o mesmo shape de `ex["trajectory"]` no dataset gerado — ver D-train-prompt-mask)."""
     from datasets import Dataset
 
     records = []
-    for raw_text in raw_texts:
-        encoded = tokenizer(raw_text, truncation=True, max_length=max_length, return_offsets_mapping=True)
-        mask = compute_loss_mask(raw_text, encoded["offset_mapping"])
+    for traj in trajectories:
+        raw_text = traj["raw_text"]
+        prefix = _render_prefix(traj["system_prompt"], traj["user_request"])
+        full_text = prefix + raw_text
+
+        encoded = tokenizer(full_text, truncation=True, max_length=max_length, return_offsets_mapping=True)
+        mask = compute_loss_mask(raw_text, encoded["offset_mapping"], prefix_len=len(prefix))
         labels = apply_loss_mask(encoded["input_ids"], mask)
         records.append({"input_ids": encoded["input_ids"], "labels": labels})
 

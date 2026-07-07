@@ -18,17 +18,24 @@ _LOSS_ELIGIBLE_KINDS = frozenset({"think", "tool_call", "final"})
 IGNORE_INDEX = -100  # convenção padrão do PyTorch/Hugging Face para "ignorar no loss"
 
 
-def compute_loss_mask(raw_text: str, token_offsets: list[tuple[int, int]]) -> list[bool]:
+def compute_loss_mask(raw_text: str, token_offsets: list[tuple[int, int]], prefix_len: int = 0) -> list[bool]:
     """Retorna, por token, True se o loss deve ser computado (token pertence a um segmento
-    gerado pelo assistente) ou False (token pertence a `<tool_result>` ou está fora de
-    qualquer segmento reconhecido — nunca deveria ocorrer num exemplo já validado pelo
-    pipeline de dataset, mas por segurança tratamos como não-elegível, não como erro)."""
+    gerado pelo assistente) ou False (token pertence a `<tool_result>`, ao prefixo de
+    prompt/contexto antes de `raw_text`, ou está fora de qualquer segmento reconhecido —
+    nunca deveria ocorrer num exemplo já validado pelo pipeline de dataset, mas por segurança
+    tratamos como não-elegível, não como erro).
+
+    `prefix_len` é o comprimento em CARACTERES de tudo que precede `raw_text` no texto
+    efetivamente tokenizado (system_prompt + user_request + marcadores de template — ver
+    D-train-prompt-mask, PLAN.md): sem isso, `token_offsets` (que indexam o texto completo)
+    não bateriam com os spans de `parse_segments(raw_text)` (que indexam só `raw_text`)."""
     segments = parse_segments(raw_text)
     eligible_spans = [(seg.start, seg.end) for seg in segments if seg.kind in _LOSS_ELIGIBLE_KINDS]
 
     mask = []
     for token_start, _token_end in token_offsets:
-        eligible = any(span_start <= token_start < span_end for span_start, span_end in eligible_spans)
+        rel_start = token_start - prefix_len
+        eligible = rel_start >= 0 and any(span_start <= rel_start < span_end for span_start, span_end in eligible_spans)
         mask.append(eligible)
     return mask
 

@@ -30,13 +30,21 @@ def tokenizer():
     return tok
 
 
-_TRAJECTORY_WITH_TOOL_RESULT = (
-    '<think>vou ler o arquivo</think>'
-    '<tool_call name="read_file">{"path": "a.py"}</tool_call>'
-    '<tool_result name="read_file" status="ok">{"content": "print(1)"}</tool_result>'
-    "<final>o arquivo imprime 1</final>"
-)
-_DIRECT_TRAJECTORY = "<think>não preciso de ferramenta</think><final>2 + 2 = 4</final>"
+_TRAJECTORY_WITH_TOOL_RESULT = {
+    "system_prompt": "Você é Praxis, um agente de engenharia de software.",
+    "user_request": "o que main.py faz?",
+    "raw_text": (
+        '<think>vou ler o arquivo</think>'
+        '<tool_call name="read_file">{"path": "a.py"}</tool_call>'
+        '<tool_result name="read_file" status="ok">{"content": "print(1)"}</tool_result>'
+        "<final>o arquivo imprime 1</final>"
+    ),
+}
+_DIRECT_TRAJECTORY = {
+    "system_prompt": "Você é Praxis, um agente de engenharia de software.",
+    "user_request": "quanto é 2 + 2?",
+    "raw_text": "<think>não preciso de ferramenta</think><final>2 + 2 = 4</final>",
+}
 
 
 def test_build_pretokenized_dataset_has_input_ids_and_labels(tokenizer):
@@ -53,6 +61,23 @@ def test_pretokenized_dataset_masks_tool_result_span(tokenizer):
     # mas pelo menos alguns tokens devem estar mascarados (o <tool_result>, D7).
     assert any(label == IGNORE_INDEX for label in labels)
     assert any(label != IGNORE_INDEX for label in labels)
+
+
+def test_pretokenized_dataset_masks_system_prompt_and_user_request(tokenizer):
+    """D-train-prompt-mask: regressão do bug em que o dataset de treino continha só `raw_text`
+    (sem system_prompt/user_request) — o modelo nunca via o prefixo que recebe de verdade na
+    inferência (via `Trajectory.render_for_model()`), e por isso ignorava o pedido do usuário.
+    O prefixo inteiro deve ter loss desligado; só `raw_text` (menos `<tool_result>`) treina."""
+    dataset = build_pretokenized_dataset([_DIRECT_TRAJECTORY], tokenizer, max_length=128)
+    input_ids = dataset[0]["input_ids"]
+    labels = dataset[0]["labels"]
+
+    trained_ids = [tok for tok, label in zip(input_ids, labels) if label != IGNORE_INDEX]
+    trained_text = tokenizer.decode(trained_ids, skip_special_tokens=True)
+
+    assert _DIRECT_TRAJECTORY["user_request"] not in trained_text
+    assert _DIRECT_TRAJECTORY["system_prompt"] not in trained_text
+    assert "final" in trained_text
 
 
 def test_collator_pads_batch_to_same_length(tokenizer):
