@@ -103,6 +103,7 @@ por probes automatizados (não por inspeção manual de exemplos soltos).
 | D-maxtokens | `AgentLoopConfig` ganha `max_tokens_per_step: int = 256`, encaminhado em toda chamada `model_runner.generate(..., max_tokens=config.max_tokens_per_step)` | Mesmo com `use_cache=True` (D-usecache), um modelo que não emite a stop-sequence de forma limpa gera até o teto padrão do backend (1024) em cada um dos até `max_steps` passos — o contexto acumulado pode estourar VRAM no *prefill* de uma chamada seguinte (`OutOfMemoryError` de ~6.67 GiB numa única operação de atenção, confirmado no Colab). 256 é generoso para as trajetórias curtas do dataset desta geração | Testado localmente (`tests/integration/test_agent_loop.py::test_max_tokens_per_step_is_forwarded_to_model_runner`) — confirma que o valor chega até o `ModelRunner`, não que resolve o OOM real (só se confirma rodando de novo no Colab) |
 | D-train-prompt-mask | `build_pretokenized_dataset` recebe a trajetória COMPLETA (`{system_prompt, user_request, raw_text}`), não só `raw_text`; monta o mesmo prefixo de `Trajectory.render_for_model()` (harness/trajectory.py) e passa `prefix_len` para `compute_loss_mask` mascarar tudo antes de `raw_text` (além do `<tool_result>`, D7) | **Bug crítico** encontrado ao investigar por que o adapter treinado (3 épocas, 90 passos, 3/3 probes OK) ignorava o pedido do usuário em prompts fora dos 3 probes testados: alucinava `<final>` sem nenhum `<tool_call>` em 3 de 5 formulações variadas, e degenerava num loop de repetição de `<think>` sem fechar após um `<tool_result status="error">` na 4ª. Causa raiz: a célula 22 do notebook só passava `ex["trajectory"]["raw_text"]` para `build_pretokenized_dataset` — o dataset de treino nunca incluía `system_prompt`/`user_request`, então o modelo nunca aprendeu o formato de prompt que `run_agent_loop`/`Trajectory.render_for_model() `de fato usa na inferência (`{system_prompt}\n\n[USER]\n{user_request}\n\n[ASSISTANT]\n`). O treino de 90 passos que passou nos 3 probes ainda assim funcionou nesses casos por coincidência de formulação, não porque o mecanismo estava correto — **invalida os adapters treinados antes desta correção**, exige retreino completo do zero | Testado localmente com um tokenizer real (`tests/unit/test_data_collator.py::test_pretokenized_dataset_masks_system_prompt_and_user_request`) — confirma que o texto do prefixo nunca aparece nos tokens com loss ativo; o comportamento correto do modelo treinado só se confirma retreinando no Colab |
 | D-probe-system-prompt | `PRAXIS_SYSTEM_PROMPT` centralizado em `src/harness/system_prompt.py` (exportado por `src.harness`), usado por `scripts/generate_dataset.py` (geração do dataset) E pelos 4 probes (`src/evaluation/probes/*.py`) — fonte única de verdade | Depois de D-train-prompt-mask, retreinar e rodar os 3 probes no Colab deu uma REGRESSÃO (3/3 `PASS`→`FAIL`, muito mais lentos: 135–384s vs 4–75s antes). Causa: todos os 4 probes chamavam `run_agent_loop(user_request, "system", ...)` — `"system"` era um placeholder literal (herdado do padrão usado em `tests/integration/test_agent_loop.py`, onde é inofensivo porque `ScriptedModelRunner` ignora o conteúdo do prompt), nunca o prompt real do dataset. Antes de D-train-prompt-mask isso não importava (modelo não treinava com `system_prompt` de jeito nenhum); depois, virou um mismatch de formato NOVO, só que na avaliação, não no treino — o adapter treinado pode estar correto, era o teste que usava um prefixo que o modelo nunca viu. Célula 34 do notebook tinha uma variante parecida (prompt mais curto, faltando a instrução de `<think>`/`<tool_call>`/`<final>`), também corrigida | Testado localmente (`tests/unit/test_probes.py::test_probe_sends_real_praxis_system_prompt_not_placeholder`, com um runner que grava o prompt recebido) — confirma que os 3 probes testáveis mandam o prompt real; a melhora efetiva do resultado dos probes só se confirma rodando de novo no Colab |
+| D-generalization-gap | Nenhuma mudança de código — decisão é diagnóstica: teste controlado no mesmo adapter (pós D-train-prompt-mask + D-probe-system-prompt) confirmou que o mecanismo de treino está correto; o gargalo restante é diversidade de frases no dataset. Motiva a expansão por paráfrase (seção 8.6) em vez de mais correções de pipeline | Mesmo adapter, duas condições: (1) frase EXATA de um exemplo do dataset (`aug-authoring-add.json`, task_type `test_authoring`) → trajetória perfeita (`write_file`→`checker`→`<final>` genuíno, 3 passos, não forçado, conteúdo do arquivo idêntico ao do exemplo de treino); (2) 5 frases parafraseadas da mesma família de tarefa (criar arquivo + validar) → 5/5 `MAX_STEPS_EXCEEDED`, nenhum `<tool_call>` bem formado. Auditoria de `data/train`+`data/validation` (556 exemplos) por `task_type` mostra a causa provável: várias categorias de múltiplos passos têm só 1–2 gabaritos de frase distintos repetidos dezenas de vezes (`model_fixes_after_error`: 41 exemplos/1 template; `checker_rejects_code`: 41/1; `debugging`: 16/1; `code_explanation`: 32/2; `compiles_successfully`: 26/2; `language_migration`: 23/2) — o modelo decorou a forma da frase, não generalizou a gramática de `<tool_call>` para reformulações | Confirmado com teste real no Colab, mesmo adapter, duas frases controladas; contagem de templates por `task_type` gerada localmente a partir dos arquivos reais em `data/` |
 
 ---
 
@@ -779,6 +780,68 @@ vazar a "resposta" de uma variação para outra.
   manualmente pelo time, e adaptação de repositórios com licença permissiva explícita
   (MIT/Apache-2.0/BSD), sempre com `source` e `license` preenchidos. Nenhum exemplo de origem
   desconhecida entra em `train`/`validation`/`benchmark`.
+
+### 8.6 Expansão por paráfrase (D-generalization-gap)
+
+**Diagnóstico** (ver D-generalization-gap na seção 2): o dataset atual (556 exemplos) tem
+volume razoável de `task_type`s e programas distintos, mas pouquíssima diversidade de
+*frase* dentro de cada `task_type` — várias categorias de trajetória multi-passo (justamente
+as que dependem de `<tool_call>` bem formado) têm 1–2 gabaritos de frase repetidos dezenas de
+vezes com só o nome de função/arquivo trocado. Um teste controlado confirmou que o modelo
+executa perfeitamente a frase exata do treino e falha em reformulações da mesma tarefa — não é
+um bug de mecanismo (D-train-prompt-mask e D-probe-system-prompt já corrigidos), é falta de
+sinal de generalização de frase.
+
+**Objetivo**: multiplicar a diversidade de `user_request` para o MESMO conjunto de trajetórias
+já validadas (mesmos `tool_call`/`tool_result`/`<final>`) — não gerar novos programas/tarefas
+nesta rodada. Isso é mais barato que expandir o dataset com tarefas inteiramente novas e ataca
+exatamente o gargalo medido.
+
+**Priorização por urgência** (razão exemplos/templates distintos, do pior para o melhor —
+contagem real em `data/train`+`data/validation`):
+
+| `task_type` | exemplos | templates distintos | prioridade |
+|---|---|---|---|
+| `model_fixes_after_error` | 41 | 1 | crítica |
+| `checker_rejects_code` | 41 | 1 | crítica |
+| `debugging` | 16 | 1 | crítica |
+| `code_explanation` | 32 | 2 | alta |
+| `compiles_successfully` | 26 | 2 | alta |
+| `language_migration` | 23 | 2 | alta |
+| `single_tool_call` | 89 | 37 | média |
+| demais `task_type`s (≥ ~0.8 template/exemplo) | — | — | baixa/adiar |
+
+**Método**: script novo `scripts/expand_dataset_paraphrases.py`, rodando DEPOIS de
+`generate_dataset.py`:
+1. Para cada exemplo existente cujo `task_type` está na lista de prioridade crítica/alta,
+   extrai as variáveis usadas na frase original (nome de função, nome de arquivo, linguagem).
+2. Aplica um conjunto de **templates de frase escritos à mão** por `task_type` (6–10 por
+   categoria crítica; cobrindo: imperativo direto, pergunta, tom formal/informal, ordem de
+   cláusulas diferente, com/sem contexto extra) — substituição determinística de variáveis,
+   sem depender de LLM externo (evita custo de API e mantém controle total sobre qualidade,
+   consistente com D-shell-v2/D14: preferência por soluções autocontidas quando viável).
+3. Gera um novo exemplo por combinação (exemplo base × template de paráfrase), com `id` derivado
+   (`{id_original}-para{k}`), **mesma `trajectory.raw_text`/`tool_calls`/`tool_results`/`final`**
+   (só `user_request` muda), e `metadata.source="paraphrase_of:{id_original}"`.
+4. **Regra de isolamento (seção 8.3) É OBRIGATÓRIA aqui**: toda paráfrase fica no MESMO split
+   do exemplo-base (`train`→`train`, `validation`→`validation`) — paráfrases da mesma
+   tarefa-base atravessando splits seria vazamento direto.
+5. Deduplicação: hash do texto normalizado da nova frase contra tudo que já existe no mesmo
+   split, para não gerar paráfrases redundantes entre si.
+6. Roda `scripts/validate_dataset.py` no dataset expandido antes de qualquer treino — a
+   trajetória em si não muda, então a validação aqui é principalmente sobre a integridade do
+   novo `user_request` (não vazio, não idêntico a outro já existente) e a consistência dos
+   metadados.
+
+**Escala alvo**: ~6–8 paráfrases por exemplo nas categorias críticas/altas (41+41+16+32+26+23 =
+179 exemplos-base × ~7 ≈ 1250 novos exemplos), mantendo as categorias já bem distribuídas
+(`multi_tool_call`, `direct_answer`, etc.) como estão nesta rodada — leva o dataset de 556 para
+a faixa de 1.500–2.000 já cogitada anteriormente, mas com o aumento concentrado exatamente onde
+a lacuna foi medida, não distribuído uniformemente.
+
+**Fora de escopo nesta rodada**: gerar novos `task_type`s, novas linguagens, ou aumentar
+`multi_tool_call`/`direct_answer` (já perto de 1 template por exemplo — a alavancagem ali é
+baixa comparada às categorias críticas).
 
 ---
 
