@@ -94,6 +94,14 @@ class TransformersModelRunner:
                 stopping_criteria=StoppingCriteriaList([stopper]),
                 do_sample=False,
                 pad_token_id=self._tokenizer.pad_token_id,
+                # D-usecache: gradient_checkpointing (treino) costuma deixar
+                # model.config.use_cache=False — sem o cache de atenção, cada token gerado
+                # recalcula a sequência inteira do zero, o que é bem mais lento E consome
+                # cada vez mais VRAM conforme a geração cresce (confirmado no Colab: VRAM
+                # subindo até quase o teto durante uma única chamada de generate()). Forçar
+                # use_cache=True aqui sempre, independente do que ficou configurado no
+                # model.config depois do treino.
+                use_cache=True,
             )
 
         generated_ids = output_ids[0][prompt_len:]

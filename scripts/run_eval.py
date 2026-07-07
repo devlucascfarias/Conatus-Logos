@@ -17,6 +17,7 @@ from __future__ import annotations
 
 import argparse
 import sys
+import time
 from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parent.parent
@@ -65,7 +66,10 @@ def run_demo_probes() -> list:
         ),
     ]
 
-    for probe_module, kwargs, script in scenarios:
+    total = len(scenarios)
+    for i, (probe_module, kwargs, script) in enumerate(scenarios, start=1):
+        print(f"[{i}/{total}] Rodando {probe_module.PROBE_ID}...", flush=True)
+        start = time.monotonic()
         sandbox = fresh_sandbox()
         try:
             runner = ScriptedModelRunner(script)
@@ -73,6 +77,8 @@ def run_demo_probes() -> list:
             results.append(result)
         finally:
             sandbox.cleanup()
+        elapsed = time.monotonic() - start
+        print(f"[{i}/{total}] {probe_module.PROBE_ID} concluído em {elapsed:.1f}s — {result.category}", flush=True)
 
     return results
 
