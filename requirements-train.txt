@@ -1,14 +1,18 @@
 # Dependências específicas do notebook de treino (M5, seção 12) — instalar só no Colab.
 # Versões fixadas aqui (seção 12.2: nenhuma célula sem pinning) — baseline testado localmente
-# (CPU) nesta geração do projeto via tests/unit/test_transformers_runner.py. `torch` no Colab
-# precisa ser a build com suporte a CUDA compatível com a GPU alocada (a instalação padrão via
-# pip normalmente já resolve isso corretamente numa L4) — se a versão exata abaixo não tiver
-# uma build CUDA disponível no momento de uso, ajuste só o `torch` e mantenha o restante.
+# (CPU) nesta geração do projeto via tests/unit/test_transformers_runner.py.
+#
+# IMPORTANTE: `torch` (e `torchvision`, se presente) NÃO são fixados aqui de propósito — o
+# Colab já vem com um par torch+torchvision pré-instalado, compatível entre si e com a build
+# CUDA/driver da GPU alocada (L4). Fixar uma versão de `torch` aqui força uma reinstalação
+# que desalinha esse par (torchvision compilado contra uma versão de torch diferente da que
+# fica instalada depois), causando erros como "operator torchvision::nms does not exist" ao
+# carregar qualquer modelo via transformers. Deixe o torch do Colab como está; só os pacotes
+# abaixo (que não trazem seu próprio requisito de build CUDA) são de fato pinados.
 
 transformers==5.10.2
 peft==0.19.1
 bitsandbytes==0.49.2
 trl==1.5.1
 accelerate==1.10.1
-torch==2.9.1
 datasets>=2.19

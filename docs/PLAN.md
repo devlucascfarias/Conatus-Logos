@@ -1139,6 +1139,7 @@ vira um uso de `git status`/`git diff` via `shell`. `web_search` usa `MockSearch
 | Modelo aprende a "alucinar" `tool_result` apesar do masking de loss | viola requisito anti-fabricação | probe dedicado (`probe_fabricated_tool_result_attempt`) + checagem determinística no parser (qualquer `<tool_result>` na saída *do modelo* antes da injeção do harness é tratado como violação, não como conteúdo válido) |
 | Granite-4.1-8B ter nomes de módulo de atenção diferentes do assumido | config de LoRA (`target_modules`) incorreta | célula de inspeção do `state_dict`/`named_modules()` antes de configurar `LoraConfig`, no início do notebook |
 | Custo de manter toolchains de múltiplas linguagens no ambiente do Colab | complexidade de setup, builds frágeis | MVP restrito a 2 toolchains leves (seção 15) |
+| Fixar versão de `torch` em `requirements-train.txt` desalinha o par `torch`+`torchvision` pré-instalado do Colab (`RuntimeError: operator torchvision::nms does not exist` ao carregar qualquer modelo via transformers) — risco confirmado rodando de verdade no Colab, não teórico | treino trava na célula 7 (carregamento do modelo) | `torch`/`torchvision` deliberadamente **não** pinados em `requirements-train.txt`; só pacotes sem requisito de build CUDA própria são fixados |
 
 ---
 
