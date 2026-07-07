@@ -20,8 +20,8 @@ quê** cada peça existe.
 | M2 | Checker Python + Go (`src/checker`) | ✅ (19 testes, 7 pulados sem toolchain Go local) |
 | M3 | Sandbox, ferramentas, busca, inferência mock, harness/loop (`src/security`, `src/tools`, `src/search`, `src/inference`, `src/harness`) | ✅ (32 testes) |
 | M4 | Pipeline de validação de dataset (`src/dataset`) + 556 exemplos (Python + Go, todos os `task_type` da taxonomia, gerados com biblioteca de ~78 funções + injetores de bug + checker como oráculo) | ✅ **556/556 validados** (465 train / 78 validation / 13 adversarial) — degrau "generalização" (500-800), ainda abaixo do que um dataset de produção real usaria (milhares+) |
-| M5 | Notebook de treino (`notebooks/train_granite_l4.ipynb`) | Estrutura completa (17 células); células 7-16 exigem GPU + `requirements-train.txt`, não executadas neste ambiente |
-| M6 | Avaliador + 4 probes reais (`src/evaluation`) | ✅ mecanismo provado contra `ScriptedModelRunner`; falta rodar contra um adapter treinado (depende de M5) |
+| M5 | Notebook de treino (`notebooks/train_granite_l4.ipynb`) + `TransformersModelRunner.generate()` | ✅ `generate()` implementado e testado ponta a ponta contra modelo real minúsculo (`tests/unit/test_transformers_runner.py`); células 7-16 do notebook ainda exigem GPU real (Colab) e não foram executadas contra o Granite de verdade — riscos abertos: acesso ao modelo (gated?), nomes de `lora_target_modules`, VRAM real |
+| M6 | Avaliador + 4 probes reais (`src/evaluation`) | ✅ mecanismo provado contra `ScriptedModelRunner` **e** contra Transformers real (modelo de teste); falta rodar contra o adapter Granite treinado de verdade |
 | M7/M8 | Fase 2 (JS/TS, `apply_patch`...) / porte do harness para Go | Fora de escopo desta geração (ver seção 18 do plano) |
 
 ## Requisitos
@@ -66,9 +66,10 @@ python scripts/run_eval.py --demo
 ```
 
 Roda os 4 probes implementados (`src/evaluation/probes/`) contra um `ScriptedModelRunner` com
-respostas roteirizadas — prova o mecanismo de avaliação. Rodar contra um adapter treinado de
-verdade depende de M5 (`TransformersModelRunner.generate` ainda não está implementado; ver
-`src/inference/transformers_runner.py`).
+respostas roteirizadas — prova o mecanismo de avaliação. `TransformersModelRunner.generate()`
+(`src/inference/transformers_runner.py`) já está implementado e testado contra um modelo real
+minúsculo do Hugging Face Hub; rodar os probes contra o **adapter Granite treinado de verdade**
+ainda depende de M5 (treino real no Colab).
 
 ## Estrutura
 

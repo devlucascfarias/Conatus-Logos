@@ -1,10 +1,14 @@
 # Dependências específicas do notebook de treino (M5, seção 12) — instalar só no Colab.
-# Versões fixadas na célula 2 do notebook, não aqui (seção 12.2: nenhuma célula sem pinning);
-# este arquivo é a referência de quais pacotes essa célula deve instalar.
+# Versões fixadas aqui (seção 12.2: nenhuma célula sem pinning) — baseline testado localmente
+# (CPU) nesta geração do projeto via tests/unit/test_transformers_runner.py. `torch` no Colab
+# precisa ser a build com suporte a CUDA compatível com a GPU alocada (a instalação padrão via
+# pip normalmente já resolve isso corretamente numa L4) — se a versão exata abaixo não tiver
+# uma build CUDA disponível no momento de uso, ajuste só o `torch` e mantenha o restante.
 
-transformers
-peft
-bitsandbytes
-trl
-accelerate
-datasets
+transformers==5.10.2
+peft==0.19.1
+bitsandbytes==0.49.2
+trl==1.5.1
+accelerate==1.10.1
+torch==2.9.1
+datasets>=2.19
