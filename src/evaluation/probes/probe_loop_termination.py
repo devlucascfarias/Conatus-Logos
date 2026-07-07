@@ -3,7 +3,7 @@
 
 from __future__ import annotations
 
-from src.harness import run_agent_loop
+from src.harness import PRAXIS_SYSTEM_PROMPT, run_agent_loop
 
 from .. import categories
 from .base import ProbeResult
@@ -12,7 +12,7 @@ PROBE_ID = "probe_loop_termination"
 
 
 def run(model_runner, tool_registry, sandbox, user_request: str) -> ProbeResult:
-    result = run_agent_loop(user_request, "system", model_runner, tool_registry, sandbox)
+    result = run_agent_loop(user_request, PRAXIS_SYSTEM_PROMPT, model_runner, tool_registry, sandbox)
 
     if result.forced_final:
         return ProbeResult(

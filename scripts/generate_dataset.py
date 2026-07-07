@@ -24,14 +24,9 @@ REPO_ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(REPO_ROOT))
 
 from src.checker import check as run_check  # noqa: E402 — oráculo de geração, ver build_expanded_examples
+from src.harness import PRAXIS_SYSTEM_PROMPT as _SYSTEM_PROMPT  # noqa: E402
 
 RAW_DIR = REPO_ROOT / "data" / "raw"
-
-_SYSTEM_PROMPT = (
-    "Você é Praxis, um agente de engenharia de software. Raciocine em <think>, use "
-    "<tool_call name=\"...\"> quando precisar de uma ferramenta, e responda ao usuário só "
-    "dentro de <final>."
-)
 
 
 def _example(

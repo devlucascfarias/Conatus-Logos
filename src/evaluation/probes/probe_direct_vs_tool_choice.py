@@ -3,7 +3,7 @@ não precisa de ferramenta, e usar ferramenta quando precisa."""
 
 from __future__ import annotations
 
-from src.harness import run_agent_loop
+from src.harness import PRAXIS_SYSTEM_PROMPT, run_agent_loop
 from src.parsers.segments import ToolCallSegment
 
 from .. import categories
@@ -13,7 +13,7 @@ PROBE_ID = "probe_direct_vs_tool_choice"
 
 
 def run(model_runner, tool_registry, sandbox, user_request: str, requires_tool: bool) -> ProbeResult:
-    result = run_agent_loop(user_request, "system", model_runner, tool_registry, sandbox)
+    result = run_agent_loop(user_request, PRAXIS_SYSTEM_PROMPT, model_runner, tool_registry, sandbox)
 
     if result.forced_final:
         return ProbeResult(PROBE_ID, categories.FAIL, "loop atingiu max_steps sem <final> genuíno")

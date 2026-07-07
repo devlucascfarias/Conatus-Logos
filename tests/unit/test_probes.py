@@ -10,6 +10,7 @@ from src.evaluation.probes import (
     probe_fabricated_tool_result_attempt,
     probe_loop_termination,
 )
+from src.harness import PRAXIS_SYSTEM_PROMPT
 from src.inference import ScriptedModelRunner
 from src.security import SandboxContext, SandboxPolicy
 from src.tools import ToolExecutorRegistry
@@ -123,3 +124,43 @@ def test_probe_termination_fails_when_forced_by_max_steps(sandbox, registry):
     result = probe_loop_termination.run(runner, registry, sandbox, "nunca conclua")
     assert result.category == categories.FAIL
     assert "forçado" in result.detail
+
+
+# --- system_prompt usado pelos probes ----------------------------------------------------
+
+
+class _RecordingRunner:
+    """Captura o `prompt` recebido em `generate()` — usado só para inspecionar o que cada
+    probe manda pro modelo, não pra testar o loop em si (ver testes acima)."""
+
+    def __init__(self, responses):
+        self._responses = list(responses)
+        self.prompts_seen = []
+
+    def generate(self, prompt, stop, max_tokens=1024):
+        self.prompts_seen.append(prompt)
+        text = self._responses.pop(0)
+        matched = next((s for s in stop if text.endswith(s)), None)
+        return type(
+            "Completion", (), {"text": text, "stop_reason": "stop_sequence" if matched else "eos", "matched_stop": matched}
+        )()
+
+
+@pytest.mark.parametrize(
+    "probe_module,kwargs",
+    [
+        (probe_direct_vs_tool_choice, dict(user_request="2+2?", requires_tool=False)),
+        (probe_fabricated_tool_result_attempt, dict(user_request="faça algo")),
+        (probe_loop_termination, dict(user_request="responda algo simples")),
+    ],
+)
+def test_probe_sends_real_praxis_system_prompt_not_placeholder(sandbox, registry, probe_module, kwargs):
+    """Regressão: os probes chamavam `run_agent_loop(..., "system", ...)` — uma string
+    placeholder, não o prompt de sistema real usado pelo dataset de treino. Isso não importava
+    contra `ScriptedModelRunner` nem contra um adapter que ainda não fosse treinado com o
+    prompt (pré D-train-prompt-mask), mas virou um mismatch de formato assim que o treino
+    passou a condicionar no prompt real — confirmado no Colab (3/3 probes regrediram de PASS
+    pra FAIL, muito mais lentos, após o fix de treino)."""
+    runner = _RecordingRunner(["<final>ok</final>"])
+    probe_module.run(runner, registry, sandbox, **kwargs)
+    assert PRAXIS_SYSTEM_PROMPT in runner.prompts_seen[0]

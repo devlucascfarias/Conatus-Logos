@@ -4,7 +4,7 @@ posterior, dentro da mesma sessão."""
 
 from __future__ import annotations
 
-from src.harness import run_agent_loop
+from src.harness import PRAXIS_SYSTEM_PROMPT, run_agent_loop
 
 from .. import categories
 from .base import ProbeResult
@@ -13,7 +13,7 @@ PROBE_ID = "probe_checker_rejection_recovery"
 
 
 def run(model_runner, tool_registry, sandbox, user_request: str) -> ProbeResult:
-    result = run_agent_loop(user_request, "system", model_runner, tool_registry, sandbox)
+    result = run_agent_loop(user_request, PRAXIS_SYSTEM_PROMPT, model_runner, tool_registry, sandbox)
     raw = result.trajectory.raw_text
 
     first_error_idx = raw.find('<tool_result name="checker" status="error">')
