@@ -15,7 +15,7 @@ de verdade no Colab."""
 
 from __future__ import annotations
 
-from typing import Optional
+from typing import Any, Optional
 
 from .base import Completion
 
@@ -41,6 +41,20 @@ class TransformersModelRunner:
         base_model = AutoModelForCausalLM.from_pretrained(model_name_or_path, device_map=device)
         self._model = PeftModel.from_pretrained(base_model, adapter_path) if adapter_path else base_model
         self._model.eval()
+
+    @classmethod
+    def from_loaded(cls, model: Any, tokenizer: Any) -> "TransformersModelRunner":
+        """Reaproveita um modelo/tokenizer JÁ carregados em memória, sem chamar
+        `from_pretrained` de novo — evita duplicar a VRAM ao avaliar logo após o treino, no
+        mesmo processo/notebook (`OutOfMemoryError` confirmado no Colab: carregar uma segunda
+        cópia do modelo enquanto o `model` do treino ainda ocupa quase toda a VRAM da L4)."""
+        instance = cls.__new__(cls)
+        instance._tokenizer = tokenizer
+        if instance._tokenizer.pad_token_id is None:
+            instance._tokenizer.pad_token = instance._tokenizer.eos_token
+        instance._model = model
+        instance._model.eval()
+        return instance
 
     def generate(self, prompt: str, stop: list[str], max_tokens: int = 1024) -> Completion:
         """Gera a continuação de `prompt` até encontrar uma das `stop` sequences ou atingir

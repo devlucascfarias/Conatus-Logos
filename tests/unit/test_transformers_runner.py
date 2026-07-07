@@ -53,6 +53,22 @@ def test_generate_returns_completion_with_correct_types(runner: TransformersMode
     assert hasattr(result, "matched_stop")
 
 
+def test_from_loaded_reuses_existing_model_without_reloading():
+    """D-oom-eval: evita OutOfMemoryError confirmado no Colab (segunda cópia do modelo
+    carregada em VRAM já quase toda ocupada pelo treino) — `from_loaded` nunca chama
+    `from_pretrained`, só empacota um model/tokenizer já existentes."""
+    from transformers import AutoModelForCausalLM, AutoTokenizer
+
+    tokenizer = AutoTokenizer.from_pretrained(_TINY_MODEL)
+    model = AutoModelForCausalLM.from_pretrained(_TINY_MODEL)
+
+    runner = TransformersModelRunner.from_loaded(model, tokenizer)
+    result = runner.generate("Hello world", stop=["ct"], max_tokens=50)
+
+    assert result.stop_reason == "stop_sequence"
+    assert result.matched_stop == "ct"
+
+
 def test_missing_dependencies_raises_clear_runtime_error(monkeypatch):
     import builtins
 
