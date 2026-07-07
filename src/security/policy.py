@@ -70,36 +70,42 @@ class SandboxPolicy:
             redaction_patterns=self.redaction_patterns,
         )
 
-    def is_command_allowed(self, command: str) -> tuple:
+    def is_command_allowed(self, binary: str, args: tuple = ()) -> tuple:
         """Retorna (allowed: bool, reason_if_denied: str | None) — seção 7.5.
+
+        D-shell-v2: `binary`/`args` chegam já estruturados (argv), nunca uma string de shell
+        — a ferramenta `shell` não passa mais por `shell=True` (seção 5.5/D-shell-v2), o que
+        elimina a dependência de qual interpretador de shell existe no SO do host e fecha uma
+        classe inteira de risco de injeção via `;`, `&&`, `|`, `` ` ``, `$()` (não há shell
+        nenhum interpretando metacaracteres). A denylist continua funcionando por substring,
+        mas contra uma reconstrução textual de `binary + args` só para fins de checagem —
+        nunca é essa string que é executada.
 
         Denylist tem prioridade sobre allowlist: um padrão bloqueado nunca passa, mesmo que
         o binário base esteja na allowlist (ex.: "git push" — git está na allowlist, mas o
         subcomando é bloqueado explicitamente)."""
-        stripped = command.strip()
-        if not stripped:
-            return False, "comando vazio"
+        binary = (binary or "").strip()
+        if not binary:
+            return False, "binário vazio"
 
-        lowered = stripped.lower()
+        joined = " ".join([binary, *[str(a) for a in args]]).lower()
         for pattern in self.denylist_patterns:
-            if pattern.lower() in lowered:
+            if pattern.lower() in joined:
                 return False, f"padrão bloqueado por denylist: {pattern!r}"
 
-        first_token = stripped.split()[0].strip('"\'')
         # Compara tanto o nome completo (POSIX/Colab: "python") quanto sem extensão
         # (Windows dev: "python.exe" -> stem "python") contra a mesma entrada da allowlist.
-        binary_full = Path(first_token).name
-        binary_stem = Path(first_token).stem
+        binary_full = Path(binary).name
+        binary_stem = Path(binary).stem
         if binary_full in self.allowlist_binaries:
-            binary = binary_full
+            resolved_binary = binary_full
         elif binary_stem in self.allowlist_binaries:
-            binary = binary_stem
+            resolved_binary = binary_stem
         else:
             return False, f"binário fora da allowlist: {binary_full!r}"
 
-        if binary == "git":
-            tokens = stripped.split()
-            subcommand = tokens[1] if len(tokens) > 1 else None
+        if resolved_binary == "git":
+            subcommand = args[0] if args else None
             if subcommand not in self.git_allowed_subcommands:
                 return False, f"subcomando git não permitido (somente leitura): {subcommand!r}"
 

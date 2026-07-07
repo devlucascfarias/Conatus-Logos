@@ -94,6 +94,7 @@ por probes automatizados (não por inspeção manual de exemplos soltos).
 | D12 | Repositório único (`Logos-1`) hospeda o projeto Praxis-SFT v2 do zero | Decisão do usuário nesta sessão | Confirmado com usuário |
 | D13 | Harness de produção será reimplementado em Go; harness Python desta geração é referência de dev/dataset/treino | Objetivo declarado do modelo/CLI é eficiência e velocidade; Go oferece binário estático único, baixo overhead de startup e memória, boa concorrência nativa para execução paralela de ferramentas, sem exigir runtime Python no ambiente do usuário final | Confirmado com usuário |
 | D14 | `web_search` usa a API de busca da Ollama como backend inicial, atrás de uma interface `SearchBackend` selecionável por config (`provider: ollama\|mock\|...`) | Pedido explícito do usuário + necessidade de trocar motor de busca no futuro sem reescrever chamadores | Confirmado com usuário |
+| D-shell-v2 | Schema da ferramenta `shell` migrado de `{"command": string}` para `{"binary": string, "args": [string]}`, executado via `subprocess.run([binary, *args], shell=False)` — nunca `shell=True` | Execução verdadeiramente independente de SO (mesma chamada Python em Windows/Linux/Mac, sem escolher entre `cmd.exe`/`bash`); fecha classe de risco de injeção via metacaracteres de shell; modelo aprende um único dialeto de comando (argv), não dois por SO | Confirmado com usuário |
 
 ---
 
@@ -279,15 +280,16 @@ Saída (contrato único, ver seção 10 para detalhamento completo):
 }
 ```
 
-### 4.5 `shell` (MVP, altamente restrito)
+### 4.5 `shell` (MVP, altamente restrito, versão 2.0 — D-shell-v2)
 
 ```json
 {
   "input_schema": {
     "type": "object",
-    "required": ["command"],
+    "required": ["binary", "args"],
     "properties": {
-      "command": {"type": "string"},
+      "binary": {"type": "string"},
+      "args": {"type": "array", "items": {"type": "string"}, "default": []},
       "cwd": {"type": "string", "default": "."},
       "timeout_ms": {"type": "integer", "minimum": 100, "maximum": 30000, "default": 10000}
     }
@@ -297,8 +299,29 @@ Saída (contrato único, ver seção 10 para detalhamento completo):
 }
 ```
 
-O executor de `shell` valida `command` contra uma **allowlist de binários** (seção 6) antes de
-qualquer execução; não é um shell livre.
+**D-shell-v2** (substitui o schema `{"command": string}` da v1): o modelo emite `binary`/`args`
+já estruturados (argv), nunca uma string de shell livre. O executor invoca
+`subprocess.run([binary, *args], shell=False)` — **sem** `shell=True` no meio. Isso torna a
+execução verdadeiramente **independente de sistema operacional**: o mesmo código Python invoca
+o binário diretamente via a API nativa do SO (`CreateProcess` no Windows, `fork`+`exec` no
+POSIX), sem que nenhum interpretador de shell (`cmd.exe`/`bash`) precise existir ou ser
+escolhido pelo harness. Consequências:
+
+- Fecha uma classe inteira de risco de injeção via metacaracteres de shell (`;`, `&&`, `|`,
+  `` ` ``, `$()`) — não há shell nenhum interpretando a string, então não há como encadear
+  comandos escapando da chamada única pretendida.
+- A allowlist de binários (seção 7.5) e a denylist continuam funcionando: a denylist compara
+  contra uma reconstrução textual de `binary + args` só para fins de checagem — essa string
+  nunca é executada, só inspecionada.
+- Efeito colateral positivo sobre o objetivo de eficiência/portabilidade (seção 5.5): o modelo
+  aprende **um único dialeto de comando** (argv de um binário), não dois (sintaxe `cmd.exe` vs.
+  `bash`) escolhidos por detecção de SO em tempo de execução — mais simples de aprender via SFT
+  e mais fácil de portar para o harness Go (M8), já que `os/exec` em Go também expõe uma API
+  argv-based sem shell por padrão.
+- Trade-off aceito: perde-se pipe/redirecionamento/encadeamento nativo de shell
+  (`cmd1 | cmd2`, `a && b`) numa única chamada — mas isso já se encaixava mal no loop do agente
+  (seção 6), que é "uma ação por passo, verifica, continua"; multi-comando vira múltiplas
+  chamadas de ferramenta, não uma string opaca.
 
 ### 4.6 Fase 2+: `apply_patch`, `search_code`, `git_diff`, `web_search` (esboço de contrato)
 

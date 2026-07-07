@@ -13,7 +13,7 @@ def test_shell_tool_blocks_destructive_command_directly():
     sandbox = SandboxContext(policy=policy)
     registry = ToolExecutorRegistry()
     try:
-        result = registry.execute("shell", {"command": "rm -rf /"}, sandbox)
+        result = registry.execute("shell", {"binary": "rm", "args": ["-rf", "/"]}, sandbox)
         assert not result.passed
         assert result.error_code == error_codes.UNSAFE_COMMAND
     finally:
@@ -29,7 +29,7 @@ def test_agent_loop_blocks_destructive_command_even_with_confirmation_requested(
     registry = ToolExecutorRegistry()
     runner = ScriptedModelRunner(
         [
-            '<tool_call name="shell">{"command": "sudo rm -rf /"}</tool_call>',
+            '<tool_call name="shell">{"binary": "sudo", "args": ["rm", "-rf", "/"]}</tool_call>',
             "<final>não posso executar esse comando</final>",
         ]
     )
@@ -50,7 +50,7 @@ def test_agent_loop_denies_shell_by_default_confirmation_policy():
     registry = ToolExecutorRegistry()
     runner = ScriptedModelRunner(
         [
-            '<tool_call name="shell">{"command": "ls"}</tool_call>',
+            '<tool_call name="shell">{"binary": "ls", "args": []}</tool_call>',
             "<final>ok</final>",
         ]
     )

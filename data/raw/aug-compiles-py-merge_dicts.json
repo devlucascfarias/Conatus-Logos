@@ -22,6 +22,6 @@
   "trajectory": {
     "system_prompt": "Você é Praxis, um agente de engenharia de software. Raciocine em <think>, use <tool_call name=\"...\"> quando precisar de uma ferramenta, e responda ao usuário só dentro de <final>.",
     "user_request": "Confirme que merge_dicts.py compila.",
-    "raw_text": "<tool_call name=\"checker\">{\"language\": \"python\", \"operation\": \"syntax_check\", \"files\": [{\"path\": \"merge_dicts.py\", \"content\": \"def merge_dicts(a, b):\\n    return {**a, **b}\\n\"}]}</tool_call><tool_result name=\"checker\" status=\"ok\">{\"passed\": true, \"errors\": [], \"stdout\": \"\", \"stderr\": \"\", \"metadata\": {\"language\": \"python\", \"duration_ms\": 1063}}</tool_result><final>merge_dicts.py compila sem erros.</final>"
+    "raw_text": "<tool_call name=\"checker\">{\"language\": \"python\", \"operation\": \"syntax_check\", \"files\": [{\"path\": \"merge_dicts.py\", \"content\": \"def merge_dicts(a, b):\\n    return {**a, **b}\\n\"}]}</tool_call><tool_result name=\"checker\" status=\"ok\">{\"passed\": true, \"errors\": [], \"stdout\": \"\", \"stderr\": \"\", \"metadata\": {\"language\": \"python\", \"duration_ms\": 1061}}</tool_result><final>merge_dicts.py compila sem erros.</final>"
   }
 }

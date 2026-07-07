@@ -142,7 +142,7 @@ def test_parse_last_segment_empty_text_returns_none():
 
 
 def test_is_complete_turn_false_without_final():
-    segments = parse_segments('<tool_call name="shell">{"command": "ls"}</tool_call>')
+    segments = parse_segments('<tool_call name="shell">{"binary": "ls", "args": []}</tool_call>')
     assert not is_complete_turn(segments)
 
 
@@ -152,7 +152,7 @@ def test_contains_fabricated_tool_result_detects_model_hallucinated_tag():
 
 
 def test_contains_fabricated_tool_result_false_for_clean_generation():
-    model_text = '<tool_call name="shell">{"command": "ls"}</tool_call>'
+    model_text = '<tool_call name="shell">{"binary": "ls", "args": []}</tool_call>'
     assert not contains_fabricated_tool_result(model_text)
 
 

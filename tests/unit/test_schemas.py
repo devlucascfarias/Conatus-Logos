@@ -100,11 +100,11 @@ def test_list_files_no_required_fields(registry: ToolRegistry):
     assert registry.validate_args("list_files", {"path": "src", "max_depth": 2}) == []
 
 
-def test_shell_requires_command(registry: ToolRegistry):
+def test_shell_requires_binary_and_args(registry: ToolRegistry):
     assert registry.validate_args("shell", {}) != []
-    assert registry.validate_args("shell", {"command": "pytest -q"}) == []
+    assert registry.validate_args("shell", {"binary": "pytest", "args": ["-q"]}) == []
 
 
 def test_shell_timeout_bounds(registry: ToolRegistry):
-    assert registry.validate_args("shell", {"command": "ls", "timeout_ms": 50}) != []
-    assert registry.validate_args("shell", {"command": "ls", "timeout_ms": 5000}) == []
+    assert registry.validate_args("shell", {"binary": "ls", "args": [], "timeout_ms": 50}) != []
+    assert registry.validate_args("shell", {"binary": "ls", "args": [], "timeout_ms": 5000}) == []

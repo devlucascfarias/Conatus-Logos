@@ -2,6 +2,19 @@
 descartável, não Docker). Nenhuma ferramenta deve chamar `subprocess` diretamente fora daqui —
 ver seção 5.2 (Tool Executor sempre passa por sandbox).
 
+D-shell-v2: `run_shell` recebe `binary`/`args` já estruturados (argv) e executa via
+`subprocess.run([binary, *args], shell=False)` — nunca `shell=True` com uma string. Isso torna
+a execução OS-independente por construção: o mesmo código Python invoca o binário diretamente
+via a API nativa do SO (CreateProcess no Windows, fork+exec no POSIX), sem que nenhum
+interpretador de shell (cmd.exe/bash) precise existir ou ser escolhido — e fecha uma classe
+inteira de risco de injeção via metacaracteres de shell (`;`, `&&`, `|`, `` ` ``, `$()`), já que
+não há shell nenhum interpretando a string.
+
+Nota: `SYSTEMROOT` continua sendo propagado no Windows mesmo sem shell — não é uma
+necessidade do cmd.exe, é o próprio SO Windows que exige essa variável para inicializar
+qualquer processo (ex.: o gerador de números aleatórios do CPython falha na inicialização
+sem ela). Isso não é um resquício de shell, é um requisito de processo do Windows.
+
 Limitação conhecida (seção 17): este dev environment roda em Windows, onde `resource.setrlimit`
 (limite de memória, seção 7.3) não existe — o limite é aplicado via `preexec_fn` só quando o
 processo roda em POSIX/Linux (ambiente real do Colab). Em Windows o limite de memória vira
@@ -20,10 +33,6 @@ from pathlib import Path
 from typing import Optional
 
 from .policy import DEFAULT_POLICY_PATH, SandboxPolicy
-
-# Variáveis mecânicas exigidas para o shell funcionar no Windows (não são segredos — cmd.exe
-# não inicializa corretamente sem elas). Fora do escopo da allowlist de segredos (seção 7.8).
-_WINDOWS_MECHANICAL_ENV = ("SYSTEMROOT", "COMSPEC", "PATHEXT", "WINDIR")
 
 
 @dataclass(frozen=True)
@@ -82,9 +91,14 @@ class SandboxContext:
         return self._policy.allow_confirmation()
 
     def run_shell(
-        self, command: str, cwd: Optional[str] = None, timeout_ms: Optional[int] = None
+        self,
+        binary: str,
+        args: Optional[list] = None,
+        cwd: Optional[str] = None,
+        timeout_ms: Optional[int] = None,
     ) -> ShellExecutionResult:
-        allowed, reason = self._policy.is_command_allowed(command)
+        args = list(args or [])
+        allowed, reason = self._policy.is_command_allowed(binary, tuple(args))
         if not allowed:
             return ShellExecutionResult(
                 allowed=False,
@@ -109,10 +123,10 @@ class SandboxContext:
             )
 
         env = {k: v for k, v in os.environ.items() if k in self._policy.allowed_env_passthrough}
-        if os.name == "nt":
-            for key in _WINDOWS_MECHANICAL_ENV:
-                if key in os.environ:
-                    env[key] = os.environ[key]
+        if os.name == "nt" and "SYSTEMROOT" in os.environ:
+            # Requisito do próprio Windows para inicializar qualquer processo (não é sobre
+            # shell — sem isso até o gerador de números aleatórios do CPython falha ao subir).
+            env["SYSTEMROOT"] = os.environ["SYSTEMROOT"]
 
         timeout_s = (timeout_ms or self._policy.default_timeout_ms) / 1000
         preexec_fn = _rlimit_preexec_fn(self._policy.max_memory_bytes) if os.name != "nt" else None
@@ -120,8 +134,8 @@ class SandboxContext:
         start = time.monotonic()
         try:
             proc = subprocess.run(
-                command,
-                shell=True,
+                [binary, *args],
+                shell=False,
                 cwd=str(effective_cwd),
                 env=env,
                 capture_output=True,
@@ -150,6 +164,20 @@ class SandboxContext:
                 stdout=self._truncate(stdout),
                 stderr=self._truncate(stderr),
                 timed_out=True,
+                duration_ms=duration_ms,
+            )
+        except FileNotFoundError:
+            # Sem shell=True, um binário inexistente/fora do PATH levanta exceção em vez de
+            # devolver um returncode "command not found" — convertido aqui num resultado
+            # estruturado (nunca deixamos a exceção vazar para o Tool Executor).
+            duration_ms = int((time.monotonic() - start) * 1000)
+            return ShellExecutionResult(
+                allowed=True,
+                denial_reason=None,
+                returncode=127,
+                stdout="",
+                stderr=f"binário não encontrado: {binary!r}",
+                timed_out=False,
                 duration_ms=duration_ms,
             )
 

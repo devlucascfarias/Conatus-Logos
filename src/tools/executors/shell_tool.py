@@ -12,7 +12,7 @@ from ..base import ToolExecutionResult
 
 def execute(args: dict[str, Any], sandbox) -> ToolExecutionResult:
     result = sandbox.run_shell(
-        args["command"], cwd=args.get("cwd", "."), timeout_ms=args.get("timeout_ms")
+        args["binary"], args=args.get("args", []), cwd=args.get("cwd", "."), timeout_ms=args.get("timeout_ms")
     )
 
     if not result.allowed:

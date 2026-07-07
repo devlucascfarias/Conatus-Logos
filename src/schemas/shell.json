@@ -1,11 +1,12 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "praxis://tools/shell/1.0",
+  "$id": "praxis://tools/shell/2.0",
   "title": "shell",
   "type": "object",
-  "required": ["command"],
+  "required": ["binary", "args"],
   "properties": {
-    "command": {"type": "string", "minLength": 1},
+    "binary": {"type": "string", "minLength": 1},
+    "args": {"type": "array", "items": {"type": "string"}, "default": []},
     "cwd": {"type": "string", "default": "."},
     "timeout_ms": {
       "type": "integer",
