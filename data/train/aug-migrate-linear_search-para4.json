@@ -1,0 +1,30 @@
+{
+  "metadata": {
+    "id": "aug-migrate-linear_search-para4",
+    "domain": "migracao",
+    "language": "go",
+    "difficulty": "hard",
+    "tools_used": [
+      "read_file",
+      "write_file",
+      "checker"
+    ],
+    "num_steps": 3,
+    "task_type": "language_migration",
+    "source": "paraphrase_of:aug-migrate-linear_search",
+    "license": "synthetic-no-license-needed",
+    "validation_status": "validated",
+    "execution_performed": true,
+    "split": "train",
+    "checker_used": "checker-go-1.0",
+    "expected_result": {
+      "passed": true
+    },
+    "execution_classification": "compiled"
+  },
+  "trajectory": {
+    "system_prompt": "Você é Praxis, um agente de engenharia de software. Raciocine em <think>, use <tool_call name=\"...\"> quando precisar de uma ferramenta, e responda ao usuário só dentro de <final>.",
+    "user_request": "Pode migrar linear_search.py para a linguagem Go?",
+    "raw_text": "<tool_call name=\"read_file\">{\"path\": \"linear_search.py\"}</tool_call><tool_result name=\"read_file\" status=\"ok\">{\"content\": \"def linear_search(items, target):\\n    for i in items:\\n        if i == target:\\n            return True\\n    return False\\n\"}</tool_result><tool_call name=\"write_file\">{\"path\": \"linearsearch.go\", \"content\": \"package search\\n\\nfunc LinearSearch(items []int, target int) bool {\\n\\tfor _, v := range items {\\n\\t\\tif v == target {\\n\\t\\t\\treturn true\\n\\t\\t}\\n\\t}\\n\\treturn false\\n}\\n\"}</tool_call><tool_result name=\"write_file\" status=\"ok\">{\"path\": \"linearsearch.go\", \"bytes_written\": 150, \"mode\": \"overwrite\"}</tool_result><tool_call name=\"checker\">{\"language\": \"go\", \"operation\": \"compile\", \"files\": [{\"path\": \"linearsearch.go\", \"content\": \"package search\\n\\nfunc LinearSearch(items []int, target int) bool {\\n\\tfor _, v := range items {\\n\\t\\tif v == target {\\n\\t\\t\\treturn true\\n\\t\\t}\\n\\t}\\n\\treturn false\\n}\\n\"}]}</tool_call><tool_result name=\"checker\" status=\"ok\">{\"passed\": true, \"errors\": [], \"stdout\": \"\", \"stderr\": \"\", \"metadata\": {\"language\": \"go\", \"duration_ms\": 843}}</tool_result><final>Reescrevi a função em Go como LinearSearch; compila sem erros.</final>"
+  }
+}

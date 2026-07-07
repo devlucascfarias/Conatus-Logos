@@ -1,0 +1,24 @@
+{
+  "metadata": {
+    "id": "aug-explain-py-absolute-para5",
+    "domain": "explicacao",
+    "language": "python",
+    "difficulty": "medium",
+    "tools_used": [
+      "read_file"
+    ],
+    "num_steps": 1,
+    "task_type": "code_explanation",
+    "source": "paraphrase_of:aug-explain-py-absolute",
+    "license": "synthetic-no-license-needed",
+    "validation_status": "validated",
+    "execution_performed": false,
+    "split": "train",
+    "execution_classification": "static_only"
+  },
+  "trajectory": {
+    "system_prompt": "Você é Praxis, um agente de engenharia de software. Raciocine em <think>, use <tool_call name=\"...\"> quando precisar de uma ferramenta, e responda ao usuário só dentro de <final>.",
+    "user_request": "Dá um resumo do que absolute.py faz.",
+    "raw_text": "<tool_call name=\"read_file\">{\"path\": \"absolute.py\"}</tool_call><tool_result name=\"read_file\" status=\"ok\">{\"content\": \"def absolute(n):\\n    return n if n >= 0 else -n\\n\"}</tool_result><final>Essa função calcula o valor absoluto de n.</final>"
+  }
+}

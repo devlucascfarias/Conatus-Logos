@@ -1,0 +1,28 @@
+{
+  "metadata": {
+    "id": "gen-compiles-py_class_ok-para1",
+    "domain": "build",
+    "language": "python",
+    "difficulty": "easy",
+    "tools_used": [
+      "checker"
+    ],
+    "num_steps": 1,
+    "task_type": "compiles_successfully",
+    "source": "paraphrase_of:gen-compiles-py_class_ok",
+    "license": "synthetic-no-license-needed",
+    "validation_status": "validated",
+    "execution_performed": true,
+    "split": "train",
+    "checker_used": "checker-python-1.0",
+    "expected_result": {
+      "passed": true
+    },
+    "execution_classification": "interpreted"
+  },
+  "trajectory": {
+    "system_prompt": "Você é Praxis, um agente de engenharia de software. Raciocine em <think>, use <tool_call name=\"...\"> quando precisar de uma ferramenta, e responda ao usuário só dentro de <final>.",
+    "user_request": "shape.py compila certinho?",
+    "raw_text": "<tool_call name=\"checker\">{\"language\": \"python\", \"operation\": \"syntax_check\", \"files\": [{\"path\": \"shape.py\", \"content\": \"class Shape:\\n    def area(self):\\n        return 0\\n\"}]}</tool_call><tool_result name=\"checker\" status=\"ok\">{\"passed\": true, \"errors\": [], \"stdout\": \"\", \"stderr\": \"\", \"metadata\": {\"language\": \"python\", \"duration_ms\": 150}}</tool_result><final>shape.py compila sem erros.</final>"
+  }
+}

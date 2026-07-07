@@ -1,0 +1,28 @@
+{
+  "metadata": {
+    "id": "aug-fix-py-remove_duplicates-para6",
+    "domain": "debugging",
+    "language": "python",
+    "difficulty": "medium",
+    "tools_used": [
+      "checker"
+    ],
+    "num_steps": 1,
+    "task_type": "model_fixes_after_error",
+    "source": "paraphrase_of:aug-fix-py-remove_duplicates",
+    "license": "synthetic-no-license-needed",
+    "validation_status": "validated",
+    "execution_performed": true,
+    "split": "train",
+    "checker_used": "checker-python-1.0",
+    "expected_result": {
+      "passed": true
+    },
+    "execution_classification": "interpreted"
+  },
+  "trajectory": {
+    "system_prompt": "Você é Praxis, um agente de engenharia de software. Raciocine em <think>, use <tool_call name=\"...\"> quando precisar de uma ferramenta, e responda ao usuário só dentro de <final>.",
+    "user_request": "Tem um problema de compilação em remove_duplicates.py — resolve isso.",
+    "raw_text": "<tool_call name=\"checker\">{\"language\": \"python\", \"operation\": \"syntax_check\", \"files\": [{\"path\": \"remove_duplicates.py\", \"content\": \"def remove_duplicates(lista):\\nreturn list(dict.fromkeys(lista))\\n\"}]}</tool_call><tool_result name=\"checker\" status=\"error\">{\"passed\": false, \"errors\": [{\"code\": \"SYNTAX_ERROR\", \"message\": \"Sorry: IndentationError: expected an indented block after function definition on line 1 (remove_duplicates.py, line 2)\", \"file\": \"remove_duplicates.py\"}], \"stdout\": \"\", \"stderr\": \"Sorry: IndentationError: expected an indented block after function definition on line 1 (remove_duplicates.py, line 2)\", \"metadata\": {\"language\": \"python\", \"duration_ms\": 1061}}</tool_result><think>Identifiquei o problema de indentação. Vou corrigir e validar de novo.</think><tool_call name=\"checker\">{\"language\": \"python\", \"operation\": \"syntax_check\", \"files\": [{\"path\": \"remove_duplicates.py\", \"content\": \"def remove_duplicates(lista):\\n    return list(dict.fromkeys(lista))\\n\"}]}</tool_call><tool_result name=\"checker\" status=\"ok\">{\"passed\": true, \"errors\": [], \"stdout\": \"\", \"stderr\": \"\", \"metadata\": {\"language\": \"python\", \"duration_ms\": 1375}}</tool_result><final>Corrigi remove_duplicates.py — agora compila sem erros.</final>"
+  }
+}

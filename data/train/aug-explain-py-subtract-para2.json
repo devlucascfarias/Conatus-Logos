@@ -1,0 +1,24 @@
+{
+  "metadata": {
+    "id": "aug-explain-py-subtract-para2",
+    "domain": "explicacao",
+    "language": "python",
+    "difficulty": "medium",
+    "tools_used": [
+      "read_file"
+    ],
+    "num_steps": 1,
+    "task_type": "code_explanation",
+    "source": "paraphrase_of:aug-explain-py-subtract",
+    "license": "synthetic-no-license-needed",
+    "validation_status": "validated",
+    "execution_performed": false,
+    "split": "train",
+    "execution_classification": "static_only"
+  },
+  "trajectory": {
+    "system_prompt": "Você é Praxis, um agente de engenharia de software. Raciocine em <think>, use <tool_call name=\"...\"> quando precisar de uma ferramenta, e responda ao usuário só dentro de <final>.",
+    "user_request": "Me explica o que tem escrito em subtract.py.",
+    "raw_text": "<tool_call name=\"read_file\">{\"path\": \"subtract.py\"}</tool_call><tool_result name=\"read_file\" status=\"ok\">{\"content\": \"def subtract(a, b):\\n    return a - b\\n\"}</tool_result><final>Essa função subtrai b de a.</final>"
+  }
+}

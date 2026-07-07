@@ -1,0 +1,28 @@
+{
+  "metadata": {
+    "id": "seed-0005-para6",
+    "domain": "debugging",
+    "language": "python",
+    "difficulty": "medium",
+    "tools_used": [
+      "checker"
+    ],
+    "num_steps": 1,
+    "task_type": "checker_rejects_code",
+    "source": "paraphrase_of:seed-0005",
+    "license": "synthetic-no-license-needed",
+    "validation_status": "validated",
+    "execution_performed": true,
+    "split": "train",
+    "checker_used": "checker-python-1.0",
+    "expected_result": {
+      "passed": false
+    },
+    "execution_classification": "interpreted"
+  },
+  "trajectory": {
+    "system_prompt": "Você é Praxis, um agente de engenharia de software. Raciocine em <think>, use <tool_call name=\"...\"> quando precisar de uma ferramenta, e responda ao usuário só dentro de <final>.",
+    "user_request": "Verifique, por favor, se calc.py compila sem problemas.",
+    "raw_text": "<tool_call name=\"checker\">{\"language\": \"python\", \"operation\": \"syntax_check\", \"files\": [{\"path\": \"calc.py\", \"content\": \"def add(a, b:\\n    return a + b\\n\"}]}</tool_call><tool_result name=\"checker\" status=\"error\">{\"passed\": false, \"errors\": [{\"code\": \"SYNTAX_ERROR\", \"message\": \"invalid syntax\", \"file\": \"calc.py\", \"line\": 1}], \"stdout\": \"\", \"stderr\": \"SyntaxError\", \"metadata\": {\"language\": \"python\", \"duration_ms\": 50}}</tool_result><final>O arquivo calc.py tem um erro de sintaxe na linha 1 (falta o ')' antes dos dois-pontos).</final>"
+  }
+}

@@ -1,0 +1,28 @@
+{
+  "metadata": {
+    "id": "aug-reject-py-cube-para4",
+    "domain": "debugging",
+    "language": "python",
+    "difficulty": "medium",
+    "tools_used": [
+      "checker"
+    ],
+    "num_steps": 1,
+    "task_type": "checker_rejects_code",
+    "source": "paraphrase_of:aug-reject-py-cube",
+    "license": "synthetic-no-license-needed",
+    "validation_status": "validated",
+    "execution_performed": true,
+    "split": "train",
+    "checker_used": "checker-python-1.0",
+    "expected_result": {
+      "passed": false
+    },
+    "execution_classification": "interpreted"
+  },
+  "trajectory": {
+    "system_prompt": "Você é Praxis, um agente de engenharia de software. Raciocine em <think>, use <tool_call name=\"...\"> quando precisar de uma ferramenta, e responda ao usuário só dentro de <final>.",
+    "user_request": "Pode checar a compilação de cube.py?",
+    "raw_text": "<tool_call name=\"checker\">{\"language\": \"python\", \"operation\": \"syntax_check\", \"files\": [{\"path\": \"cube.py\", \"content\": \"def cube(n)\\n    return n ** 3\\n\"}]}</tool_call><tool_result name=\"checker\" status=\"error\">{\"passed\": false, \"errors\": [{\"code\": \"SYNTAX_ERROR\", \"message\": \"File \\\"cube.py\\\", line 1\\n    def cube(n)\\n               ^\\nSyntaxError: expected ':'\", \"file\": \"cube.py\", \"line\": 1}], \"stdout\": \"\", \"stderr\": \"  File \\\"cube.py\\\", line 1\\n    def cube(n)\\n               ^\\nSyntaxError: expected ':'\\n\", \"metadata\": {\"language\": \"python\", \"duration_ms\": 1359}}</tool_result><final>O arquivo cube.py não compila — há um erro de sintaxe nele.</final>"
+  }
+}

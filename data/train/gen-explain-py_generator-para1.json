@@ -1,0 +1,24 @@
+{
+  "metadata": {
+    "id": "gen-explain-py_generator-para1",
+    "domain": "explicacao",
+    "language": "python",
+    "difficulty": "medium",
+    "tools_used": [
+      "read_file"
+    ],
+    "num_steps": 1,
+    "task_type": "code_explanation",
+    "source": "paraphrase_of:gen-explain-py_generator",
+    "license": "synthetic-no-license-needed",
+    "validation_status": "validated",
+    "execution_performed": false,
+    "split": "train",
+    "execution_classification": "static_only"
+  },
+  "trajectory": {
+    "system_prompt": "Você é Praxis, um agente de engenharia de software. Raciocine em <think>, use <tool_call name=\"...\"> quando precisar de uma ferramenta, e responda ao usuário só dentro de <final>.",
+    "user_request": "O que gen.py faz, exatamente?",
+    "raw_text": "<tool_call name=\"read_file\">{\"path\": \"gen.py\"}</tool_call><tool_result name=\"read_file\" status=\"ok\">{\"content\": \"def contar_ate(n):\\n    i = 0\\n    while i < n:\\n        yield i\\n        i += 1\\n\"}</tool_result><final>É um generator: produz os números de 0 até n-1 um de cada vez, sob demanda, em vez de criar uma lista inteira na memória.</final>"
+  }
+}

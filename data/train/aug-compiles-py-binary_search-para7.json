@@ -1,0 +1,28 @@
+{
+  "metadata": {
+    "id": "aug-compiles-py-binary_search-para7",
+    "domain": "build",
+    "language": "python",
+    "difficulty": "easy",
+    "tools_used": [
+      "checker"
+    ],
+    "num_steps": 1,
+    "task_type": "compiles_successfully",
+    "source": "paraphrase_of:aug-compiles-py-binary_search",
+    "license": "synthetic-no-license-needed",
+    "validation_status": "validated",
+    "execution_performed": true,
+    "split": "train",
+    "checker_used": "checker-python-1.0",
+    "expected_result": {
+      "passed": true
+    },
+    "execution_classification": "interpreted"
+  },
+  "trajectory": {
+    "system_prompt": "Você é Praxis, um agente de engenharia de software. Raciocine em <think>, use <tool_call name=\"...\"> quando precisar de uma ferramenta, e responda ao usuário só dentro de <final>.",
+    "user_request": "Dá uma checada se binary_search.py compila sem problema.",
+    "raw_text": "<tool_call name=\"checker\">{\"language\": \"python\", \"operation\": \"syntax_check\", \"files\": [{\"path\": \"binary_search.py\", \"content\": \"def binary_search(items, target):\\n    lo, hi = 0, len(items) - 1\\n    while lo <= hi:\\n        mid = (lo + hi) // 2\\n        if items[mid] == target:\\n            return True\\n        elif items[mid] < target:\\n            lo = mid + 1\\n        else:\\n            hi = mid - 1\\n    return False\\n\"}]}</tool_call><tool_result name=\"checker\" status=\"ok\">{\"passed\": true, \"errors\": [], \"stdout\": \"\", \"stderr\": \"\", \"metadata\": {\"language\": \"python\", \"duration_ms\": 1360}}</tool_result><final>binary_search.py compila sem erros.</final>"
+  }
+}
