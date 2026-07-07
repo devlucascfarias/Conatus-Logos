@@ -904,7 +904,7 @@ futura) — ver justificativa consolidada na seção 18.
 | `lr_scheduler` | cosine | padrão robusto |
 | `eval_steps` | a cada ~5% do total de steps | avaliação parcial frequente dado risco de desconexão do Colab |
 | `save_steps` | mesma cadência de `eval_steps`, `save_total_limit=3` | checkpoint frequente + retenção limitada por espaço no Drive |
-| `max_steps` (fallback) | definido explicitamente além de `epochs`, para sessões que podem cair | garante checkpoint mesmo se a sessão do Colab cair no meio de uma epoch |
+| `max_steps` | **-1** (não sobrepor `num_train_epochs`) | D-maxsteps-v2, erro confirmado no Colab: um `max_steps` positivo SEMPRE sobrepõe `num_train_epochs` no HF Trainer — um valor "de segurança" alto (ex.: 3000) virou ~100 épocas reais num dataset de ~465 exemplos (overfitting severo + ~12h de treino). A proteção contra queda de sessão já vem de `save_steps`/`resume_from_checkpoint`, não precisa de `max_steps` grande |
 
 ### 11.3 Estimativa de VRAM (L4, 24 GB) — baseline experimental
 
@@ -1132,7 +1132,7 @@ vira um uso de `git status`/`git diff` via `shell`. `web_search` usa `MockSearch
 
 | Risco | Impacto | Mitigação |
 |---|---|---|
-| Sessão do Colab cai no meio do treino | perda de progresso | checkpoints frequentes + `max_steps` fallback + Drive persistente |
+| Sessão do Colab cai no meio do treino | perda de progresso | checkpoints frequentes (`save_steps`) + `resume_from_checkpoint` + Drive persistente — **não** um `max_steps` artificialmente alto (ver D-maxsteps-v2, seção 11.2: isso já causou ~100 épocas de overfitting num dataset pequeno) |
 | VRAM estourada em sequências longas/multi-tool | crash de treino | `sequence_length` conservador inicial + profiling real antes de escalar |
 | Sandbox subprocess insuficiente contra código adversarial real (D6) | risco de segurança em uso futuro com código de terceiros | documentado como lacuna; reforço (namespaces/Docker real) é pré-requisito antes de expor a uma CLI que execute repositórios não confiáveis |
 | Dataset sintético gerado em lote com viés/baixa diversidade | modelo memoriza padrões estreitos | pipeline de validação por execução real (seção 9) rejeita não-compiláveis; monitorar distribuição por `task_type`/linguagem |

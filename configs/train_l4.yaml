@@ -38,14 +38,25 @@ training:
   lr_scheduler_type: "cosine"
   warmup_ratio: 0.03
   num_train_epochs: 3
-  max_steps: 3000            # fallback explícito (seção 11.2) — sessões do Colab podem cair no meio de uma epoch
+  # D-maxsteps-v2: max_steps=-1 (sentinela do HF Trainer para "não sobrepor num_train_epochs").
+  # ERRO CONFIRMADO NO COLAB: um max_steps positivo SEMPRE sobrepõe num_train_epochs no HF
+  # Trainer — com max_steps=3000 fixo aqui antes, e um dataset de ~465 exemplos de treino
+  # (batch efetivo 16 -> ~30 passos/época), isso virava ~100 épocas em vez das 3 pretendidas
+  # (overfitting severo, e ~12h de treino em vez do esperado). A rede de segurança contra
+  # queda de sessão do Colab (seção 11.2) já vem de save_steps/resume_from_checkpoint, não
+  # precisa de um max_steps artificialmente alto — por isso -1 é o valor correto aqui, não
+  # um número grande "por via das dúvidas".
+  max_steps: -1
   optim: "paged_adamw_8bit"
   gradient_checkpointing: true
   seed: 42
 
 evaluation:
-  eval_steps: 150            # ~5% de max_steps
-  save_steps: 150
+  # Recalculado para bater com ~90 passos totais (3 épocas x ~30 passos/época num dataset de
+  # ~465 exemplos de treino, seção 15). Se o dataset mudar de tamanho, ajuste proporcionalmente
+  # (ideal: checkpoint a cada meia época, aprox.).
+  eval_steps: 15
+  save_steps: 15
   save_total_limit: 3
 
 paths:
