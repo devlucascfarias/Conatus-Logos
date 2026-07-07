@@ -132,3 +132,25 @@ def test_prod_mode_hides_reasoning_and_tool_calls(sandbox, registry):
     assert result.public_output.strip() == "resposta pública limpa"
     assert "segredo" not in result.public_output
     assert "<think>" not in result.public_output
+
+
+def test_max_tokens_per_step_is_forwarded_to_model_runner(sandbox, registry):
+    """D-maxtokens: sem isso, um modelo que não emite a stop-sequence de forma limpa gera até
+    o teto padrão do backend (1024) em cada passo — o contexto acumulado pode estourar VRAM no
+    prefill de uma chamada seguinte (OutOfMemoryError de ~6.67 GiB confirmado no Colab)."""
+
+    class _RecordingRunner:
+        def __init__(self, responses):
+            self._responses = list(responses)
+            self.max_tokens_seen = []
+
+        def generate(self, prompt, stop, max_tokens=1024):
+            self.max_tokens_seen.append(max_tokens)
+            text = self._responses.pop(0)
+            return type("Completion", (), {"text": text, "stop_reason": "stop_sequence", "matched_stop": stop[-1]})()
+
+    runner = _RecordingRunner(["<final>ok</final>"])
+    config = AgentLoopConfig(max_tokens_per_step=64)
+    run_agent_loop("pergunta qualquer", "system", runner, registry, sandbox, config=config)
+
+    assert runner.max_tokens_seen == [64]

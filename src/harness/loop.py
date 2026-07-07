@@ -31,6 +31,14 @@ class AgentLoopConfig:
     max_steps: int = 8
     stop_sequences: tuple = ("</tool_call>", "</final>")
     mode: str = "dev"  # "dev" | "prod" — seção 3.6
+    # D-maxtokens: teto de tokens por CHAMADA de generate() (não por turno inteiro). Sem isso,
+    # um modelo que não emite a stop-sequence de forma limpa gera até o default do backend
+    # (1024 em TransformersModelRunner) em cada um dos até `max_steps` passos — o contexto
+    # acumulado pode explodir a ponto de estourar VRAM só no prefill da próxima chamada
+    # (OutOfMemoryError de ~6.67 GiB numa única atenção, confirmado no Colab). 256 é generoso
+    # para as trajetórias curtas do dataset desta geração (seção 8); ajustar se exemplos mais
+    # longos entrarem no dataset depois.
+    max_tokens_per_step: int = 256
 
 
 @dataclass
@@ -66,6 +74,7 @@ def run_agent_loop(
         completion = model_runner.generate(
             prompt=trajectory.render_for_model(),
             stop=list(config.stop_sequences),
+            max_tokens=config.max_tokens_per_step,
         )
 
         # Checagem anti-fabricação (seção 10.3) sobre o texto RECÉM-GERADO, antes de anexar
