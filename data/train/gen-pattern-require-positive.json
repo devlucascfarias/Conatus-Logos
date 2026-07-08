@@ -1,0 +1,29 @@
+{
+  "metadata": {
+    "id": "gen-pattern-require-positive",
+    "domain": "python_patterns",
+    "language": "python",
+    "difficulty": "medium",
+    "tools_used": [
+      "write_file",
+      "checker"
+    ],
+    "num_steps": 2,
+    "task_type": "python_pattern",
+    "source": "curated_manual_real_execution",
+    "license": "synthetic-no-license-needed",
+    "validation_status": "validated",
+    "execution_performed": true,
+    "split": "train",
+    "checker_used": "checker-python-1.0",
+    "expected_result": {
+      "passed": true
+    },
+    "execution_classification": "tested"
+  },
+  "trajectory": {
+    "system_prompt": "Você é Praxis, um agente de engenharia de software. Raciocine em <think>, use <tool_call name=\"...\"> quando precisar de uma ferramenta, e responda ao usuário só dentro de <final>.",
+    "user_request": "Implemente um decorator require_positive que valide que todos os argumentos numéricos posicionais são positivos antes de executar a função.",
+    "raw_text": "<think>O decorator precisa inspecionar os args antes de chamar a função original, levantando ValueError se algum número não-positivo aparecer.</think><tool_call name=\"write_file\">{\"path\": \"require_positive.py\", \"content\": \"def require_positive(func):\\n    def wrapper(*args, **kwargs):\\n        for value in args:\\n            if isinstance(value, (int, float)) and value <= 0:\\n                raise ValueError(f'argumento deve ser positivo: {value}')\\n        return func(*args, **kwargs)\\n    return wrapper\\n\"}</tool_call><tool_result name=\"write_file\" status=\"ok\">{\"path\": \"require_positive.py\", \"bytes_written\": 282, \"mode\": \"overwrite\"}</tool_result><think>A validação ocorre antes da execução da função original, como esperado. Vou validar.</think><tool_call name=\"checker\">{\"language\": \"python\", \"operation\": \"compile_and_test\", \"files\": [{\"path\": \"require_positive.py\", \"content\": \"def require_positive(func):\\n    def wrapper(*args, **kwargs):\\n        for value in args:\\n            if isinstance(value, (int, float)) and value <= 0:\\n                raise ValueError(f'argumento deve ser positivo: {value}')\\n        return func(*args, **kwargs)\\n    return wrapper\\n\"}, {\"path\": \"test_require_positive.py\", \"content\": \"import pytest\\n\\nfrom require_positive import require_positive\\n\\n\\n@require_positive\\ndef sqrt_like(x):\\n    return x ** 0.5\\n\\n\\ndef test_require_positive():\\n    assert sqrt_like(9) == 3.0\\n    with pytest.raises(ValueError):\\n        sqrt_like(-4)\\n\"}]}</tool_call><tool_result name=\"checker\" status=\"ok\">{\"passed\": true, \"errors\": [], \"stdout\": \".                                                                        [100%]\\n1 passed in 0.02s\\n\", \"stderr\": \"\", \"metadata\": {\"language\": \"python\", \"duration_ms\": 6280}}</tool_result><final>Implementei o decorator require_positive, que valida os argumentos numéricos antes de executar a função decorada. A validação confirma que compila e o teste passa.</final>"
+  }
+}

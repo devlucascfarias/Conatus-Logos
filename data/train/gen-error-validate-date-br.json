@@ -1,0 +1,29 @@
+{
+  "metadata": {
+    "id": "gen-error-validate-date-br",
+    "domain": "tratamento_erro",
+    "language": "python",
+    "difficulty": "medium",
+    "tools_used": [
+      "write_file",
+      "checker"
+    ],
+    "num_steps": 2,
+    "task_type": "error_handling",
+    "source": "curated_manual_real_execution",
+    "license": "synthetic-no-license-needed",
+    "validation_status": "validated",
+    "execution_performed": true,
+    "split": "train",
+    "checker_used": "checker-python-1.0",
+    "expected_result": {
+      "passed": true
+    },
+    "execution_classification": "tested"
+  },
+  "trajectory": {
+    "system_prompt": "Você é Praxis, um agente de engenharia de software. Raciocine em <think>, use <tool_call name=\"...\"> quando precisar de uma ferramenta, e responda ao usuário só dentro de <final>.",
+    "user_request": "Implemente uma função que valide uma data no formato DD/MM/AAAA, levantando ValueError se o formato ou a data forem inválidos.",
+    "raw_text": "<think>datetime.strptime já valida datas reais (ex.: 31/02 falha); só preciso capturar ValueError e relançar com mensagem no formato esperado.</think><tool_call name=\"write_file\">{\"path\": \"validate_date_br.py\", \"content\": \"from datetime import datetime\\n\\n\\ndef validate_date_br(date_str):\\n    try:\\n        return datetime.strptime(date_str, '%d/%m/%Y').date()\\n    except ValueError as e:\\n        raise ValueError(f\\\"data invalida, use DD/MM/AAAA: {date_str}\\\") from e\\n\"}</tool_call><tool_result name=\"write_file\" status=\"ok\">{\"path\": \"validate_date_br.py\", \"bytes_written\": 241, \"mode\": \"overwrite\"}</tool_result><think>A validação cobre formato errado e datas inexistentes (como 31/02). Vou validar.</think><tool_call name=\"checker\">{\"language\": \"python\", \"operation\": \"compile_and_test\", \"files\": [{\"path\": \"validate_date_br.py\", \"content\": \"from datetime import datetime\\n\\n\\ndef validate_date_br(date_str):\\n    try:\\n        return datetime.strptime(date_str, '%d/%m/%Y').date()\\n    except ValueError as e:\\n        raise ValueError(f\\\"data invalida, use DD/MM/AAAA: {date_str}\\\") from e\\n\"}, {\"path\": \"test_validate_date_br.py\", \"content\": \"import pytest\\n\\nfrom validate_date_br import validate_date_br\\n\\n\\ndef test_validate_date_br():\\n    assert validate_date_br('25/12/2024').day == 25\\n    with pytest.raises(ValueError, match='DD/MM/AAAA'):\\n        validate_date_br('31/02/2024')\\n    with pytest.raises(ValueError, match='DD/MM/AAAA'):\\n        validate_date_br('2024-12-25')\\n\"}]}</tool_call><tool_result name=\"checker\" status=\"ok\">{\"passed\": true, \"errors\": [], \"stdout\": \".                                                                        [100%]\\n1 passed in 0.02s\\n\", \"stderr\": \"\", \"metadata\": {\"language\": \"python\", \"duration_ms\": 6280}}</tool_result><final>Implementei validate_date_br(date_str), validando o formato brasileiro DD/MM/AAAA e relançando ValueError com mensagem clara para datas ou formatos inválidos. A validação confirma que compila e o teste passa.</final>"
+  }
+}

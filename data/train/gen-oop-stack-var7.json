@@ -1,0 +1,29 @@
+{
+  "metadata": {
+    "id": "gen-oop-stack-var7",
+    "domain": "oop",
+    "language": "python",
+    "difficulty": "easy",
+    "tools_used": [
+      "write_file",
+      "checker"
+    ],
+    "num_steps": 2,
+    "task_type": "class_implementation",
+    "source": "phrasing_variant_of:gen-oop-stack",
+    "license": "synthetic-no-license-needed",
+    "validation_status": "validated",
+    "execution_performed": true,
+    "split": "train",
+    "checker_used": "checker-python-1.0",
+    "expected_result": {
+      "passed": true
+    },
+    "execution_classification": "tested"
+  },
+  "trajectory": {
+    "system_prompt": "Você é Praxis, um agente de engenharia de software. Raciocine em <think>, use <tool_call name=\"...\"> quando precisar de uma ferramenta, e responda ao usuário só dentro de <final>.",
+    "user_request": "Me ajuda com uma classe Stack que tenha push, pop, peek e is_empty?",
+    "raw_text": "<think>push, pop, peek e is_empty de uma pilha é justamente o tipo de comportamento que pede uma classe com estado — vou implementar Stack assim.</think><tool_call name=\"write_file\">{\"path\": \"stack.py\", \"content\": \"class Stack:\\n    def __init__(self):\\n        self._items = []\\n\\n    def push(self, item):\\n        self._items.append(item)\\n\\n    def pop(self):\\n        if self.is_empty():\\n            raise IndexError('pop em pilha vazia')\\n        return self._items.pop()\\n\\n    def peek(self):\\n        if self.is_empty():\\n            raise IndexError('peek em pilha vazia')\\n        return self._items[-1]\\n\\n    def is_empty(self):\\n        return len(self._items) == 0\\n\"}</tool_call><tool_result name=\"write_file\" status=\"ok\">{\"path\": \"stack.py\", \"bytes_written\": 448, \"mode\": \"overwrite\"}</tool_result><think>Terminei a implementação; agora preciso validar antes de responder ao usuário.</think><tool_call name=\"checker\">{\"language\": \"python\", \"operation\": \"compile_and_test\", \"files\": [{\"path\": \"stack.py\", \"content\": \"class Stack:\\n    def __init__(self):\\n        self._items = []\\n\\n    def push(self, item):\\n        self._items.append(item)\\n\\n    def pop(self):\\n        if self.is_empty():\\n            raise IndexError('pop em pilha vazia')\\n        return self._items.pop()\\n\\n    def peek(self):\\n        if self.is_empty():\\n            raise IndexError('peek em pilha vazia')\\n        return self._items[-1]\\n\\n    def is_empty(self):\\n        return len(self._items) == 0\\n\"}, {\"path\": \"test_stack.py\", \"content\": \"import pytest\\n\\nfrom stack import Stack\\n\\n\\ndef test_stack():\\n    s = Stack()\\n    assert s.is_empty() is True\\n    s.push(1)\\n    s.push(2)\\n    assert s.peek() == 2\\n    assert s.pop() == 2\\n    assert s.pop() == 1\\n    assert s.is_empty() is True\\n    with pytest.raises(IndexError):\\n        s.pop()\\n\"}]}</tool_call><tool_result name=\"checker\" status=\"ok\">{\"passed\": true, \"errors\": [], \"stdout\": \".                                                                        [100%]\\n1 passed in 0.02s\\n\", \"stderr\": \"\", \"metadata\": {\"language\": \"python\", \"duration_ms\": 2795}}</tool_result><final>Pronto: Stack implementada como classe, cobrindo push, pop, peek e is_empty de uma pilha, e já validada com sucesso.</final>"
+  }
+}

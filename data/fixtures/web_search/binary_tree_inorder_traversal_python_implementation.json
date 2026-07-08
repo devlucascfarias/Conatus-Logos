@@ -1,0 +1,12 @@
+[
+  {
+    "title": "Inorder Traversal of Binary Tree in Python - GeeksforGeeks",
+    "url": "https://www.geeksforgeeks.org/python/inorder-traversal-of-binary-tree-in-python/",
+    "snippet": "Inorder traversal visits nodes in Left, Root, Right order. Time complexity is O(N) since every node is visited once; auxiliary space is O(h) for the recursion stack, where h is the tree height."
+  },
+  {
+    "title": "Binary Tree Inorder Traversal in Python - TutorialsPoint",
+    "url": "https://www.tutorialspoint.com/binary-tree-inorder-traversal-in-python",
+    "snippet": "An iterative approach uses an explicit stack: push left children until None, pop a node, record its value, then move to its right child."
+  }
+]

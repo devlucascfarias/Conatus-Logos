@@ -1,0 +1,30 @@
+{
+  "metadata": {
+    "id": "gen-ensearch-bubble-sort",
+    "domain": "algorithms",
+    "language": "python",
+    "difficulty": "easy",
+    "tools_used": [
+      "web_search",
+      "write_file",
+      "checker"
+    ],
+    "num_steps": 3,
+    "task_type": "multi_tool_call",
+    "source": "curated_manual_real_execution",
+    "license": "synthetic-no-license-needed",
+    "validation_status": "validated",
+    "execution_performed": true,
+    "split": "train",
+    "checker_used": "checker-python-1.0",
+    "expected_result": {
+      "passed": true
+    },
+    "execution_classification": "tested"
+  },
+  "trajectory": {
+    "system_prompt": "Você é Praxis, um agente de engenharia de software. Raciocine em <think>, use <tool_call name=\"...\"> quando precisar de uma ferramenta, e responda ao usuário só dentro de <final>.",
+    "user_request": "Pesquise o algoritmo bubble sort e implemente com a otimização de parar cedo se a lista já estiver ordenada.",
+    "raw_text": "<think>Vou confirmar a otimização com flag de troca antes de implementar.</think><tool_call name=\"web_search\">{\"query\": \"bubble sort algorithm python implementation\"}</tool_call><tool_result name=\"web_search\" status=\"ok\">{\"results\": [{\"title\": \"Bubble Sort - Python - GeeksforGeeks\", \"url\": \"https://www.geeksforgeeks.org/python/python-program-for-bubble-sort/\", \"snippet\": \"Repeatedly compares adjacent elements and swaps them if out of order; after each full pass, the largest unsorted element bubbles up to its correct position at the end.\"}, {\"title\": \"Bubble Sort in Python - StackAbuse\", \"url\": \"https://stackabuse.com/bubble-sort-in-python/\", \"snippet\": \"An optimization uses a 'swapped' flag to exit early if no swaps occur during a pass, giving best-case O(n) time when the list is already sorted; worst/average case is O(n^2).\"}]}</tool_result><think>O conteúdo que a busca retornou está em inglês, mas a conversa com o usuário é em português — vou continuar respondendo em português mesmo assim, usando o que encontrei só como base técnica. A documentação confirma a otimização: usar uma flag 'swapped' para encerrar mais cedo se nenhuma troca ocorreu numa passada, dando O(n) no melhor caso.</think><tool_call name=\"write_file\">{\"path\": \"bubble_sort.py\", \"content\": \"def bubble_sort(arr):\\n    items = list(arr)\\n    n = len(items)\\n    for i in range(n):\\n        swapped = False\\n        for j in range(n - i - 1):\\n            if items[j] > items[j + 1]:\\n                items[j], items[j + 1] = items[j + 1], items[j]\\n                swapped = True\\n        if not swapped:\\n            break\\n    return items\\n\"}</tool_call><tool_result name=\"write_file\" status=\"ok\">{\"path\": \"bubble_sort.py\", \"bytes_written\": 339, \"mode\": \"overwrite\"}</tool_result><think>A flag de troca antecipa o término quando a lista já está ordenada. Vou validar.</think><tool_call name=\"checker\">{\"language\": \"python\", \"operation\": \"compile_and_test\", \"files\": [{\"path\": \"bubble_sort.py\", \"content\": \"def bubble_sort(arr):\\n    items = list(arr)\\n    n = len(items)\\n    for i in range(n):\\n        swapped = False\\n        for j in range(n - i - 1):\\n            if items[j] > items[j + 1]:\\n                items[j], items[j + 1] = items[j + 1], items[j]\\n                swapped = True\\n        if not swapped:\\n            break\\n    return items\\n\"}, {\"path\": \"test_bubble_sort.py\", \"content\": \"from bubble_sort import bubble_sort\\n\\n\\ndef test_bubble_sort():\\n    assert bubble_sort([5, 1, 4, 2, 8]) == [1, 2, 4, 5, 8]\\n    assert bubble_sort([1, 2, 3]) == [1, 2, 3]\\n    assert bubble_sort([]) == []\\n\"}]}</tool_call><tool_result name=\"checker\" status=\"ok\">{\"passed\": true, \"errors\": [], \"stdout\": \".                                                                        [100%]\\n1 passed in 0.02s\\n\", \"stderr\": \"\", \"metadata\": {\"language\": \"python\", \"duration_ms\": 2875}}</tool_result><final>Pesquisei bubble sort (conteúdo em inglês, resposta em português) e implementei bubble_sort(arr) com a otimização da flag de troca para encerrar mais cedo. A validação confirma que compila e o teste passa.</final>"
+  }
+}

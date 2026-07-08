@@ -1,0 +1,29 @@
+{
+  "metadata": {
+    "id": "gen-pattern-transaction-contextmanager-var7",
+    "domain": "python_patterns",
+    "language": "python",
+    "difficulty": "hard",
+    "tools_used": [
+      "write_file",
+      "checker"
+    ],
+    "num_steps": 2,
+    "task_type": "python_pattern",
+    "source": "phrasing_variant_of:gen-pattern-transaction-contextmanager",
+    "license": "synthetic-no-license-needed",
+    "validation_status": "validated",
+    "execution_performed": true,
+    "split": "train",
+    "checker_used": "checker-python-1.0",
+    "expected_result": {
+      "passed": true
+    },
+    "execution_classification": "tested"
+  },
+  "trajectory": {
+    "system_prompt": "Você é Praxis, um agente de engenharia de software. Raciocine em <think>, use <tool_call name=\"...\"> quando precisar de uma ferramenta, e responda ao usuário só dentro de <final>.",
+    "user_request": "Me ajuda com um context manager de transação que relance a exceção após o rollback?",
+    "raw_text": "<think>transaction, com commit em sucesso e rollback em erro é justamente o tipo de caso que pede um context manager com @contextmanager em vez de uma solução mais manual.</think><tool_call name=\"write_file\">{\"path\": \"transaction_contextmanager.py\", \"content\": \"from contextlib import contextmanager\\n\\n\\n@contextmanager\\ndef transaction(log):\\n    log.append('begin')\\n    try:\\n        yield log\\n        log.append('commit')\\n    except Exception:\\n        log.append('rollback')\\n        raise\\n\"}</tool_call><tool_result name=\"write_file\" status=\"ok\">{\"path\": \"transaction_contextmanager.py\", \"bytes_written\": 225, \"mode\": \"overwrite\"}</tool_result><think>Terminei a implementação com um context manager com @contextmanager; agora preciso validar antes de responder ao usuário.</think><tool_call name=\"checker\">{\"language\": \"python\", \"operation\": \"compile_and_test\", \"files\": [{\"path\": \"transaction_contextmanager.py\", \"content\": \"from contextlib import contextmanager\\n\\n\\n@contextmanager\\ndef transaction(log):\\n    log.append('begin')\\n    try:\\n        yield log\\n        log.append('commit')\\n    except Exception:\\n        log.append('rollback')\\n        raise\\n\"}, {\"path\": \"test_transaction_contextmanager.py\", \"content\": \"import pytest\\n\\nfrom transaction_contextmanager import transaction\\n\\n\\ndef test_transaction_commits_on_success():\\n    log = []\\n    with transaction(log):\\n        pass\\n    assert log == ['begin', 'commit']\\n\\n\\ndef test_transaction_rolls_back_on_error():\\n    log = []\\n    with pytest.raises(RuntimeError):\\n        with transaction(log):\\n            raise RuntimeError('falha no meio da transacao')\\n    assert log == ['begin', 'rollback']\\n\"}]}</tool_call><tool_result name=\"checker\" status=\"ok\">{\"passed\": true, \"errors\": [], \"stdout\": \"..                                                                       [100%]\\n2 passed in 0.02s\\n\", \"stderr\": \"\", \"metadata\": {\"language\": \"python\", \"duration_ms\": 6843}}</tool_result><final>Pronto: transaction, com commit em sucesso e rollback em erro implementado com um context manager com @contextmanager, e já validado com sucesso.</final>"
+  }
+}

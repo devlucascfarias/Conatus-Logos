@@ -1,0 +1,30 @@
+{
+  "metadata": {
+    "id": "gen-shell-ls-then-cat-var7",
+    "domain": "shell_real",
+    "language": "shell",
+    "difficulty": "medium",
+    "tools_used": [
+      "write_file",
+      "shell",
+      "shell"
+    ],
+    "num_steps": 3,
+    "task_type": "shell_command",
+    "source": "phrasing_variant_of:gen-shell-ls-then-cat",
+    "license": "synthetic-no-license-needed",
+    "validation_status": "validated",
+    "execution_performed": true,
+    "split": "train",
+    "checker_used": null,
+    "expected_result": {
+      "passed": true
+    },
+    "execution_classification": "tested"
+  },
+  "trajectory": {
+    "system_prompt": "Você é Praxis, um agente de engenharia de software. Raciocine em <think>, use <tool_call name=\"...\"> quando precisar de uma ferramenta, e responda ao usuário só dentro de <final>.",
+    "user_request": "Um arquivo de log em logs/app.log, por favor, listado e depois exibido.",
+    "raw_text": "<think>Vou registrar o arquivo logs/app.log no workspace.</think><tool_call name=\"write_file\">{\"path\": \"logs/app.log\", \"content\": \"app iniciado\\n\"}</tool_call><tool_result name=\"write_file\" status=\"ok\">{\"path\": \"logs/app.log\", \"bytes_written\": 13, \"mode\": \"overwrite\"}</tool_result><think>Listo a pasta logs/ para ter certeza do resultado.</think><tool_call name=\"shell\">{\"binary\": \"ls\", \"args\": [\"-la\", \"logs\"]}</tool_call><tool_result name=\"shell\" status=\"ok\">{\"stdout\": \"total 1\\ndrwxr-xr-x 1 Lucas 197608  0 Jul  8 08:59 .\\ndrwxr-xr-x 1 Lucas 197608  0 Jul  8 08:59 ..\\n-rw-r--r-- 1 Lucas 197608 14 Jul  8 08:59 app.log\\n\", \"stderr\": \"\", \"returncode\": 0}</tool_result><think>Vou mostrar o conteúdo de logs/app.log usando cat.</think><tool_call name=\"shell\">{\"binary\": \"cat\", \"args\": [\"logs/app.log\"]}</tool_call><tool_result name=\"shell\" status=\"ok\">{\"stdout\": \"app iniciado\\n\", \"stderr\": \"\", \"returncode\": 0}</tool_result><final>Resultado: logs/app.log foi criado, confirmado com ls e mostrado com cat.</final>"
+  }
+}

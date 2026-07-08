@@ -1,0 +1,29 @@
+{
+  "metadata": {
+    "id": "gen-shell-git-status-untracked-var3",
+    "domain": "shell_real",
+    "language": "shell",
+    "difficulty": "medium",
+    "tools_used": [
+      "write_file",
+      "shell"
+    ],
+    "num_steps": 2,
+    "task_type": "shell_command",
+    "source": "phrasing_variant_of:gen-shell-git-status-untracked",
+    "license": "synthetic-no-license-needed",
+    "validation_status": "validated",
+    "execution_performed": true,
+    "split": "train",
+    "checker_used": null,
+    "expected_result": {
+      "passed": true
+    },
+    "execution_classification": "tested"
+  },
+  "trajectory": {
+    "system_prompt": "Você é Praxis, um agente de engenharia de software. Raciocine em <think>, use <tool_call name=\"...\"> quando precisar de uma ferramenta, e responda ao usuário só dentro de <final>.",
+    "user_request": "Quero draft.md criado e o git status mostrando que está untracked.",
+    "raw_text": "<think>Primeiro, vou gerar o arquivo draft.md.</think><tool_call name=\"write_file\">{\"path\": \"draft.md\", \"content\": \"# rascunho\\n\"}</tool_call><tool_result name=\"write_file\" status=\"ok\">{\"path\": \"draft.md\", \"bytes_written\": 11, \"mode\": \"overwrite\"}</tool_result><think>Vou conferir o novo arquivo não rastreado rodando git status.</think><tool_call name=\"shell\">{\"binary\": \"git\", \"args\": [\"status\"]}</tool_call><tool_result name=\"shell\" status=\"ok\">{\"stdout\": \"On branch master\\nUntracked files:\\n  (use \\\"git add <file>...\\\" to include in what will be committed)\\n\\tdraft.md\\n\\nnothing added to commit but untracked files present (use \\\"git add\\\" to track)\\n\", \"stderr\": \"\", \"returncode\": 0}</tool_result><final>draft.md foi criado e confirmado como untracked via git status, como pedido.</final>"
+  }
+}

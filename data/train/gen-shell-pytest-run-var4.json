@@ -1,0 +1,30 @@
+{
+  "metadata": {
+    "id": "gen-shell-pytest-run-var4",
+    "domain": "shell_real",
+    "language": "shell",
+    "difficulty": "medium",
+    "tools_used": [
+      "write_file",
+      "write_file",
+      "shell"
+    ],
+    "num_steps": 3,
+    "task_type": "shell_command",
+    "source": "phrasing_variant_of:gen-shell-pytest-run",
+    "license": "synthetic-no-license-needed",
+    "validation_status": "validated",
+    "execution_performed": true,
+    "split": "train",
+    "checker_used": null,
+    "expected_result": {
+      "passed": true
+    },
+    "execution_classification": "tested"
+  },
+  "trajectory": {
+    "system_prompt": "Você é Praxis, um agente de engenharia de software. Raciocine em <think>, use <tool_call name=\"...\"> quando precisar de uma ferramenta, e responda ao usuário só dentro de <final>.",
+    "user_request": "Preciso de is_even com teste, e quero ver o resultado rodando pytest direto.",
+    "raw_text": "<think>Vou providenciar a função is_even nesta etapa.</think><tool_call name=\"write_file\">{\"path\": \"is_even.py\", \"content\": \"def is_even(n):\\n    return n % 2 == 0\\n\"}</tool_call><tool_result name=\"write_file\" status=\"ok\">{\"path\": \"is_even.py\", \"bytes_written\": 38, \"mode\": \"overwrite\"}</tool_result><think>Começo criando o teste de is_even.</think><tool_call name=\"write_file\">{\"path\": \"test_is_even.py\", \"content\": \"from is_even import is_even\\n\\n\\ndef test_is_even():\\n    assert is_even(4) is True\\n    assert is_even(3) is False\\n\"}</tool_call><tool_result name=\"write_file\" status=\"ok\">{\"path\": \"test_is_even.py\", \"bytes_written\": 111, \"mode\": \"overwrite\"}</tool_result><think>Rodo os testes de os testes de is_even.py direto, sem o checker.</think><tool_call name=\"shell\">{\"binary\": \"python\", \"args\": [\"-m\", \"pytest\", \"-q\", \"test_is_even.py\"]}</tool_call><tool_result name=\"shell\" status=\"ok\">{\"stdout\": \".                                                                        [100%]\\n1 passed in 0.04s\\n\", \"stderr\": \"\", \"returncode\": 0}</tool_result><final>Terminei: is_even.py e o teste foram criados e os testes rodados direto com python -m pytest.</final>"
+  }
+}

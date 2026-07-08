@@ -1,0 +1,12 @@
+[
+  {
+    "title": "Encoding and Decoding Base64 Strings in Python - GeeksforGeeks",
+    "url": "https://www.geeksforgeeks.org/python/encoding-and-decoding-base64-strings-in-python/",
+    "snippet": "Strings are first converted into byte-like objects with .encode(), then encoded using base64.b64encode(). The result can be converted back to a string with .decode()."
+  },
+  {
+    "title": "base64 - Base16, Base32, Base64, Base85 Data Encodings - Python documentation",
+    "url": "https://docs.python.org/3/library/base64.html",
+    "snippet": "base64.b64encode(s) encodes a bytes-like object using the standard Base64 alphabet and returns the encoded bytes; b64decode reverses the process."
+  }
+]

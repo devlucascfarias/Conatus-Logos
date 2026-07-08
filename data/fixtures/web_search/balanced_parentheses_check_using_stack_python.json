@@ -1,0 +1,12 @@
+[
+  {
+    "title": "Check for balanced parentheses in Python - GeeksforGeeks",
+    "url": "https://www.geeksforgeeks.org/python/check-for-balanced-parentheses-in-python/",
+    "snippet": "Push opening brackets onto a stack; on a closing bracket, check the stack is not empty and its top matches the corresponding opening bracket. The string is balanced only if the stack is empty at the end."
+  },
+  {
+    "title": "Balanced Parentheses - Bradfield CS",
+    "url": "https://bradfieldcs.com/algos/stacks/balanced-parentheses/",
+    "snippet": "Simply matching bracket counts is not enough to detect improper nesting like '([)]', where counts match but the order is wrong -- the stack-based approach handles this correctly."
+  }
+]

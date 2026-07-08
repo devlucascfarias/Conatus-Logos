@@ -1,0 +1,30 @@
+{
+  "metadata": {
+    "id": "gen-shell-grep-recursive-todo",
+    "domain": "shell_real",
+    "language": "shell",
+    "difficulty": "medium",
+    "tools_used": [
+      "write_file",
+      "write_file",
+      "shell"
+    ],
+    "num_steps": 3,
+    "task_type": "shell_command",
+    "source": "curated_manual_real_execution",
+    "license": "synthetic-no-license-needed",
+    "validation_status": "validated",
+    "execution_performed": true,
+    "split": "train",
+    "checker_used": null,
+    "expected_result": {
+      "passed": true
+    },
+    "execution_classification": "tested"
+  },
+  "trajectory": {
+    "system_prompt": "Você é Praxis, um agente de engenharia de software. Raciocine em <think>, use <tool_call name=\"...\"> quando precisar de uma ferramenta, e responda ao usuário só dentro de <final>.",
+    "user_request": "Crie dois arquivos com comentários TODO pendentes e depois use grep para encontrar todos os TODOs do projeto de uma vez.",
+    "raw_text": "<think>Vou criar o primeiro arquivo com um TODO pendente.</think><tool_call name=\"write_file\">{\"path\": \"module_a.py\", \"content\": \"# TODO: validar entrada do usuario\\ndef process(x):\\n    return x\\n\"}</tool_call><tool_result name=\"write_file\" status=\"ok\">{\"path\": \"module_a.py\", \"bytes_written\": 64, \"mode\": \"overwrite\"}</tool_result><think>Agora o segundo arquivo, também com um TODO pendente.</think><tool_call name=\"write_file\">{\"path\": \"module_b.py\", \"content\": \"# TODO: adicionar cache\\ndef fetch(key):\\n    return key\\n\"}</tool_call><tool_result name=\"write_file\" status=\"ok\">{\"path\": \"module_b.py\", \"bytes_written\": 55, \"mode\": \"overwrite\"}</tool_result><think>Vou usar grep recursivo para encontrar todos os TODOs do projeto de uma vez, em vez de abrir arquivo por arquivo.</think><tool_call name=\"shell\">{\"binary\": \"grep\", \"args\": [\"-r\", \"TODO\", \".\"]}</tool_call><tool_result name=\"shell\" status=\"ok\">{\"stdout\": \"./module_a.py:# TODO: validar entrada do usuario\\n./module_b.py:# TODO: adicionar cache\\n\", \"stderr\": \"\", \"returncode\": 0}</tool_result><final>Criei module_a.py e module_b.py, cada um com um TODO pendente, e usei 'grep -r TODO .' para listar os dois de uma vez.</final>"
+  }
+}

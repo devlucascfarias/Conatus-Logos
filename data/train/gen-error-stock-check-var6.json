@@ -1,0 +1,29 @@
+{
+  "metadata": {
+    "id": "gen-error-stock-check-var6",
+    "domain": "tratamento_erro",
+    "language": "python",
+    "difficulty": "medium",
+    "tools_used": [
+      "write_file",
+      "checker"
+    ],
+    "num_steps": 2,
+    "task_type": "error_handling",
+    "source": "phrasing_variant_of:gen-error-stock-check",
+    "license": "synthetic-no-license-needed",
+    "validation_status": "validated",
+    "execution_performed": true,
+    "split": "train",
+    "checker_used": "checker-python-1.0",
+    "expected_result": {
+      "passed": true
+    },
+    "execution_classification": "tested"
+  },
+  "trajectory": {
+    "system_prompt": "Você é Praxis, um agente de engenharia de software. Raciocine em <think>, use <tool_call name=\"...\"> quando precisar de uma ferramenta, e responda ao usuário só dentro de <final>.",
+    "user_request": "Estou precisando de um erro customizado para quando o estoque não é suficiente.",
+    "raw_text": "<think>Vou tratar isso com cuidado: a exceção OutOfStockError e a função purchase(stock, item, quantity) precisa de uma exceção específica, não um catch genérico que esconderia outros bugs.</think><tool_call name=\"write_file\">{\"path\": \"stock_check.py\", \"content\": \"class OutOfStockError(Exception):\\n    pass\\n\\n\\ndef purchase(stock, item, quantity):\\n    try:\\n        available = stock[item]\\n    except KeyError:\\n        raise OutOfStockError(f'item nao encontrado no estoque: {item}') from None\\n    if quantity > available:\\n        raise OutOfStockError(\\n            f'estoque insuficiente para {item}: pedido {quantity}, disponivel {available}'\\n        )\\n    stock[item] -= quantity\\n    return stock[item]\\n\"}</tool_call><tool_result name=\"write_file\" status=\"ok\">{\"path\": \"stock_check.py\", \"bytes_written\": 439, \"mode\": \"overwrite\"}</tool_result><think>Antes de finalizar, preciso rodar a validação para confirmar que está tudo certo.</think><tool_call name=\"checker\">{\"language\": \"python\", \"operation\": \"compile_and_test\", \"files\": [{\"path\": \"stock_check.py\", \"content\": \"class OutOfStockError(Exception):\\n    pass\\n\\n\\ndef purchase(stock, item, quantity):\\n    try:\\n        available = stock[item]\\n    except KeyError:\\n        raise OutOfStockError(f'item nao encontrado no estoque: {item}') from None\\n    if quantity > available:\\n        raise OutOfStockError(\\n            f'estoque insuficiente para {item}: pedido {quantity}, disponivel {available}'\\n        )\\n    stock[item] -= quantity\\n    return stock[item]\\n\"}, {\"path\": \"test_stock_check.py\", \"content\": \"import pytest\\n\\nfrom stock_check import OutOfStockError, purchase\\n\\n\\ndef test_purchase():\\n    stock = {'caneta': 10}\\n    assert purchase(stock, 'caneta', 4) == 6\\n    with pytest.raises(OutOfStockError, match='insuficiente'):\\n        purchase(stock, 'caneta', 100)\\n    with pytest.raises(OutOfStockError, match='nao encontrado'):\\n        purchase(stock, 'lapis', 1)\\n\"}]}</tool_call><tool_result name=\"checker\" status=\"ok\">{\"passed\": true, \"errors\": [], \"stdout\": \".                                                                        [100%]\\n1 passed in 0.02s\\n\", \"stderr\": \"\", \"metadata\": {\"language\": \"python\", \"duration_ms\": 6030}}</tool_result><final>a exceção OutOfStockError e a função purchase(stock, item, quantity) está implementado com o tratamento de erro correto. Rodei a validação e confirmei que passa.</final>"
+  }
+}

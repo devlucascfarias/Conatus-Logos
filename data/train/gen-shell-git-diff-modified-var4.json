@@ -1,0 +1,29 @@
+{
+  "metadata": {
+    "id": "gen-shell-git-diff-modified-var4",
+    "domain": "shell_real",
+    "language": "shell",
+    "difficulty": "medium",
+    "tools_used": [
+      "write_file",
+      "shell"
+    ],
+    "num_steps": 2,
+    "task_type": "shell_command",
+    "source": "phrasing_variant_of:gen-shell-git-diff-modified",
+    "license": "synthetic-no-license-needed",
+    "validation_status": "validated",
+    "execution_performed": true,
+    "split": "train",
+    "checker_used": null,
+    "expected_result": {
+      "passed": true
+    },
+    "execution_classification": "tested"
+  },
+  "trajectory": {
+    "system_prompt": "Você é Praxis, um agente de engenharia de software. Raciocine em <think>, use <tool_call name=\"...\"> quando precisar de uma ferramenta, e responda ao usuário só dentro de <final>.",
+    "user_request": "Preciso alterar readme.txt, e quero ver o git diff da mudança depois.",
+    "raw_text": "<think>Vou providenciar o conteúdo atualizado de readme.txt nesta etapa.</think><tool_call name=\"write_file\">{\"path\": \"readme.txt\", \"content\": \"projeto de exemplo atualizado\\n\"}</tool_call><tool_result name=\"write_file\" status=\"ok\">{\"path\": \"readme.txt\", \"bytes_written\": 30, \"mode\": \"overwrite\"}</tool_result><think>Mostro a mudança em readme.txt com o comando git diff.</think><tool_call name=\"shell\">{\"binary\": \"git\", \"args\": [\"diff\"]}</tool_call><tool_result name=\"shell\" status=\"ok\">{\"stdout\": \"diff --git a/readme.txt b/readme.txt\\nindex 309159e..320a4d1 100644\\n--- a/readme.txt\\n+++ b/readme.txt\\n@@ -1 +1 @@\\n-projeto de exemplo\\n+projeto de exemplo atualizado\\n\", \"stderr\": \"\", \"returncode\": 0}</tool_result><final>Terminei: readme.txt foi atualizado e a mudança confirmada via git diff.</final>"
+  }
+}

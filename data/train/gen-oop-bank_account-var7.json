@@ -1,0 +1,29 @@
+{
+  "metadata": {
+    "id": "gen-oop-bank_account-var7",
+    "domain": "oop",
+    "language": "python",
+    "difficulty": "medium",
+    "tools_used": [
+      "write_file",
+      "checker"
+    ],
+    "num_steps": 2,
+    "task_type": "class_implementation",
+    "source": "phrasing_variant_of:gen-oop-bank_account",
+    "license": "synthetic-no-license-needed",
+    "validation_status": "validated",
+    "execution_performed": true,
+    "split": "train",
+    "checker_used": "checker-python-1.0",
+    "expected_result": {
+      "passed": true
+    },
+    "execution_classification": "tested"
+  },
+  "trajectory": {
+    "system_prompt": "Você é Praxis, um agente de engenharia de software. Raciocine em <think>, use <tool_call name=\"...\"> quando precisar de uma ferramenta, e responda ao usuário só dentro de <final>.",
+    "user_request": "Me ajuda com uma classe BankAccount que valide saldo antes do saque?",
+    "raw_text": "<think>depósito e saque com proteção contra saldo negativo é justamente o tipo de comportamento que pede uma classe com estado — vou implementar BankAccount assim.</think><tool_call name=\"write_file\">{\"path\": \"bank_account.py\", \"content\": \"class BankAccount:\\n    def __init__(self, initial_balance=0):\\n        self._balance = initial_balance\\n\\n    def deposit(self, amount):\\n        if amount <= 0:\\n            raise ValueError('deposito deve ser positivo')\\n        self._balance += amount\\n\\n    def withdraw(self, amount):\\n        if amount <= 0:\\n            raise ValueError('saque deve ser positivo')\\n        if amount > self._balance:\\n            raise ValueError('saldo insuficiente')\\n        self._balance -= amount\\n\\n    @property\\n    def balance(self):\\n        return self._balance\\n\"}</tool_call><tool_result name=\"write_file\" status=\"ok\">{\"path\": \"bank_account.py\", \"bytes_written\": 547, \"mode\": \"overwrite\"}</tool_result><think>Terminei a implementação; agora preciso validar antes de responder ao usuário.</think><tool_call name=\"checker\">{\"language\": \"python\", \"operation\": \"compile_and_test\", \"files\": [{\"path\": \"bank_account.py\", \"content\": \"class BankAccount:\\n    def __init__(self, initial_balance=0):\\n        self._balance = initial_balance\\n\\n    def deposit(self, amount):\\n        if amount <= 0:\\n            raise ValueError('deposito deve ser positivo')\\n        self._balance += amount\\n\\n    def withdraw(self, amount):\\n        if amount <= 0:\\n            raise ValueError('saque deve ser positivo')\\n        if amount > self._balance:\\n            raise ValueError('saldo insuficiente')\\n        self._balance -= amount\\n\\n    @property\\n    def balance(self):\\n        return self._balance\\n\"}, {\"path\": \"test_bank_account.py\", \"content\": \"import pytest\\n\\nfrom bank_account import BankAccount\\n\\n\\ndef test_bank_account():\\n    acc = BankAccount(100)\\n    acc.deposit(50)\\n    assert acc.balance == 150\\n    acc.withdraw(30)\\n    assert acc.balance == 120\\n    with pytest.raises(ValueError):\\n        acc.withdraw(1000)\\n    with pytest.raises(ValueError):\\n        acc.deposit(-10)\\n\"}]}</tool_call><tool_result name=\"checker\" status=\"ok\">{\"passed\": true, \"errors\": [], \"stdout\": \".                                                                        [100%]\\n1 passed in 0.02s\\n\", \"stderr\": \"\", \"metadata\": {\"language\": \"python\", \"duration_ms\": 2875}}</tool_result><final>Pronto: BankAccount implementada como classe, cobrindo depósito e saque com proteção contra saldo negativo, e já validada com sucesso.</final>"
+  }
+}

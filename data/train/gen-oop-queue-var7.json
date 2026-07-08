@@ -1,0 +1,29 @@
+{
+  "metadata": {
+    "id": "gen-oop-queue-var7",
+    "domain": "oop",
+    "language": "python",
+    "difficulty": "easy",
+    "tools_used": [
+      "write_file",
+      "checker"
+    ],
+    "num_steps": 2,
+    "task_type": "class_implementation",
+    "source": "phrasing_variant_of:gen-oop-queue",
+    "license": "synthetic-no-license-needed",
+    "validation_status": "validated",
+    "execution_performed": true,
+    "split": "train",
+    "checker_used": "checker-python-1.0",
+    "expected_result": {
+      "passed": true
+    },
+    "execution_classification": "tested"
+  },
+  "trajectory": {
+    "system_prompt": "Você é Praxis, um agente de engenharia de software. Raciocine em <think>, use <tool_call name=\"...\"> quando precisar de uma ferramenta, e responda ao usuário só dentro de <final>.",
+    "user_request": "Me ajuda com uma classe Queue que tenha enqueue, dequeue e is_empty?",
+    "raw_text": "<think>enqueue, dequeue e is_empty de uma fila é justamente o tipo de comportamento que pede uma classe com estado — vou implementar Queue assim.</think><tool_call name=\"write_file\">{\"path\": \"queue_.py\", \"content\": \"class Queue:\\n    def __init__(self):\\n        self._items = []\\n\\n    def enqueue(self, item):\\n        self._items.append(item)\\n\\n    def dequeue(self):\\n        if self.is_empty():\\n            raise IndexError('dequeue em fila vazia')\\n        return self._items.pop(0)\\n\\n    def is_empty(self):\\n        return len(self._items) == 0\\n\"}</tool_call><tool_result name=\"write_file\" status=\"ok\">{\"path\": \"queue_.py\", \"bytes_written\": 327, \"mode\": \"overwrite\"}</tool_result><think>Terminei a implementação; agora preciso validar antes de responder ao usuário.</think><tool_call name=\"checker\">{\"language\": \"python\", \"operation\": \"compile_and_test\", \"files\": [{\"path\": \"queue_.py\", \"content\": \"class Queue:\\n    def __init__(self):\\n        self._items = []\\n\\n    def enqueue(self, item):\\n        self._items.append(item)\\n\\n    def dequeue(self):\\n        if self.is_empty():\\n            raise IndexError('dequeue em fila vazia')\\n        return self._items.pop(0)\\n\\n    def is_empty(self):\\n        return len(self._items) == 0\\n\"}, {\"path\": \"test_queue_.py\", \"content\": \"import pytest\\n\\nfrom queue_ import Queue\\n\\n\\ndef test_queue():\\n    q = Queue()\\n    assert q.is_empty() is True\\n    q.enqueue('a')\\n    q.enqueue('b')\\n    assert q.dequeue() == 'a'\\n    assert q.dequeue() == 'b'\\n    with pytest.raises(IndexError):\\n        q.dequeue()\\n\"}]}</tool_call><tool_result name=\"checker\" status=\"ok\">{\"passed\": true, \"errors\": [], \"stdout\": \".                                                                        [100%]\\n1 passed in 0.02s\\n\", \"stderr\": \"\", \"metadata\": {\"language\": \"python\", \"duration_ms\": 2828}}</tool_result><final>Pronto: Queue implementada como classe, cobrindo enqueue, dequeue e is_empty de uma fila, e já validada com sucesso.</final>"
+  }
+}

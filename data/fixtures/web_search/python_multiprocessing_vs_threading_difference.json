@@ -1,0 +1,12 @@
+[
+  {
+    "title": "Difference Between Multithreading vs Multiprocessing in Python - GeeksforGeeks",
+    "url": "https://www.geeksforgeeks.org/python/difference-between-multithreading-vs-multiprocessing-in-python/",
+    "snippet": "Due to Python's Global Interpreter Lock (GIL), only one thread executes Python bytecode at a time, so multithreading gives concurrency but not parallelism for CPU-bound work. Each process has its own GIL, avoiding this limitation."
+  },
+  {
+    "title": "Multithreading VS Multiprocessing in Python - Contentsquare Engineering",
+    "url": "https://medium.com/contentsquare-engineering-blog/multithreading-vs-multiprocessing-in-python-ece023ad55a",
+    "snippet": "Threading is best for I/O-bound work (network, disk) since threads can run concurrently while waiting on I/O; multiprocessing is best for CPU-bound work since each process gets its own interpreter and core."
+  }
+]

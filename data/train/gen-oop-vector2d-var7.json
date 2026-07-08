@@ -1,0 +1,29 @@
+{
+  "metadata": {
+    "id": "gen-oop-vector2d-var7",
+    "domain": "oop",
+    "language": "python",
+    "difficulty": "medium",
+    "tools_used": [
+      "write_file",
+      "checker"
+    ],
+    "num_steps": 2,
+    "task_type": "class_implementation",
+    "source": "phrasing_variant_of:gen-oop-vector2d",
+    "license": "synthetic-no-license-needed",
+    "validation_status": "validated",
+    "execution_performed": true,
+    "split": "train",
+    "checker_used": "checker-python-1.0",
+    "expected_result": {
+      "passed": true
+    },
+    "execution_classification": "tested"
+  },
+  "trajectory": {
+    "system_prompt": "Você é Praxis, um agente de engenharia de software. Raciocine em <think>, use <tool_call name=\"...\"> quando precisar de uma ferramenta, e responda ao usuário só dentro de <final>.",
+    "user_request": "Me ajuda com uma classe de vetor 2D que use __add__ e __sub__?",
+    "raw_text": "<think>soma e subtração via operadores, além de magnitude é justamente o tipo de comportamento que pede uma classe com estado — vou implementar Vector2D assim.</think><tool_call name=\"write_file\">{\"path\": \"vector2d.py\", \"content\": \"import math\\n\\n\\nclass Vector2D:\\n    def __init__(self, x, y):\\n        self.x = x\\n        self.y = y\\n\\n    def __add__(self, other):\\n        return Vector2D(self.x + other.x, self.y + other.y)\\n\\n    def __sub__(self, other):\\n        return Vector2D(self.x - other.x, self.y - other.y)\\n\\n    def magnitude(self):\\n        return math.sqrt(self.x ** 2 + self.y ** 2)\\n\"}</tool_call><tool_result name=\"write_file\" status=\"ok\">{\"path\": \"vector2d.py\", \"bytes_written\": 358, \"mode\": \"overwrite\"}</tool_result><think>Terminei a implementação; agora preciso validar antes de responder ao usuário.</think><tool_call name=\"checker\">{\"language\": \"python\", \"operation\": \"compile_and_test\", \"files\": [{\"path\": \"vector2d.py\", \"content\": \"import math\\n\\n\\nclass Vector2D:\\n    def __init__(self, x, y):\\n        self.x = x\\n        self.y = y\\n\\n    def __add__(self, other):\\n        return Vector2D(self.x + other.x, self.y + other.y)\\n\\n    def __sub__(self, other):\\n        return Vector2D(self.x - other.x, self.y - other.y)\\n\\n    def magnitude(self):\\n        return math.sqrt(self.x ** 2 + self.y ** 2)\\n\"}, {\"path\": \"test_vector2d.py\", \"content\": \"from vector2d import Vector2D\\n\\n\\ndef test_vector2d():\\n    v1 = Vector2D(1, 2)\\n    v2 = Vector2D(3, 4)\\n    result = v1 + v2\\n    assert (result.x, result.y) == (4, 6)\\n    diff = v2 - v1\\n    assert (diff.x, diff.y) == (2, 2)\\n    assert abs(Vector2D(3, 4).magnitude() - 5.0) < 1e-9\\n\"}]}</tool_call><tool_result name=\"checker\" status=\"ok\">{\"passed\": true, \"errors\": [], \"stdout\": \".                                                                        [100%]\\n1 passed in 0.02s\\n\", \"stderr\": \"\", \"metadata\": {\"language\": \"python\", \"duration_ms\": 4031}}</tool_result><final>Pronto: Vector2D implementada como classe, cobrindo soma e subtração via operadores, além de magnitude, e já validada com sucesso.</final>"
+  }
+}

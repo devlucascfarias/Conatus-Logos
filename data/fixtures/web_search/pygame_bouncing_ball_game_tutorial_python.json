@@ -1,0 +1,12 @@
+[
+  {
+    "title": "PythonInformer - Bouncing ball in pygame",
+    "url": "https://www.pythoninformer.com/python-libraries/pygame/bouncing-ball/",
+    "snippet": "Creates a Ball class with velocity [5, 5] and uses an update method to check screen boundaries and reverse velocity when hitting edges."
+  },
+  {
+    "title": "Stimulate bouncing game using Pygame - GeeksforGeeks",
+    "url": "https://www.geeksforgeeks.org/python/stimulate-bouncing-game-using-pygame/",
+    "snippet": "Demonstrates checking if the ball goes out of the screen and changing the movement direction accordingly inside the main game loop."
+  }
+]

@@ -1,0 +1,30 @@
+{
+  "metadata": {
+    "id": "gen-shell-grep-recursive-todo-var3",
+    "domain": "shell_real",
+    "language": "shell",
+    "difficulty": "medium",
+    "tools_used": [
+      "write_file",
+      "write_file",
+      "shell"
+    ],
+    "num_steps": 3,
+    "task_type": "shell_command",
+    "source": "phrasing_variant_of:gen-shell-grep-recursive-todo",
+    "license": "synthetic-no-license-needed",
+    "validation_status": "validated",
+    "execution_performed": true,
+    "split": "train",
+    "checker_used": null,
+    "expected_result": {
+      "passed": true
+    },
+    "execution_classification": "tested"
+  },
+  "trajectory": {
+    "system_prompt": "Você é Praxis, um agente de engenharia de software. Raciocine em <think>, use <tool_call name=\"...\"> quando precisar de uma ferramenta, e responda ao usuário só dentro de <final>.",
+    "user_request": "Quero dois TODOs criados e encontrados via grep -r.",
+    "raw_text": "<think>Primeiro, vou gerar o primeiro TODO pendente (module_a.py).</think><tool_call name=\"write_file\">{\"path\": \"module_a.py\", \"content\": \"# TODO: validar entrada do usuario\\ndef process(x):\\n    return x\\n\"}</tool_call><tool_result name=\"write_file\" status=\"ok\">{\"path\": \"module_a.py\", \"bytes_written\": 64, \"mode\": \"overwrite\"}</tool_result><think>Vou providenciar o segundo TODO pendente (module_b.py) nesta etapa.</think><tool_call name=\"write_file\">{\"path\": \"module_b.py\", \"content\": \"# TODO: adicionar cache\\ndef fetch(key):\\n    return key\\n\"}</tool_call><tool_result name=\"write_file\" status=\"ok\">{\"path\": \"module_b.py\", \"bytes_written\": 55, \"mode\": \"overwrite\"}</tool_result><think>Uso busca recursiva para encontrar todos os TODOs do projeto de uma vez de uma vez.</think><tool_call name=\"shell\">{\"binary\": \"grep\", \"args\": [\"-r\", \"TODO\", \".\"]}</tool_call><tool_result name=\"shell\" status=\"ok\">{\"stdout\": \"./module_a.py:# TODO: validar entrada do usuario\\n./module_b.py:# TODO: adicionar cache\\n\", \"stderr\": \"\", \"returncode\": 0}</tool_result><final>dois TODOs foram criados e encontrados de uma vez com grep recursivo, como pedido.</final>"
+  }
+}

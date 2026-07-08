@@ -1,0 +1,29 @@
+{
+  "metadata": {
+    "id": "gen-pattern-timer-contextmanager-var2",
+    "domain": "python_patterns",
+    "language": "python",
+    "difficulty": "medium",
+    "tools_used": [
+      "write_file",
+      "checker"
+    ],
+    "num_steps": 2,
+    "task_type": "python_pattern",
+    "source": "phrasing_variant_of:gen-pattern-timer-contextmanager",
+    "license": "synthetic-no-license-needed",
+    "validation_status": "validated",
+    "execution_performed": true,
+    "split": "train",
+    "checker_used": "checker-python-1.0",
+    "expected_result": {
+      "passed": true
+    },
+    "execution_classification": "tested"
+  },
+  "trajectory": {
+    "system_prompt": "Você é Praxis, um agente de engenharia de software. Raciocine em <think>, use <tool_call name=\"...\"> quando precisar de uma ferramenta, e responda ao usuário só dentro de <final>.",
+    "user_request": "Pode implementar um Timer que aceite uma fonte de tempo customizada?",
+    "raw_text": "<think>Para Timer, com relógio injetável para testes determinísticos, um context manager baseado em classe é a ferramenta certa da linguagem — vou modelar assim.</think><tool_call name=\"write_file\">{\"path\": \"timer_contextmanager.py\", \"content\": \"import time as _time\\n\\n\\nclass Timer:\\n    def __init__(self, clock=None):\\n        self._clock = clock or _time.perf_counter\\n        self.elapsed = None\\n\\n    def __enter__(self):\\n        self._start = self._clock()\\n        return self\\n\\n    def __exit__(self, exc_type, exc_val, exc_tb):\\n        self.elapsed = self._clock() - self._start\\n        return False\\n\"}</tool_call><tool_result name=\"write_file\" status=\"ok\">{\"path\": \"timer_contextmanager.py\", \"bytes_written\": 356, \"mode\": \"overwrite\"}</tool_result><think>Pronto o código com um context manager baseado em classe; falta rodar a validação antes de responder.</think><tool_call name=\"checker\">{\"language\": \"python\", \"operation\": \"compile_and_test\", \"files\": [{\"path\": \"timer_contextmanager.py\", \"content\": \"import time as _time\\n\\n\\nclass Timer:\\n    def __init__(self, clock=None):\\n        self._clock = clock or _time.perf_counter\\n        self.elapsed = None\\n\\n    def __enter__(self):\\n        self._start = self._clock()\\n        return self\\n\\n    def __exit__(self, exc_type, exc_val, exc_tb):\\n        self.elapsed = self._clock() - self._start\\n        return False\\n\"}, {\"path\": \"test_timer_contextmanager.py\", \"content\": \"from timer_contextmanager import Timer\\n\\n\\ndef test_timer_with_fake_clock():\\n    values = iter([10.0, 15.0])\\n    with Timer(clock=lambda: next(values)) as t:\\n        pass\\n    assert t.elapsed == 5.0\\n\"}]}</tool_call><tool_result name=\"checker\" status=\"ok\">{\"passed\": true, \"errors\": [], \"stdout\": \".                                                                        [100%]\\n1 passed in 0.02s\\n\", \"stderr\": \"\", \"metadata\": {\"language\": \"python\", \"duration_ms\": 3250}}</tool_result><final>Cobri Timer, com relógio injetável para testes determinísticos com um context manager baseado em classe, e a validação passou sem problemas.</final>"
+  }
+}

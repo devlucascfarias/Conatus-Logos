@@ -1,0 +1,12 @@
+[
+  {
+    "title": "Python - Regex Lookahead - GeeksforGeeks",
+    "url": "https://www.geeksforgeeks.org/python/python-regex-lookahead/",
+    "snippet": "Positive lookahead uses the syntax (?=pattern) and matches X only if followed by Y, without consuming Y. Negative lookahead (?!pattern) matches X only if NOT followed by Y. Both are zero-width assertions."
+  },
+  {
+    "title": "re - Regular expression operations - Python 3.14.6 documentation",
+    "url": "https://docs.python.org/3/library/re.html",
+    "snippet": "Lookahead assertions do not consume characters in the string being matched; they only assert whether a match is possible at the current position."
+  }
+]

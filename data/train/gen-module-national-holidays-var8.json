@@ -1,0 +1,29 @@
+{
+  "metadata": {
+    "id": "gen-module-national-holidays-var8",
+    "domain": "modulos_realistas",
+    "language": "python",
+    "difficulty": "medium",
+    "tools_used": [
+      "write_file",
+      "checker"
+    ],
+    "num_steps": 2,
+    "task_type": "realistic_module",
+    "source": "phrasing_variant_of:gen-module-national-holidays",
+    "license": "synthetic-no-license-needed",
+    "validation_status": "validated",
+    "execution_performed": true,
+    "split": "train",
+    "checker_used": "checker-python-1.0",
+    "expected_result": {
+      "passed": true
+    },
+    "execution_classification": "tested"
+  },
+  "trajectory": {
+    "system_prompt": "Você é Praxis, um agente de engenharia de software. Raciocine em <think>, use <tool_call name=\"...\"> quando precisar de uma ferramenta, e responda ao usuário só dentro de <final>.",
+    "user_request": "Um módulo de feriados nacionais, por favor, cobrindo as datas fixas.",
+    "raw_text": "<think>Vou escrever o módulo national_holidays com is_national_holiday e holiday_name pensando no caso de uso real, não só no caminho feliz.</think><tool_call name=\"write_file\">{\"path\": \"national_holidays.py\", \"content\": \"_FIXED_HOLIDAYS = {\\n    (1, 1): 'Confraternizacao Universal',\\n    (4, 21): 'Tiradentes',\\n    (5, 1): 'Dia do Trabalho',\\n    (9, 7): 'Independencia do Brasil',\\n    (10, 12): 'Nossa Senhora Aparecida',\\n    (11, 2): 'Finados',\\n    (11, 15): 'Proclamacao da Republica',\\n    (12, 25): 'Natal',\\n}\\n\\n\\ndef is_national_holiday(day, month):\\n    return (month, day) in _FIXED_HOLIDAYS\\n\\n\\ndef holiday_name(day, month):\\n    return _FIXED_HOLIDAYS.get((month, day))\\n\"}</tool_call><tool_result name=\"write_file\" status=\"ok\">{\"path\": \"national_holidays.py\", \"bytes_written\": 450, \"mode\": \"overwrite\"}</tool_result><think>Só falta validar o código antes de considerar a tarefa concluída.</think><tool_call name=\"checker\">{\"language\": \"python\", \"operation\": \"compile_and_test\", \"files\": [{\"path\": \"national_holidays.py\", \"content\": \"_FIXED_HOLIDAYS = {\\n    (1, 1): 'Confraternizacao Universal',\\n    (4, 21): 'Tiradentes',\\n    (5, 1): 'Dia do Trabalho',\\n    (9, 7): 'Independencia do Brasil',\\n    (10, 12): 'Nossa Senhora Aparecida',\\n    (11, 2): 'Finados',\\n    (11, 15): 'Proclamacao da Republica',\\n    (12, 25): 'Natal',\\n}\\n\\n\\ndef is_national_holiday(day, month):\\n    return (month, day) in _FIXED_HOLIDAYS\\n\\n\\ndef holiday_name(day, month):\\n    return _FIXED_HOLIDAYS.get((month, day))\\n\"}, {\"path\": \"test_national_holidays.py\", \"content\": \"from national_holidays import is_national_holiday, holiday_name\\n\\n\\ndef test_national_holidays():\\n    assert is_national_holiday(7, 9) is True\\n    assert holiday_name(7, 9) == 'Independencia do Brasil'\\n    assert is_national_holiday(3, 6) is False\\n    assert holiday_name(3, 6) is None\\n\"}]}</tool_call><tool_result name=\"checker\" status=\"ok\">{\"passed\": true, \"errors\": [], \"stdout\": \".                                                                        [100%]\\n1 passed in 0.02s\\n\", \"stderr\": \"\", \"metadata\": {\"language\": \"python\", \"duration_ms\": 3015}}</tool_result><final>Implementei o módulo national_holidays com is_national_holiday e holiday_name. A validação passou sem erros.</final>"
+  }
+}

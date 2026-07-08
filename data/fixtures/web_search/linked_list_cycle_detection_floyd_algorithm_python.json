@@ -1,0 +1,12 @@
+[
+  {
+    "title": "Floyd's Cycle Detection Algorithm - Medium",
+    "url": "https://yuminlee2.medium.com/floyds-cycle-detection-algorithm-b27ed50c607f",
+    "snippet": "Two pointers (slow and fast) start at the head. Slow moves one step at a time, fast moves two steps. If there is a cycle, fast eventually catches up to slow; if there is no cycle, fast reaches the end (None) first."
+  },
+  {
+    "title": "Detect cycle in a linked list (Floyd's Cycle Detection Algorithm) - TechieDelight",
+    "url": "https://www.techiedelight.com/detect-cycle-linked-list-floyds-cycle-detection-algorithm/",
+    "snippet": "The algorithm runs in O(n) time and O(1) space, making it more efficient than using a visited-set to track seen nodes."
+  }
+]

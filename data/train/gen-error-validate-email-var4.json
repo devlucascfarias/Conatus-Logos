@@ -1,0 +1,29 @@
+{
+  "metadata": {
+    "id": "gen-error-validate-email-var4",
+    "domain": "tratamento_erro",
+    "language": "python",
+    "difficulty": "medium",
+    "tools_used": [
+      "write_file",
+      "checker"
+    ],
+    "num_steps": 2,
+    "task_type": "error_handling",
+    "source": "phrasing_variant_of:gen-error-validate-email",
+    "license": "synthetic-no-license-needed",
+    "validation_status": "validated",
+    "execution_performed": true,
+    "split": "train",
+    "checker_used": "checker-python-1.0",
+    "expected_result": {
+      "passed": true
+    },
+    "execution_classification": "tested"
+  },
+  "trajectory": {
+    "system_prompt": "Você é Praxis, um agente de engenharia de software. Raciocine em <think>, use <tool_call name=\"...\"> quando precisar de uma ferramenta, e responda ao usuário só dentro de <final>.",
+    "user_request": "Implementa uma validação de e-mail que cheque @ e domínio separadamente.",
+    "raw_text": "<think>Aqui o ponto central é o tratamento de erro — vou implementar validate_email(email), com mensagens específicas para cada formato inválido garantindo que a exceção certa seja capturada ou levantada.</think><tool_call name=\"write_file\">{\"path\": \"validate_email.py\", \"content\": \"def validate_email(email):\\n    if '@' not in email:\\n        raise ValueError('e-mail sem @')\\n    local, _, domain = email.partition('@')\\n    if not local or not domain:\\n        raise ValueError('e-mail com parte local ou dominio vazio')\\n    if '.' not in domain:\\n        raise ValueError('dominio do e-mail sem ponto')\\n    return email\\n\"}</tool_call><tool_result name=\"write_file\" status=\"ok\">{\"path\": \"validate_email.py\", \"bytes_written\": 336, \"mode\": \"overwrite\"}</tool_result><think>Falta só confirmar que o comportamento de erro está correto antes de responder.</think><tool_call name=\"checker\">{\"language\": \"python\", \"operation\": \"compile_and_test\", \"files\": [{\"path\": \"validate_email.py\", \"content\": \"def validate_email(email):\\n    if '@' not in email:\\n        raise ValueError('e-mail sem @')\\n    local, _, domain = email.partition('@')\\n    if not local or not domain:\\n        raise ValueError('e-mail com parte local ou dominio vazio')\\n    if '.' not in domain:\\n        raise ValueError('dominio do e-mail sem ponto')\\n    return email\\n\"}, {\"path\": \"test_validate_email.py\", \"content\": \"import pytest\\n\\nfrom validate_email import validate_email\\n\\n\\ndef test_validate_email():\\n    assert validate_email('ana@exemplo.com') == 'ana@exemplo.com'\\n    with pytest.raises(ValueError, match='@'):\\n        validate_email('semarroba.com')\\n    with pytest.raises(ValueError, match='ponto'):\\n        validate_email('ana@exemplocom')\\n\"}]}</tool_call><tool_result name=\"checker\" status=\"ok\">{\"passed\": true, \"errors\": [], \"stdout\": \".                                                                        [100%]\\n1 passed in 0.02s\\n\", \"stderr\": \"\", \"metadata\": {\"language\": \"python\", \"duration_ms\": 6109}}</tool_result><final>Implementei validate_email(email), com mensagens específicas para cada formato inválido, com o tratamento de erro correto. A checagem confirma que está tudo funcionando.</final>"
+  }
+}

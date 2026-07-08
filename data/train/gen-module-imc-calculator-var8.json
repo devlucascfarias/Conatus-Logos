@@ -1,0 +1,29 @@
+{
+  "metadata": {
+    "id": "gen-module-imc-calculator-var8",
+    "domain": "modulos_realistas",
+    "language": "python",
+    "difficulty": "easy",
+    "tools_used": [
+      "write_file",
+      "checker"
+    ],
+    "num_steps": 2,
+    "task_type": "realistic_module",
+    "source": "phrasing_variant_of:gen-module-imc-calculator",
+    "license": "synthetic-no-license-needed",
+    "validation_status": "validated",
+    "execution_performed": true,
+    "split": "train",
+    "checker_used": "checker-python-1.0",
+    "expected_result": {
+      "passed": true
+    },
+    "execution_classification": "tested"
+  },
+  "trajectory": {
+    "system_prompt": "Você é Praxis, um agente de engenharia de software. Raciocine em <think>, use <tool_call name=\"...\"> quando precisar de uma ferramenta, e responda ao usuário só dentro de <final>.",
+    "user_request": "Um módulo de IMC, por favor, com cálculo e classificação separados.",
+    "raw_text": "<think>Vou escrever o módulo imc_calculator com calculate_imc e classify_imc pensando no caso de uso real, não só no caminho feliz.</think><tool_call name=\"write_file\">{\"path\": \"imc_calculator.py\", \"content\": \"def calculate_imc(weight_kg, height_m):\\n    return weight_kg / (height_m ** 2)\\n\\n\\ndef classify_imc(imc):\\n    if imc < 18.5:\\n        return 'abaixo do peso'\\n    if imc < 25:\\n        return 'peso normal'\\n    if imc < 30:\\n        return 'sobrepeso'\\n    return 'obesidade'\\n\"}</tool_call><tool_result name=\"write_file\" status=\"ok\">{\"path\": \"imc_calculator.py\", \"bytes_written\": 268, \"mode\": \"overwrite\"}</tool_result><think>Só falta validar o código antes de considerar a tarefa concluída.</think><tool_call name=\"checker\">{\"language\": \"python\", \"operation\": \"compile_and_test\", \"files\": [{\"path\": \"imc_calculator.py\", \"content\": \"def calculate_imc(weight_kg, height_m):\\n    return weight_kg / (height_m ** 2)\\n\\n\\ndef classify_imc(imc):\\n    if imc < 18.5:\\n        return 'abaixo do peso'\\n    if imc < 25:\\n        return 'peso normal'\\n    if imc < 30:\\n        return 'sobrepeso'\\n    return 'obesidade'\\n\"}, {\"path\": \"test_imc_calculator.py\", \"content\": \"from imc_calculator import calculate_imc, classify_imc\\n\\n\\ndef test_imc_calculator():\\n    imc = calculate_imc(70, 1.75)\\n    assert abs(imc - 22.857142857142858) < 1e-9\\n    assert classify_imc(imc) == 'peso normal'\\n    assert classify_imc(17) == 'abaixo do peso'\\n    assert classify_imc(32) == 'obesidade'\\n\"}]}</tool_call><tool_result name=\"checker\" status=\"ok\">{\"passed\": true, \"errors\": [], \"stdout\": \".                                                                        [100%]\\n1 passed in 0.02s\\n\", \"stderr\": \"\", \"metadata\": {\"language\": \"python\", \"duration_ms\": 4000}}</tool_result><final>Implementei o módulo imc_calculator com calculate_imc e classify_imc. A validação passou sem erros.</final>"
+  }
+}

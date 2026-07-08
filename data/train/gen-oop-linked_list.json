@@ -1,0 +1,29 @@
+{
+  "metadata": {
+    "id": "gen-oop-linked_list",
+    "domain": "oop",
+    "language": "python",
+    "difficulty": "medium",
+    "tools_used": [
+      "write_file",
+      "checker"
+    ],
+    "num_steps": 2,
+    "task_type": "class_implementation",
+    "source": "curated_manual_real_execution",
+    "license": "synthetic-no-license-needed",
+    "validation_status": "validated",
+    "execution_performed": true,
+    "split": "train",
+    "checker_used": "checker-python-1.0",
+    "expected_result": {
+      "passed": true
+    },
+    "execution_classification": "tested"
+  },
+  "trajectory": {
+    "system_prompt": "Você é Praxis, um agente de engenharia de software. Raciocine em <think>, use <tool_call name=\"...\"> quando precisar de uma ferramenta, e responda ao usuário só dentro de <final>.",
+    "user_request": "Implemente uma lista encadeada simples em Python com append, prepend e conversão para lista Python.",
+    "raw_text": "<think>Preciso de duas classes: Node (guarda valor e próximo) e LinkedList (guarda a cabeça e implementa append/prepend/to_list percorrendo os nós).</think><tool_call name=\"write_file\">{\"path\": \"linked_list.py\", \"content\": \"class Node:\\n    def __init__(self, value):\\n        self.value = value\\n        self.next = None\\n\\n\\nclass LinkedList:\\n    def __init__(self):\\n        self.head = None\\n\\n    def append(self, value):\\n        node = Node(value)\\n        if self.head is None:\\n            self.head = node\\n            return\\n        current = self.head\\n        while current.next is not None:\\n            current = current.next\\n        current.next = node\\n\\n    def prepend(self, value):\\n        node = Node(value)\\n        node.next = self.head\\n        self.head = node\\n\\n    def to_list(self):\\n        result = []\\n        current = self.head\\n        while current is not None:\\n            result.append(current.value)\\n            current = current.next\\n        return result\\n\"}</tool_call><tool_result name=\"write_file\" status=\"ok\">{\"path\": \"linked_list.py\", \"bytes_written\": 748, \"mode\": \"overwrite\"}</tool_result><think>Node e LinkedList com append, prepend e to_list estão prontos. Vou validar.</think><tool_call name=\"checker\">{\"language\": \"python\", \"operation\": \"compile_and_test\", \"files\": [{\"path\": \"linked_list.py\", \"content\": \"class Node:\\n    def __init__(self, value):\\n        self.value = value\\n        self.next = None\\n\\n\\nclass LinkedList:\\n    def __init__(self):\\n        self.head = None\\n\\n    def append(self, value):\\n        node = Node(value)\\n        if self.head is None:\\n            self.head = node\\n            return\\n        current = self.head\\n        while current.next is not None:\\n            current = current.next\\n        current.next = node\\n\\n    def prepend(self, value):\\n        node = Node(value)\\n        node.next = self.head\\n        self.head = node\\n\\n    def to_list(self):\\n        result = []\\n        current = self.head\\n        while current is not None:\\n            result.append(current.value)\\n            current = current.next\\n        return result\\n\"}, {\"path\": \"test_linked_list.py\", \"content\": \"from linked_list import LinkedList\\n\\n\\ndef test_linked_list():\\n    ll = LinkedList()\\n    ll.append(1)\\n    ll.append(2)\\n    ll.prepend(0)\\n    assert ll.to_list() == [0, 1, 2]\\n\"}]}</tool_call><tool_result name=\"checker\" status=\"ok\">{\"passed\": true, \"errors\": [], \"stdout\": \".                                                                        [100%]\\n1 passed in 0.02s\\n\", \"stderr\": \"\", \"metadata\": {\"language\": \"python\", \"duration_ms\": 3140}}</tool_result><final>Implementei Node e LinkedList com append, prepend e to_list. A validação confirma que compila e o teste passa.</final>"
+  }
+}

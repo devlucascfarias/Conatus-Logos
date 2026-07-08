@@ -1,0 +1,29 @@
+{
+  "metadata": {
+    "id": "gen-module-user-registry-var4",
+    "domain": "modulos_realistas",
+    "language": "python",
+    "difficulty": "medium",
+    "tools_used": [
+      "write_file",
+      "checker"
+    ],
+    "num_steps": 2,
+    "task_type": "realistic_module",
+    "source": "phrasing_variant_of:gen-module-user-registry",
+    "license": "synthetic-no-license-needed",
+    "validation_status": "validated",
+    "execution_performed": true,
+    "split": "train",
+    "checker_used": "checker-python-1.0",
+    "expected_result": {
+      "passed": true
+    },
+    "execution_classification": "tested"
+  },
+  "trajectory": {
+    "system_prompt": "Você é Praxis, um agente de engenharia de software. Raciocine em <think>, use <tool_call name=\"...\"> quando precisar de uma ferramenta, e responda ao usuário só dentro de <final>.",
+    "user_request": "Implementa um cadastro simples de usuários em Python.",
+    "raw_text": "<think>o módulo user_registry com register_user e find_user_by_email é o tipo de tarefa de engenharia com múltiplas funções relacionadas — vou implementar dessa forma.</think><tool_call name=\"write_file\">{\"path\": \"user_registry.py\", \"content\": \"def register_user(registry, name, email):\\n    if any(user['email'] == email for user in registry):\\n        raise ValueError(f'email ja cadastrado: {email}')\\n    user = {'name': name, 'email': email}\\n    registry.append(user)\\n    return user\\n\\n\\ndef find_user_by_email(registry, email):\\n    for user in registry:\\n        if user['email'] == email:\\n            return user\\n    return None\\n\"}</tool_call><tool_result name=\"write_file\" status=\"ok\">{\"path\": \"user_registry.py\", \"bytes_written\": 385, \"mode\": \"overwrite\"}</tool_result><think>Falta só confirmar que o código está correto antes de responder ao usuário.</think><tool_call name=\"checker\">{\"language\": \"python\", \"operation\": \"compile_and_test\", \"files\": [{\"path\": \"user_registry.py\", \"content\": \"def register_user(registry, name, email):\\n    if any(user['email'] == email for user in registry):\\n        raise ValueError(f'email ja cadastrado: {email}')\\n    user = {'name': name, 'email': email}\\n    registry.append(user)\\n    return user\\n\\n\\ndef find_user_by_email(registry, email):\\n    for user in registry:\\n        if user['email'] == email:\\n            return user\\n    return None\\n\"}, {\"path\": \"test_user_registry.py\", \"content\": \"import pytest\\n\\nfrom user_registry import register_user, find_user_by_email\\n\\n\\ndef test_user_registry():\\n    registry = []\\n    register_user(registry, 'Ana', 'ana@exemplo.com')\\n    assert find_user_by_email(registry, 'ana@exemplo.com')['name'] == 'Ana'\\n    assert find_user_by_email(registry, 'inexistente@exemplo.com') is None\\n    with pytest.raises(ValueError):\\n        register_user(registry, 'Outra Ana', 'ana@exemplo.com')\\n\"}]}</tool_call><tool_result name=\"checker\" status=\"ok\">{\"passed\": true, \"errors\": [], \"stdout\": \".                                                                        [100%]\\n1 passed in 0.02s\\n\", \"stderr\": \"\", \"metadata\": {\"language\": \"python\", \"duration_ms\": 3077}}</tool_result><final>o módulo user_registry com register_user e find_user_by_email está implementado. A checagem confirma que está tudo funcionando.</final>"
+  }
+}

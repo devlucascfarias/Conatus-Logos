@@ -1,0 +1,29 @@
+{
+  "metadata": {
+    "id": "gen-module-phone-formatter-var2",
+    "domain": "modulos_realistas",
+    "language": "python",
+    "difficulty": "medium",
+    "tools_used": [
+      "write_file",
+      "checker"
+    ],
+    "num_steps": 2,
+    "task_type": "realistic_module",
+    "source": "phrasing_variant_of:gen-module-phone-formatter",
+    "license": "synthetic-no-license-needed",
+    "validation_status": "validated",
+    "execution_performed": true,
+    "split": "train",
+    "checker_used": "checker-python-1.0",
+    "expected_result": {
+      "passed": true
+    },
+    "execution_classification": "tested"
+  },
+  "trajectory": {
+    "system_prompt": "Você é Praxis, um agente de engenharia de software. Raciocine em <think>, use <tool_call name=\"...\"> quando precisar de uma ferramenta, e responda ao usuário só dentro de <final>.",
+    "user_request": "Pode implementar uma formatação de telefone que valide a quantidade de dígitos?",
+    "raw_text": "<think>Para format_phone(digits), no padrão brasileiro (DD) 9XXXX-XXXX, o mais direto é um módulo com as funções relacionadas, sem complicar com estruturas desnecessárias.</think><tool_call name=\"write_file\">{\"path\": \"phone_formatter.py\", \"content\": \"def format_phone(digits):\\n    only_digits = ''.join(c for c in digits if c.isdigit())\\n    if len(only_digits) != 11:\\n        raise ValueError('numero de telefone deve ter 11 digitos (DDD + 9 + numero)')\\n    ddd = only_digits[:2]\\n    first_part = only_digits[2:7]\\n    second_part = only_digits[7:]\\n    return f'({ddd}) {first_part}-{second_part}'\\n\"}</tool_call><tool_result name=\"write_file\" status=\"ok\">{\"path\": \"phone_formatter.py\", \"bytes_written\": 346, \"mode\": \"overwrite\"}</tool_result><think>Pronto o código; falta rodar a validação antes de dar a resposta final.</think><tool_call name=\"checker\">{\"language\": \"python\", \"operation\": \"compile_and_test\", \"files\": [{\"path\": \"phone_formatter.py\", \"content\": \"def format_phone(digits):\\n    only_digits = ''.join(c for c in digits if c.isdigit())\\n    if len(only_digits) != 11:\\n        raise ValueError('numero de telefone deve ter 11 digitos (DDD + 9 + numero)')\\n    ddd = only_digits[:2]\\n    first_part = only_digits[2:7]\\n    second_part = only_digits[7:]\\n    return f'({ddd}) {first_part}-{second_part}'\\n\"}, {\"path\": \"test_phone_formatter.py\", \"content\": \"import pytest\\n\\nfrom phone_formatter import format_phone\\n\\n\\ndef test_format_phone():\\n    assert format_phone('11987654321') == '(11) 98765-4321'\\n    assert format_phone('(11) 98765-4321') == '(11) 98765-4321'\\n    with pytest.raises(ValueError):\\n        format_phone('123')\\n\"}]}</tool_call><tool_result name=\"checker\" status=\"ok\">{\"passed\": true, \"errors\": [], \"stdout\": \".                                                                        [100%]\\n1 passed in 0.02s\\n\", \"stderr\": \"\", \"metadata\": {\"language\": \"python\", \"duration_ms\": 3016}}</tool_result><final>format_phone(digits), no padrão brasileiro (DD) 9XXXX-XXXX ficou pronto e passou na validação sem problemas.</final>"
+  }
+}

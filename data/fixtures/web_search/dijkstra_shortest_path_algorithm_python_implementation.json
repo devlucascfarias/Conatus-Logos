@@ -1,0 +1,12 @@
+[
+  {
+    "title": "Dijkstra's shortest path algorithm in Python - GeeksforGeeks",
+    "url": "https://www.geeksforgeeks.org/python/python-program-for-dijkstras-shortest-path-algorithm-greedy-algo-7/",
+    "snippet": "The algorithm assigns distance values to all vertices initialized as infinite, sets distance 0 for the source vertex, and repeatedly picks the vertex with minimum distance not yet visited, updating its neighbors' distances."
+  },
+  {
+    "title": "Implementing the Dijkstra Algorithm in Python: A Step-by-Step Tutorial | DataCamp",
+    "url": "https://www.datacamp.com/tutorial/dijkstra-algorithm-in-python",
+    "snippet": "A common approach uses Python's heapq module as a priority queue: distances are initialized to infinity except the start node (0), and the algorithm pops the minimum-distance node, updating neighbors until the queue is empty."
+  }
+]

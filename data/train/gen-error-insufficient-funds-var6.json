@@ -1,0 +1,29 @@
+{
+  "metadata": {
+    "id": "gen-error-insufficient-funds-var6",
+    "domain": "tratamento_erro",
+    "language": "python",
+    "difficulty": "medium",
+    "tools_used": [
+      "write_file",
+      "checker"
+    ],
+    "num_steps": 2,
+    "task_type": "error_handling",
+    "source": "phrasing_variant_of:gen-error-insufficient-funds",
+    "license": "synthetic-no-license-needed",
+    "validation_status": "validated",
+    "execution_performed": true,
+    "split": "train",
+    "checker_used": "checker-python-1.0",
+    "expected_result": {
+      "passed": true
+    },
+    "execution_classification": "tested"
+  },
+  "trajectory": {
+    "system_prompt": "Você é Praxis, um agente de engenharia de software. Raciocine em <think>, use <tool_call name=\"...\"> quando precisar de uma ferramenta, e responda ao usuário só dentro de <final>.",
+    "user_request": "Estou precisando de um erro customizado para o caso de saque maior que o saldo.",
+    "raw_text": "<think>Vou tratar isso com cuidado: a exceção InsufficientFundsError e a função withdraw(balance, amount) precisa de uma exceção específica, não um catch genérico que esconderia outros bugs.</think><tool_call name=\"write_file\">{\"path\": \"insufficient_funds.py\", \"content\": \"class InsufficientFundsError(Exception):\\n    pass\\n\\n\\ndef withdraw(balance, amount):\\n    if amount > balance:\\n        raise InsufficientFundsError(\\n            f'saldo {balance} insuficiente para saque de {amount}'\\n        )\\n    return balance - amount\\n\"}</tool_call><tool_result name=\"write_file\" status=\"ok\">{\"path\": \"insufficient_funds.py\", \"bytes_written\": 251, \"mode\": \"overwrite\"}</tool_result><think>Antes de finalizar, preciso rodar a validação para confirmar que está tudo certo.</think><tool_call name=\"checker\">{\"language\": \"python\", \"operation\": \"compile_and_test\", \"files\": [{\"path\": \"insufficient_funds.py\", \"content\": \"class InsufficientFundsError(Exception):\\n    pass\\n\\n\\ndef withdraw(balance, amount):\\n    if amount > balance:\\n        raise InsufficientFundsError(\\n            f'saldo {balance} insuficiente para saque de {amount}'\\n        )\\n    return balance - amount\\n\"}, {\"path\": \"test_insufficient_funds.py\", \"content\": \"import pytest\\n\\nfrom insufficient_funds import InsufficientFundsError, withdraw\\n\\n\\ndef test_withdraw():\\n    assert withdraw(100, 50) == 50\\n    with pytest.raises(InsufficientFundsError):\\n        withdraw(100, 200)\\n\"}]}</tool_call><tool_result name=\"checker\" status=\"ok\">{\"passed\": true, \"errors\": [], \"stdout\": \".                                                                        [100%]\\n1 passed in 0.02s\\n\", \"stderr\": \"\", \"metadata\": {\"language\": \"python\", \"duration_ms\": 6030}}</tool_result><final>a exceção InsufficientFundsError e a função withdraw(balance, amount) está implementado com o tratamento de erro correto. Rodei a validação e confirmei que passa.</final>"
+  }
+}

@@ -1,0 +1,29 @@
+{
+  "metadata": {
+    "id": "gen-shell-git-status-untracked",
+    "domain": "shell_real",
+    "language": "shell",
+    "difficulty": "medium",
+    "tools_used": [
+      "write_file",
+      "shell"
+    ],
+    "num_steps": 2,
+    "task_type": "shell_command",
+    "source": "curated_manual_real_execution",
+    "license": "synthetic-no-license-needed",
+    "validation_status": "validated",
+    "execution_performed": true,
+    "split": "train",
+    "checker_used": null,
+    "expected_result": {
+      "passed": true
+    },
+    "execution_classification": "tested"
+  },
+  "trajectory": {
+    "system_prompt": "Você é Praxis, um agente de engenharia de software. Raciocine em <think>, use <tool_call name=\"...\"> quando precisar de uma ferramenta, e responda ao usuário só dentro de <final>.",
+    "user_request": "Crie um novo arquivo chamado draft.md no repositório e depois rode git status para ver o que mudou.",
+    "raw_text": "<think>Vou criar o arquivo pedido; como o repositório já existe, ele deve aparecer como não rastreado no git status.</think><tool_call name=\"write_file\">{\"path\": \"draft.md\", \"content\": \"# rascunho\\n\"}</tool_call><tool_result name=\"write_file\" status=\"ok\">{\"path\": \"draft.md\", \"bytes_written\": 11, \"mode\": \"overwrite\"}</tool_result><think>Vou rodar git status para confirmar que o novo arquivo aparece como untracked.</think><tool_call name=\"shell\">{\"binary\": \"git\", \"args\": [\"status\"]}</tool_call><tool_result name=\"shell\" status=\"ok\">{\"stdout\": \"On branch master\\nUntracked files:\\n  (use \\\"git add <file>...\\\" to include in what will be committed)\\n\\tdraft.md\\n\\nnothing added to commit but untracked files present (use \\\"git add\\\" to track)\\n\", \"stderr\": \"\", \"returncode\": 0}</tool_result><final>Criei draft.md e confirmei com 'git status' que ele aparece como arquivo não rastreado (untracked), já que ainda não foi adicionado ao commit.</final>"
+  }
+}

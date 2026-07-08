@@ -1,0 +1,12 @@
+[
+  {
+    "title": "Implementation of Hash Table in Python using Separate Chaining - GeeksforGeeks",
+    "url": "https://www.geeksforgeeks.org/dsa/implementation-of-hash-table-in-python-using-separate-chaining/",
+    "snippet": "Separate chaining handles collisions by storing keys that map to the same index in a linked list at that bucket. The hash function uses Python's built-in hash() and the modulo operator to compute the bucket index."
+  },
+  {
+    "title": "How to Implement a Hash Table in Python | Medium",
+    "url": "https://stephenagrice.medium.com/how-to-implement-a-hash-table-in-python-1eb6c55019fd",
+    "snippet": "Insert computes the bucket index and either creates a new node if the bucket is empty or traverses the chain to update an existing key. Expected time complexity for insert/search/remove is O(1) with a good hash function, O(n) worst case."
+  }
+]

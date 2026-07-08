@@ -1,0 +1,29 @@
+{
+  "metadata": {
+    "id": "gen-pattern-flatten-generator-var7",
+    "domain": "python_patterns",
+    "language": "python",
+    "difficulty": "medium",
+    "tools_used": [
+      "write_file",
+      "checker"
+    ],
+    "num_steps": 2,
+    "task_type": "python_pattern",
+    "source": "phrasing_variant_of:gen-pattern-flatten-generator",
+    "license": "synthetic-no-license-needed",
+    "validation_status": "validated",
+    "execution_performed": true,
+    "split": "train",
+    "checker_used": "checker-python-1.0",
+    "expected_result": {
+      "passed": true
+    },
+    "execution_classification": "tested"
+  },
+  "trajectory": {
+    "system_prompt": "Você é Praxis, um agente de engenharia de software. Raciocine em <think>, use <tool_call name=\"...\"> quando precisar de uma ferramenta, e responda ao usuário só dentro de <final>.",
+    "user_request": "Me ajuda com um generator flatten que use yield from recursivamente?",
+    "raw_text": "<think>flatten(nested), achatando qualquer nível de aninhamento é justamente o tipo de caso que pede um generator recursivo com yield from em vez de uma solução mais manual.</think><tool_call name=\"write_file\">{\"path\": \"flatten_generator.py\", \"content\": \"def flatten(nested):\\n    for item in nested:\\n        if isinstance(item, list):\\n            yield from flatten(item)\\n        else:\\n            yield item\\n\"}</tool_call><tool_result name=\"write_file\" status=\"ok\">{\"path\": \"flatten_generator.py\", \"bytes_written\": 154, \"mode\": \"overwrite\"}</tool_result><think>Terminei a implementação com um generator recursivo com yield from; agora preciso validar antes de responder ao usuário.</think><tool_call name=\"checker\">{\"language\": \"python\", \"operation\": \"compile_and_test\", \"files\": [{\"path\": \"flatten_generator.py\", \"content\": \"def flatten(nested):\\n    for item in nested:\\n        if isinstance(item, list):\\n            yield from flatten(item)\\n        else:\\n            yield item\\n\"}, {\"path\": \"test_flatten_generator.py\", \"content\": \"from flatten_generator import flatten\\n\\n\\ndef test_flatten():\\n    assert list(flatten([1, [2, 3, [4]], 5])) == [1, 2, 3, 4, 5]\\n    assert list(flatten([])) == []\\n\"}]}</tool_call><tool_result name=\"checker\" status=\"ok\">{\"passed\": true, \"errors\": [], \"stdout\": \".                                                                        [100%]\\n1 passed in 0.02s\\n\", \"stderr\": \"\", \"metadata\": {\"language\": \"python\", \"duration_ms\": 5875}}</tool_result><final>Pronto: flatten(nested), achatando qualquer nível de aninhamento implementado com um generator recursivo com yield from, e já validado com sucesso.</final>"
+  }
+}

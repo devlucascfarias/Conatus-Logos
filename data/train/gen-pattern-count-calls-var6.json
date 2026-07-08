@@ -1,0 +1,29 @@
+{
+  "metadata": {
+    "id": "gen-pattern-count-calls-var6",
+    "domain": "python_patterns",
+    "language": "python",
+    "difficulty": "medium",
+    "tools_used": [
+      "write_file",
+      "checker"
+    ],
+    "num_steps": 2,
+    "task_type": "python_pattern",
+    "source": "phrasing_variant_of:gen-pattern-count-calls",
+    "license": "synthetic-no-license-needed",
+    "validation_status": "validated",
+    "execution_performed": true,
+    "split": "train",
+    "checker_used": "checker-python-1.0",
+    "expected_result": {
+      "passed": true
+    },
+    "execution_classification": "tested"
+  },
+  "trajectory": {
+    "system_prompt": "Você é Praxis, um agente de engenharia de software. Raciocine em <think>, use <tool_call name=\"...\"> quando precisar de uma ferramenta, e responda ao usuário só dentro de <final>.",
+    "user_request": "Estou precisando de um jeito de contar chamadas de função via decorator.",
+    "raw_text": "<think>Vou usar um decorator aqui, não uma solução mais verbosa, porque count_calls, expondo o total de chamadas no atributo calls se encaixa bem nesse padrão.</think><tool_call name=\"write_file\">{\"path\": \"count_calls.py\", \"content\": \"def count_calls(func):\\n    def wrapper(*args, **kwargs):\\n        wrapper.calls += 1\\n        return func(*args, **kwargs)\\n    wrapper.calls = 0\\n    return wrapper\\n\"}</tool_call><tool_result name=\"write_file\" status=\"ok\">{\"path\": \"count_calls.py\", \"bytes_written\": 162, \"mode\": \"overwrite\"}</tool_result><think>Antes de finalizar, preciso rodar a validação para confirmar que está tudo certo.</think><tool_call name=\"checker\">{\"language\": \"python\", \"operation\": \"compile_and_test\", \"files\": [{\"path\": \"count_calls.py\", \"content\": \"def count_calls(func):\\n    def wrapper(*args, **kwargs):\\n        wrapper.calls += 1\\n        return func(*args, **kwargs)\\n    wrapper.calls = 0\\n    return wrapper\\n\"}, {\"path\": \"test_count_calls.py\", \"content\": \"from count_calls import count_calls\\n\\n\\n@count_calls\\ndef greet(name):\\n    return f'ola {name}'\\n\\n\\ndef test_count_calls():\\n    assert greet('ana') == 'ola ana'\\n    greet('bruno')\\n    greet('carla')\\n    assert greet.calls == 3\\n\"}]}</tool_call><tool_result name=\"checker\" status=\"ok\">{\"passed\": true, \"errors\": [], \"stdout\": \".                                                                        [100%]\\n1 passed in 0.02s\\n\", \"stderr\": \"\", \"metadata\": {\"language\": \"python\", \"duration_ms\": 7405}}</tool_result><final>count_calls, expondo o total de chamadas no atributo calls foi implementado com um decorator. Rodei a validação e confirmei que passa.</final>"
+  }
+}

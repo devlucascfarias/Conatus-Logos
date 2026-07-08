@@ -1,0 +1,12 @@
+[
+  {
+    "title": "Python's asyncio: A Hands-On Walkthrough - Real Python",
+    "url": "https://realpython.com/async-io-python/",
+    "snippet": "The core building blocks of async I/O are awaitable objects, most often coroutines, that an event loop schedules and executes asynchronously. A coroutine is created with 'async def'."
+  },
+  {
+    "title": "Event loop - Python 3.14.6 documentation",
+    "url": "https://docs.python.org/3/library/asyncio-eventloop.html",
+    "snippet": "The event loop runs asynchronous tasks and callbacks, performs network IO, and runs subprocesses. Application developers should typically use asyncio.run() rather than referencing the loop object directly."
+  }
+]

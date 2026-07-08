@@ -1,0 +1,12 @@
+[
+  {
+    "title": "Bubble Sort - Python - GeeksforGeeks",
+    "url": "https://www.geeksforgeeks.org/python/python-program-for-bubble-sort/",
+    "snippet": "Repeatedly compares adjacent elements and swaps them if out of order; after each full pass, the largest unsorted element bubbles up to its correct position at the end."
+  },
+  {
+    "title": "Bubble Sort in Python - StackAbuse",
+    "url": "https://stackabuse.com/bubble-sort-in-python/",
+    "snippet": "An optimization uses a 'swapped' flag to exit early if no swaps occur during a pass, giving best-case O(n) time when the list is already sorted; worst/average case is O(n^2)."
+  }
+]

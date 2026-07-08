@@ -1,0 +1,29 @@
+{
+  "metadata": {
+    "id": "gen-pattern-log-calls-var8",
+    "domain": "python_patterns",
+    "language": "python",
+    "difficulty": "medium",
+    "tools_used": [
+      "write_file",
+      "checker"
+    ],
+    "num_steps": 2,
+    "task_type": "python_pattern",
+    "source": "phrasing_variant_of:gen-pattern-log-calls",
+    "license": "synthetic-no-license-needed",
+    "validation_status": "validated",
+    "execution_performed": true,
+    "split": "train",
+    "checker_used": "checker-python-1.0",
+    "expected_result": {
+      "passed": true
+    },
+    "execution_classification": "tested"
+  },
+  "trajectory": {
+    "system_prompt": "Você é Praxis, um agente de engenharia de software. Raciocine em <think>, use <tool_call name=\"...\"> quando precisar de uma ferramenta, e responda ao usuário só dentro de <final>.",
+    "user_request": "Um decorator log_calls, por favor, com histórico acessível de fora.",
+    "raw_text": "<think>Vou escrever isso usando um decorator com registro de chamadas desde o início, já que log_calls, registrando args/kwargs/resultado de cada chamada depende dessa estrutura para funcionar bem.</think><tool_call name=\"write_file\">{\"path\": \"log_calls.py\", \"content\": \"def log_calls(func):\\n    def wrapper(*args, **kwargs):\\n        result = func(*args, **kwargs)\\n        wrapper.log.append((args, kwargs, result))\\n        return result\\n    wrapper.log = []\\n    return wrapper\\n\"}</tool_call><tool_result name=\"write_file\" status=\"ok\">{\"path\": \"log_calls.py\", \"bytes_written\": 207, \"mode\": \"overwrite\"}</tool_result><think>Só falta validar o código com um decorator com registro de chamadas antes de considerar a tarefa concluída.</think><tool_call name=\"checker\">{\"language\": \"python\", \"operation\": \"compile_and_test\", \"files\": [{\"path\": \"log_calls.py\", \"content\": \"def log_calls(func):\\n    def wrapper(*args, **kwargs):\\n        result = func(*args, **kwargs)\\n        wrapper.log.append((args, kwargs, result))\\n        return result\\n    wrapper.log = []\\n    return wrapper\\n\"}, {\"path\": \"test_log_calls.py\", \"content\": \"from log_calls import log_calls\\n\\n\\n@log_calls\\ndef add(a, b):\\n    return a + b\\n\\n\\ndef test_log_calls():\\n    assert add(2, 3) == 5\\n    assert add(4, 5) == 9\\n    assert log_calls_log_length() == 2\\n\\n\\ndef log_calls_log_length():\\n    return len(add.log)\\n\"}]}</tool_call><tool_result name=\"checker\" status=\"ok\">{\"passed\": true, \"errors\": [], \"stdout\": \".                                                                        [100%]\\n1 passed in 0.02s\\n\", \"stderr\": \"\", \"metadata\": {\"language\": \"python\", \"duration_ms\": 5922}}</tool_result><final>Implementei log_calls, registrando args/kwargs/resultado de cada chamada com um decorator com registro de chamadas. A validação passou sem erros.</final>"
+  }
+}

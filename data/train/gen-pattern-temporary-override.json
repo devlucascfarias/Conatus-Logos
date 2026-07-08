@@ -1,0 +1,29 @@
+{
+  "metadata": {
+    "id": "gen-pattern-temporary-override",
+    "domain": "python_patterns",
+    "language": "python",
+    "difficulty": "medium",
+    "tools_used": [
+      "write_file",
+      "checker"
+    ],
+    "num_steps": 2,
+    "task_type": "python_pattern",
+    "source": "curated_manual_real_execution",
+    "license": "synthetic-no-license-needed",
+    "validation_status": "validated",
+    "execution_performed": true,
+    "split": "train",
+    "checker_used": "checker-python-1.0",
+    "expected_result": {
+      "passed": true
+    },
+    "execution_classification": "tested"
+  },
+  "trajectory": {
+    "system_prompt": "Você é Praxis, um agente de engenharia de software. Raciocine em <think>, use <tool_call name=\"...\"> quando precisar de uma ferramenta, e responda ao usuário só dentro de <final>.",
+    "user_request": "Implemente um context manager que sobrescreva temporariamente uma chave de um dicionário, restaurando o valor original ao sair.",
+    "raw_text": "<think>Preciso guardar se a chave já existia e qual era o valor antigo em __enter__, para decidir em __exit__ entre restaurar o valor antigo ou remover a chave.</think><tool_call name=\"write_file\">{\"path\": \"temporary_override.py\", \"content\": \"class temporary_override:\\n    def __init__(self, config, key, value):\\n        self.config = config\\n        self.key = key\\n        self.value = value\\n\\n    def __enter__(self):\\n        self._had_key = self.key in self.config\\n        self._old_value = self.config.get(self.key)\\n        self.config[self.key] = self.value\\n        return self.config\\n\\n    def __exit__(self, exc_type, exc_val, exc_tb):\\n        if self._had_key:\\n            self.config[self.key] = self._old_value\\n        else:\\n            del self.config[self.key]\\n        return False\\n\"}</tool_call><tool_result name=\"write_file\" status=\"ok\">{\"path\": \"temporary_override.py\", \"bytes_written\": 548, \"mode\": \"overwrite\"}</tool_result><think>O valor é restaurado corretamente tanto para chave preexistente quanto para chave nova. Vou validar.</think><tool_call name=\"checker\">{\"language\": \"python\", \"operation\": \"compile_and_test\", \"files\": [{\"path\": \"temporary_override.py\", \"content\": \"class temporary_override:\\n    def __init__(self, config, key, value):\\n        self.config = config\\n        self.key = key\\n        self.value = value\\n\\n    def __enter__(self):\\n        self._had_key = self.key in self.config\\n        self._old_value = self.config.get(self.key)\\n        self.config[self.key] = self.value\\n        return self.config\\n\\n    def __exit__(self, exc_type, exc_val, exc_tb):\\n        if self._had_key:\\n            self.config[self.key] = self._old_value\\n        else:\\n            del self.config[self.key]\\n        return False\\n\"}, {\"path\": \"test_temporary_override.py\", \"content\": \"from temporary_override import temporary_override\\n\\n\\ndef test_temporary_override_existing_key():\\n    config = {'timeout': 30}\\n    with temporary_override(config, 'timeout', 5):\\n        assert config['timeout'] == 5\\n    assert config['timeout'] == 30\\n\\n\\ndef test_temporary_override_new_key():\\n    config = {}\\n    with temporary_override(config, 'debug', True):\\n        assert config['debug'] is True\\n    assert 'debug' not in config\\n\"}]}</tool_call><tool_result name=\"checker\" status=\"ok\">{\"passed\": true, \"errors\": [], \"stdout\": \"..                                                                       [100%]\\n2 passed in 0.02s\\n\", \"stderr\": \"\", \"metadata\": {\"language\": \"python\", \"duration_ms\": 6250}}</tool_result><final>Implementei o context manager temporary_override, que sobrescreve uma chave temporariamente e restaura (ou remove) o valor original ao sair do bloco. A validação confirma que compila e o teste passa.</final>"
+  }
+}

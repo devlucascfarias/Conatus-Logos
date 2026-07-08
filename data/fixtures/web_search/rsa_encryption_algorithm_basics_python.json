@@ -1,0 +1,12 @@
+[
+  {
+    "title": "RSA Algorithm: Theory and Implementation in Python - AskPython",
+    "url": "https://www.askpython.com/python/examples/rsa-algorithm-in-python",
+    "snippet": "RSA key generation picks two large primes p and q, computes n = p*q, and derives a public/private key pair from Euler's totient of n. Encryption computes c = m^e mod n; decryption computes m = c^d mod n."
+  },
+  {
+    "title": "RSA Cipher Encryption - TutorialsPoint",
+    "url": "https://www.tutorialspoint.com/cryptography_with_python/cryptography_with_python_rsa_cipher_encryption.htm",
+    "snippet": "Security relies on the difficulty of factoring the product of two large primes back into its original factors."
+  }
+]

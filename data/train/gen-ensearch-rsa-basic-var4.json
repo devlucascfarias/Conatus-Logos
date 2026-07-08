@@ -1,0 +1,30 @@
+{
+  "metadata": {
+    "id": "gen-ensearch-rsa-basic-var4",
+    "domain": "algorithms",
+    "language": "python",
+    "difficulty": "hard",
+    "tools_used": [
+      "web_search",
+      "write_file",
+      "checker"
+    ],
+    "num_steps": 3,
+    "task_type": "multi_tool_call",
+    "source": "phrasing_variant_of:gen-ensearch-rsa-basic",
+    "license": "synthetic-no-license-needed",
+    "validation_status": "validated",
+    "execution_performed": true,
+    "split": "train",
+    "checker_used": "checker-python-1.0",
+    "expected_result": {
+      "passed": true
+    },
+    "execution_classification": "tested"
+  },
+  "trajectory": {
+    "system_prompt": "Você é Praxis, um agente de engenharia de software. Raciocine em <think>, use <tool_call name=\"...\"> quando precisar de uma ferramenta, e responda ao usuário só dentro de <final>.",
+    "user_request": "Implementa geração de chaves RSA simplificada, pesquisando os passos do algoritmo.",
+    "raw_text": "<think>Vou confirmar os passos de geração de chave do RSA com uma busca antes de implementar generate_keypair, encrypt e decrypt.</think><tool_call name=\"web_search\">{\"query\": \"RSA encryption algorithm basics python\"}</tool_call><tool_result name=\"web_search\" status=\"ok\">{\"results\": [{\"title\": \"RSA Algorithm: Theory and Implementation in Python - AskPython\", \"url\": \"https://www.askpython.com/python/examples/rsa-algorithm-in-python\", \"snippet\": \"RSA key generation picks two large primes p and q, computes n = p*q, and derives a public/private key pair from Euler's totient of n. Encryption computes c = m^e mod n; decryption computes m = c^d mod n.\"}, {\"title\": \"RSA Cipher Encryption - TutorialsPoint\", \"url\": \"https://www.tutorialspoint.com/cryptography_with_python/cryptography_with_python_rsa_cipher_encryption.htm\", \"snippet\": \"Security relies on the difficulty of factoring the product of two large primes back into its original factors.\"}]}</tool_result><think>Idioma da busca (inglês) e da conversa (português) são diferentes, mas isso não muda como respondo — sigo em português. O achado central: a chave pública/privada vem do totiente de Euler e do inverso modular do expoente escolhido.</think><tool_call name=\"write_file\">{\"path\": \"rsa_basic.py\", \"content\": \"def _mod_inverse(e, phi):\\n    for d in range(2, phi):\\n        if (d * e) % phi == 1:\\n            return d\\n    raise ValueError('inverso modular nao encontrado')\\n\\n\\ndef generate_keypair(p, q, e=7):\\n    n = p * q\\n    phi = (p - 1) * (q - 1)\\n    d = _mod_inverse(e, phi)\\n    return (e, n), (d, n)\\n\\n\\ndef encrypt(message, public_key):\\n    e, n = public_key\\n    return pow(message, e, n)\\n\\n\\ndef decrypt(ciphertext, private_key):\\n    d, n = private_key\\n    return pow(ciphertext, d, n)\\n\"}</tool_call><tool_result name=\"write_file\" status=\"ok\">{\"path\": \"rsa_basic.py\", \"bytes_written\": 477, \"mode\": \"overwrite\"}</tool_result><think>Falta só confirmar que o código está correto antes de responder ao usuário.</think><tool_call name=\"checker\">{\"language\": \"python\", \"operation\": \"compile_and_test\", \"files\": [{\"path\": \"rsa_basic.py\", \"content\": \"def _mod_inverse(e, phi):\\n    for d in range(2, phi):\\n        if (d * e) % phi == 1:\\n            return d\\n    raise ValueError('inverso modular nao encontrado')\\n\\n\\ndef generate_keypair(p, q, e=7):\\n    n = p * q\\n    phi = (p - 1) * (q - 1)\\n    d = _mod_inverse(e, phi)\\n    return (e, n), (d, n)\\n\\n\\ndef encrypt(message, public_key):\\n    e, n = public_key\\n    return pow(message, e, n)\\n\\n\\ndef decrypt(ciphertext, private_key):\\n    d, n = private_key\\n    return pow(ciphertext, d, n)\\n\"}, {\"path\": \"test_rsa_basic.py\", \"content\": \"from rsa_basic import generate_keypair, encrypt, decrypt\\n\\n\\ndef test_rsa_basic_roundtrip():\\n    public_key, private_key = generate_keypair(p=3, q=11, e=7)\\n    message = 4\\n    ciphertext = encrypt(message, public_key)\\n    assert ciphertext != message\\n    assert decrypt(ciphertext, private_key) == message\\n\"}]}</tool_call><tool_result name=\"checker\" status=\"ok\">{\"passed\": true, \"errors\": [], \"stdout\": \".                                                                        [100%]\\n1 passed in 0.02s\\n\", \"stderr\": \"\", \"metadata\": {\"language\": \"python\", \"duration_ms\": 3015}}</tool_result><final>A pesquisa sobre os passos de geração de chave do RSA veio em inglês; respondo em português mesmo assim. Confirmado que a chave pública/privada vem do totiente de Euler e do inverso modular do expoente escolhido, implementei generate_keypair, encrypt e decrypt e validei com sucesso.</final>"
+  }
+}

@@ -1,0 +1,30 @@
+{
+  "metadata": {
+    "id": "gen-ensearch-quicksort",
+    "domain": "algorithms",
+    "language": "python",
+    "difficulty": "medium",
+    "tools_used": [
+      "web_search",
+      "write_file",
+      "checker"
+    ],
+    "num_steps": 3,
+    "task_type": "multi_tool_call",
+    "source": "curated_manual_real_execution",
+    "license": "synthetic-no-license-needed",
+    "validation_status": "validated",
+    "execution_performed": true,
+    "split": "train",
+    "checker_used": "checker-python-1.0",
+    "expected_result": {
+      "passed": true
+    },
+    "execution_classification": "tested"
+  },
+  "trajectory": {
+    "system_prompt": "Você é Praxis, um agente de engenharia de software. Raciocine em <think>, use <tool_call name=\"...\"> quando precisar de uma ferramenta, e responda ao usuário só dentro de <final>.",
+    "user_request": "Pesquise o algoritmo quicksort e implemente ele em Python.",
+    "raw_text": "<think>Vou confirmar o esquema de particionamento mais comum antes de implementar.</think><tool_call name=\"web_search\">{\"query\": \"quicksort algorithm implementation python\"}</tool_call><tool_result name=\"web_search\" status=\"ok\">{\"results\": [{\"title\": \"QuickSort (With Code in Python/C++/Java/C) - Programiz\", \"url\": \"https://www.programiz.com/dsa/quick-sort\", \"snippet\": \"Quicksort selects a pivot element and partitions the other elements into two sub-arrays according to whether they are less than or greater than the pivot, then recursively sorts the sub-arrays. Average time complexity is O(n log n); worst case is O(n^2) when the pivot is the highest or lowest value.\"}, {\"title\": \"DSA Quicksort with Python - W3Schools\", \"url\": \"https://www.w3schools.com/python/python_dsa_quicksort.asp\", \"snippet\": \"The most commonly used partitioning approach is the Lomuto partition scheme, where the last element of the array is chosen as the pivot.\"}]}</tool_result><think>O conteúdo que a busca retornou está em inglês, mas a conversa com o usuário é em português — vou continuar respondendo em português mesmo assim, usando o que encontrei só como base técnica. A documentação confirma o esquema de particionamento de Lomuto: escolher o último elemento como pivô, reorganizar os menores à esquerda, os maiores à direita, e aplicar recursivamente aos dois lados.</think><tool_call name=\"write_file\">{\"path\": \"quicksort.py\", \"content\": \"def quicksort(arr):\\n    if len(arr) <= 1:\\n        return arr\\n    pivot = arr[-1]\\n    less = [x for x in arr[:-1] if x <= pivot]\\n    greater = [x for x in arr[:-1] if x > pivot]\\n    return quicksort(less) + [pivot] + quicksort(greater)\\n\"}</tool_call><tool_result name=\"write_file\" status=\"ok\">{\"path\": \"quicksort.py\", \"bytes_written\": 235, \"mode\": \"overwrite\"}</tool_result><think>O particionamento estilo Lomuto está implementado corretamente. Vou validar.</think><tool_call name=\"checker\">{\"language\": \"python\", \"operation\": \"compile_and_test\", \"files\": [{\"path\": \"quicksort.py\", \"content\": \"def quicksort(arr):\\n    if len(arr) <= 1:\\n        return arr\\n    pivot = arr[-1]\\n    less = [x for x in arr[:-1] if x <= pivot]\\n    greater = [x for x in arr[:-1] if x > pivot]\\n    return quicksort(less) + [pivot] + quicksort(greater)\\n\"}, {\"path\": \"test_quicksort.py\", \"content\": \"from quicksort import quicksort\\n\\n\\ndef test_quicksort():\\n    assert quicksort([5, 3, 8, 1, 9, 2]) == [1, 2, 3, 5, 8, 9]\\n    assert quicksort([]) == []\\n    assert quicksort([1]) == [1]\\n\"}]}</tool_call><tool_result name=\"checker\" status=\"ok\">{\"passed\": true, \"errors\": [], \"stdout\": \".                                                                        [100%]\\n1 passed in 0.05s\\n\", \"stderr\": \"\", \"metadata\": {\"language\": \"python\", \"duration_ms\": 3187}}</tool_result><final>Pesquisei o algoritmo quicksort (conteúdo em inglês, resposta em português) e implementei quicksort(arr) usando particionamento estilo Lomuto com o último elemento como pivô. A validação confirma que compila e o teste passa.</final>"
+  }
+}

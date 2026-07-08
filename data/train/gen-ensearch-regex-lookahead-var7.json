@@ -1,0 +1,30 @@
+{
+  "metadata": {
+    "id": "gen-ensearch-regex-lookahead-var7",
+    "domain": "algorithms",
+    "language": "python",
+    "difficulty": "medium",
+    "tools_used": [
+      "web_search",
+      "write_file",
+      "checker"
+    ],
+    "num_steps": 3,
+    "task_type": "multi_tool_call",
+    "source": "phrasing_variant_of:gen-ensearch-regex-lookahead",
+    "license": "synthetic-no-license-needed",
+    "validation_status": "validated",
+    "execution_performed": true,
+    "split": "train",
+    "checker_used": "checker-python-1.0",
+    "expected_result": {
+      "passed": true
+    },
+    "execution_classification": "tested"
+  },
+  "trajectory": {
+    "system_prompt": "Você é Praxis, um agente de engenharia de software. Raciocine em <think>, use <tool_call name=\"...\"> quando precisar de uma ferramenta, e responda ao usuário só dentro de <final>.",
+    "user_request": "Me ajuda pesquisando e implementando um separador de camelCase com regex?",
+    "raw_text": "<think>Vou pesquisar lookahead/lookbehind em regex do Python para não implementar algo baseado só em suposição.</think><tool_call name=\"web_search\">{\"query\": \"regular expression lookahead python re module\"}</tool_call><tool_result name=\"web_search\" status=\"ok\">{\"results\": [{\"title\": \"Python - Regex Lookahead - GeeksforGeeks\", \"url\": \"https://www.geeksforgeeks.org/python/python-regex-lookahead/\", \"snippet\": \"Positive lookahead uses the syntax (?=pattern) and matches X only if followed by Y, without consuming Y. Negative lookahead (?!pattern) matches X only if NOT followed by Y. Both are zero-width assertions.\"}, {\"title\": \"re - Regular expression operations - Python 3.14.6 documentation\", \"url\": \"https://docs.python.org/3/library/re.html\", \"snippet\": \"Lookahead assertions do not consume characters in the string being matched; they only assert whether a match is possible at the current position.\"}]}</tool_result><think>Percebo que o resultado veio em inglês — como o usuário fala português, é assim que vou responder, usando o conteúdo só como base técnica. Acha-se que lookahead e lookbehind são asserções de largura zero que não consomem caracteres.</think><tool_call name=\"write_file\">{\"path\": \"camel_case_splitter.py\", \"content\": \"import re\\n\\n\\ndef split_camel_case(text):\\n    spaced = re.sub(r'(?<=[a-z])(?=[A-Z])', ' ', text)\\n    return spaced\\n\"}</tool_call><tool_result name=\"write_file\" status=\"ok\">{\"path\": \"camel_case_splitter.py\", \"bytes_written\": 113, \"mode\": \"overwrite\"}</tool_result><think>Terminei a implementação; agora preciso validar antes de responder ao usuário.</think><tool_call name=\"checker\">{\"language\": \"python\", \"operation\": \"compile_and_test\", \"files\": [{\"path\": \"camel_case_splitter.py\", \"content\": \"import re\\n\\n\\ndef split_camel_case(text):\\n    spaced = re.sub(r'(?<=[a-z])(?=[A-Z])', ' ', text)\\n    return spaced\\n\"}, {\"path\": \"test_camel_case_splitter.py\", \"content\": \"from camel_case_splitter import split_camel_case\\n\\n\\ndef test_split_camel_case():\\n    assert split_camel_case('helloWorldExample') == 'hello World Example'\\n    assert split_camel_case('single') == 'single'\\n\"}]}</tool_call><tool_result name=\"checker\" status=\"ok\">{\"passed\": true, \"errors\": [], \"stdout\": \".                                                                        [100%]\\n1 passed in 0.02s\\n\", \"stderr\": \"\", \"metadata\": {\"language\": \"python\", \"duration_ms\": 7500}}</tool_result><final>Pesquisei lookahead/lookbehind em regex do Python, com resultado em inglês, mas sigo respondendo em português: lookahead e lookbehind são asserções de largura zero que não consomem caracteres. Implementei split_camel_case(text), e a validação confirma que está correto.</final>"
+  }
+}

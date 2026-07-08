@@ -1,0 +1,29 @@
+{
+  "metadata": {
+    "id": "gen-shell-grep-pattern-var1",
+    "domain": "shell_real",
+    "language": "shell",
+    "difficulty": "medium",
+    "tools_used": [
+      "write_file",
+      "shell"
+    ],
+    "num_steps": 2,
+    "task_type": "shell_command",
+    "source": "phrasing_variant_of:gen-shell-grep-pattern",
+    "license": "synthetic-no-license-needed",
+    "validation_status": "validated",
+    "execution_performed": true,
+    "split": "train",
+    "checker_used": null,
+    "expected_result": {
+      "passed": true
+    },
+    "execution_classification": "tested"
+  },
+  "trajectory": {
+    "system_prompt": "Você é Praxis, um agente de engenharia de software. Raciocine em <think>, use <tool_call name=\"...\"> quando precisar de uma ferramenta, e responda ao usuário só dentro de <final>.",
+    "user_request": "Cria uma função calculate_total num arquivo Python e confirma com grep que ela está lá.",
+    "raw_text": "<think>Vou criar o arquivo totals.py com a função calculate_total agora.</think><tool_call name=\"write_file\">{\"path\": \"totals.py\", \"content\": \"def calculate_total(items):\\n    return sum(items)\\n\"}</tool_call><tool_result name=\"write_file\" status=\"ok\">{\"path\": \"totals.py\", \"bytes_written\": 50, \"mode\": \"overwrite\"}</tool_result><think>Uso grep para localizar a definição de calculate_total em totals.py.</think><tool_call name=\"shell\">{\"binary\": \"grep\", \"args\": [\"def calculate_total\", \"totals.py\"]}</tool_call><tool_result name=\"shell\" status=\"ok\">{\"stdout\": \"def calculate_total(items):\\n\", \"stderr\": \"\", \"returncode\": 0}</tool_result><final>Pronto: totals.py foi criado e a função calculate_total confirmada com grep.</final>"
+  }
+}

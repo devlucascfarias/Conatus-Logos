@@ -1,0 +1,30 @@
+{
+  "metadata": {
+    "id": "gen-ensearch-ball-bounce-var5",
+    "domain": "algorithms",
+    "language": "python",
+    "difficulty": "medium",
+    "tools_used": [
+      "web_search",
+      "write_file",
+      "checker"
+    ],
+    "num_steps": 3,
+    "task_type": "multi_tool_call",
+    "source": "phrasing_variant_of:gen-ensearch-ball-bounce",
+    "license": "synthetic-no-license-needed",
+    "validation_status": "validated",
+    "execution_performed": true,
+    "split": "train",
+    "checker_used": "checker-python-1.0",
+    "expected_result": {
+      "passed": true
+    },
+    "execution_classification": "tested"
+  },
+  "trajectory": {
+    "system_prompt": "Você é Praxis, um agente de engenharia de software. Raciocine em <think>, use <tool_call name=\"...\"> quando precisar de uma ferramenta, e responda ao usuário só dentro de <final>.",
+    "user_request": "Cria a lógica de quique de bola com pygame, depois de pesquisar a abordagem certa.",
+    "raw_text": "<think>Antes de partir para o código, vou checar a lógica clássica de bolinha quicando com pygame.</think><tool_call name=\"web_search\">{\"query\": \"pygame bouncing ball game tutorial python\"}</tool_call><tool_result name=\"web_search\" status=\"ok\">{\"results\": [{\"title\": \"PythonInformer - Bouncing ball in pygame\", \"url\": \"https://www.pythoninformer.com/python-libraries/pygame/bouncing-ball/\", \"snippet\": \"Creates a Ball class with velocity [5, 5] and uses an update method to check screen boundaries and reverse velocity when hitting edges.\"}, {\"title\": \"Stimulate bouncing game using Pygame - GeeksforGeeks\", \"url\": \"https://www.geeksforgeeks.org/python/stimulate-bouncing-game-using-pygame/\", \"snippet\": \"Demonstrates checking if the ball goes out of the screen and changing the movement direction accordingly inside the main game loop.\"}]}</tool_result><think>Só destacando: o conteúdo da busca está em inglês, mas continuo respondendo em português por ser o idioma da conversa. O ponto principal: a velocidade deve ser guardada como vetor e o componente correspondente invertido ao bater na borda.</think><tool_call name=\"write_file\">{\"path\": \"ball_bounce.py\", \"content\": \"import pygame\\n\\n\\ndef bounce_update(rect, velocity, screen_width, screen_height):\\n    new_x = rect.x + velocity.x\\n    new_y = rect.y + velocity.y\\n    if new_x <= 0 or new_x + rect.width >= screen_width:\\n        velocity.x *= -1\\n    if new_y <= 0 or new_y + rect.height >= screen_height:\\n        velocity.y *= -1\\n    rect.x = max(0, min(new_x, screen_width - rect.width))\\n    rect.y = max(0, min(new_y, screen_height - rect.height))\\n    return rect, velocity\\n\"}</tool_call><tool_result name=\"write_file\" status=\"ok\">{\"path\": \"ball_bounce.py\", \"bytes_written\": 456, \"mode\": \"overwrite\"}</tool_result><think>Código pronto. Rodo a validação agora para confirmar antes de responder.</think><tool_call name=\"checker\">{\"language\": \"python\", \"operation\": \"compile_and_test\", \"files\": [{\"path\": \"ball_bounce.py\", \"content\": \"import pygame\\n\\n\\ndef bounce_update(rect, velocity, screen_width, screen_height):\\n    new_x = rect.x + velocity.x\\n    new_y = rect.y + velocity.y\\n    if new_x <= 0 or new_x + rect.width >= screen_width:\\n        velocity.x *= -1\\n    if new_y <= 0 or new_y + rect.height >= screen_height:\\n        velocity.y *= -1\\n    rect.x = max(0, min(new_x, screen_width - rect.width))\\n    rect.y = max(0, min(new_y, screen_height - rect.height))\\n    return rect, velocity\\n\"}, {\"path\": \"test_ball_bounce.py\", \"content\": \"import pygame\\n\\nfrom ball_bounce import bounce_update\\n\\n\\ndef test_bounce_update_reverses_at_edge():\\n    rect = pygame.Rect(0, 50, 20, 20)\\n    velocity = pygame.math.Vector2(-5, 0)\\n    rect, velocity = bounce_update(rect, velocity, screen_width=200, screen_height=200)\\n    assert velocity.x == 5\\n\\n\\ndef test_bounce_update_keeps_direction_away_from_edge():\\n    rect = pygame.Rect(100, 100, 20, 20)\\n    velocity = pygame.math.Vector2(3, 2)\\n    rect, velocity = bounce_update(rect, velocity, screen_width=200, screen_height=200)\\n    assert (velocity.x, velocity.y) == (3, 2)\\n\"}]}</tool_call><tool_result name=\"checker\" status=\"ok\">{\"passed\": true, \"errors\": [], \"stdout\": \"..                                                                       [100%]\\n2 passed in 0.26s\\n\", \"stderr\": \"\", \"metadata\": {\"language\": \"python\", \"duration_ms\": 3922}}</tool_result><final>Busquei sobre a lógica clássica de bolinha quicando com pygame (conteúdo em inglês) e mantive a resposta em português. Com a velocidade deve ser guardada como vetor e o componente correspondente invertido ao bater na borda confirmado, implementei bounce_update(rect, velocity, screen_width, screen_height), validado sem problemas.</final>"
+  }
+}

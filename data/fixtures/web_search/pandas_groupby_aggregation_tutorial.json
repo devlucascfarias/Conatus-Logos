@@ -1,0 +1,12 @@
+[
+  {
+    "title": "Group by: split-apply-combine - pandas documentation",
+    "url": "https://pandas.pydata.org/docs/user_guide/groupby.html",
+    "snippet": "groupby() follows the split-apply-combine pattern: split data into groups by a key, apply a function independently to each group, then combine the results."
+  },
+  {
+    "title": "Comprehensive Guide to Grouping and Aggregating with Pandas - Practical Business Python",
+    "url": "https://pbpython.com/groupby-agg.html",
+    "snippet": "The .agg() method lets you apply multiple aggregation functions at once (e.g. sum, mean, count) and is not limited to pandas' built-in functions."
+  }
+]

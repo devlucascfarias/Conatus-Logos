@@ -1,0 +1,12 @@
+[
+  {
+    "title": "QuickSort (With Code in Python/C++/Java/C) - Programiz",
+    "url": "https://www.programiz.com/dsa/quick-sort",
+    "snippet": "Quicksort selects a pivot element and partitions the other elements into two sub-arrays according to whether they are less than or greater than the pivot, then recursively sorts the sub-arrays. Average time complexity is O(n log n); worst case is O(n^2) when the pivot is the highest or lowest value."
+  },
+  {
+    "title": "DSA Quicksort with Python - W3Schools",
+    "url": "https://www.w3schools.com/python/python_dsa_quicksort.asp",
+    "snippet": "The most commonly used partitioning approach is the Lomuto partition scheme, where the last element of the array is chosen as the pivot."
+  }
+]

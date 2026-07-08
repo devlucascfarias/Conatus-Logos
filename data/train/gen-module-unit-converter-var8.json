@@ -1,0 +1,29 @@
+{
+  "metadata": {
+    "id": "gen-module-unit-converter-var8",
+    "domain": "modulos_realistas",
+    "language": "python",
+    "difficulty": "easy",
+    "tools_used": [
+      "write_file",
+      "checker"
+    ],
+    "num_steps": 2,
+    "task_type": "realistic_module",
+    "source": "phrasing_variant_of:gen-module-unit-converter",
+    "license": "synthetic-no-license-needed",
+    "validation_status": "validated",
+    "execution_performed": true,
+    "split": "train",
+    "checker_used": "checker-python-1.0",
+    "expected_result": {
+      "passed": true
+    },
+    "execution_classification": "tested"
+  },
+  "trajectory": {
+    "system_prompt": "Você é Praxis, um agente de engenharia de software. Raciocine em <think>, use <tool_call name=\"...\"> quando precisar de uma ferramenta, e responda ao usuário só dentro de <final>.",
+    "user_request": "Um módulo de conversão de unidades, por favor, com essas três funções.",
+    "raw_text": "<think>Vou escrever o módulo unit_converter com km_to_miles, miles_to_km e kg_to_lb pensando no caso de uso real, não só no caminho feliz.</think><tool_call name=\"write_file\">{\"path\": \"unit_converter.py\", \"content\": \"def km_to_miles(km):\\n    return km * 0.621371\\n\\n\\ndef miles_to_km(miles):\\n    return miles / 0.621371\\n\\n\\ndef kg_to_lb(kg):\\n    return kg * 2.20462\\n\"}</tool_call><tool_result name=\"write_file\" status=\"ok\">{\"path\": \"unit_converter.py\", \"bytes_written\": 144, \"mode\": \"overwrite\"}</tool_result><think>Só falta validar o código antes de considerar a tarefa concluída.</think><tool_call name=\"checker\">{\"language\": \"python\", \"operation\": \"compile_and_test\", \"files\": [{\"path\": \"unit_converter.py\", \"content\": \"def km_to_miles(km):\\n    return km * 0.621371\\n\\n\\ndef miles_to_km(miles):\\n    return miles / 0.621371\\n\\n\\ndef kg_to_lb(kg):\\n    return kg * 2.20462\\n\"}, {\"path\": \"test_unit_converter.py\", \"content\": \"from unit_converter import km_to_miles, miles_to_km, kg_to_lb\\n\\n\\ndef test_unit_converter():\\n    assert abs(km_to_miles(10) - 6.21371) < 1e-5\\n    assert abs(miles_to_km(6.21371) - 10) < 1e-4\\n    assert abs(kg_to_lb(1) - 2.20462) < 1e-5\\n\"}]}</tool_call><tool_result name=\"checker\" status=\"ok\">{\"passed\": true, \"errors\": [], \"stdout\": \".                                                                        [100%]\\n1 passed in 0.02s\\n\", \"stderr\": \"\", \"metadata\": {\"language\": \"python\", \"duration_ms\": 3062}}</tool_result><final>Implementei o módulo unit_converter com km_to_miles, miles_to_km e kg_to_lb. A validação passou sem erros.</final>"
+  }
+}

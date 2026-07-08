@@ -1,9 +1,9 @@
 # Plano: expansão do dataset — OOP, erros, padrões, módulos realistas, busca-em-inglês, shell
 
-Status: **planejado, não iniciado**. Combinado em conversa em 2026-07-08, execução prevista para
-depois (não fazer no mesmo dia do planejamento). Este arquivo é o registro de intenção — ao
-executar, seguir isto e depois consolidar o resultado real em `docs/PLAN.md` (decisão nova,
-como já foi feito para D-tool-recovery-pilot/D-tool-success-pilot/D-tool-pilots-phrasing).
+Status: **executado em 2026-07-08** (ver `D-oop-error-patterns-modules-search-shell-expansion`
+em `docs/PLAN.md`, seção 2). Este arquivo permanece como registro do plano original; o resultado
+real (765 exemplos, scripts usados, achados da checagem de similaridade/vazamento) está
+consolidado na decisão do PLAN.md.
 
 ## 1. Motivação
 

@@ -1,0 +1,30 @@
+{
+  "metadata": {
+    "id": "gen-ensearch-pandas-groupby-var3",
+    "domain": "algorithms",
+    "language": "python",
+    "difficulty": "medium",
+    "tools_used": [
+      "web_search",
+      "write_file",
+      "checker"
+    ],
+    "num_steps": 3,
+    "task_type": "multi_tool_call",
+    "source": "phrasing_variant_of:gen-ensearch-pandas-groupby",
+    "license": "synthetic-no-license-needed",
+    "validation_status": "validated",
+    "execution_performed": true,
+    "split": "train",
+    "checker_used": "checker-python-1.0",
+    "expected_result": {
+      "passed": true
+    },
+    "execution_classification": "tested"
+  },
+  "trajectory": {
+    "system_prompt": "Você é Praxis, um agente de engenharia de software. Raciocine em <think>, use <tool_call name=\"...\"> quando precisar de uma ferramenta, e responda ao usuário só dentro de <final>.",
+    "user_request": "Quero uma soma de vendas por categoria usando pandas, pesquisada antes.",
+    "raw_text": "<think>Melhor pesquisar o padrão split-apply-combine do groupby para confirmar a abordagem certa antes de escrever código.</think><tool_call name=\"web_search\">{\"query\": \"pandas groupby aggregation tutorial\"}</tool_call><tool_result name=\"web_search\" status=\"ok\">{\"results\": [{\"title\": \"Group by: split-apply-combine - pandas documentation\", \"url\": \"https://pandas.pydata.org/docs/user_guide/groupby.html\", \"snippet\": \"groupby() follows the split-apply-combine pattern: split data into groups by a key, apply a function independently to each group, then combine the results.\"}, {\"title\": \"Comprehensive Guide to Grouping and Aggregating with Pandas - Practical Business Python\", \"url\": \"https://pbpython.com/groupby-agg.html\", \"snippet\": \"The .agg() method lets you apply multiple aggregation functions at once (e.g. sum, mean, count) and is not limited to pandas' built-in functions.\"}]}</tool_result><think>O material que encontrei está em inglês — vou continuar em português na resposta, só usando isso como referência técnica. Confirma-se que groupby seguido de uma agregação resume os dados por grupo.</think><tool_call name=\"write_file\">{\"path\": \"sales_summary.py\", \"content\": \"import pandas as pd\\n\\n\\ndef total_sales_by_category(records):\\n    df = pd.DataFrame(records)\\n    return df.groupby('category')['amount'].sum().to_dict()\\n\"}</tool_call><tool_result name=\"write_file\" status=\"ok\">{\"path\": \"sales_summary.py\", \"bytes_written\": 151, \"mode\": \"overwrite\"}</tool_result><think>Com o código pronto, o próximo passo é validar antes de responder.</think><tool_call name=\"checker\">{\"language\": \"python\", \"operation\": \"compile_and_test\", \"files\": [{\"path\": \"sales_summary.py\", \"content\": \"import pandas as pd\\n\\n\\ndef total_sales_by_category(records):\\n    df = pd.DataFrame(records)\\n    return df.groupby('category')['amount'].sum().to_dict()\\n\"}, {\"path\": \"test_sales_summary.py\", \"content\": \"from sales_summary import total_sales_by_category\\n\\n\\ndef test_total_sales_by_category():\\n    records = [\\n        {'category': 'livros', 'amount': 50},\\n        {'category': 'livros', 'amount': 30},\\n        {'category': 'eletronicos', 'amount': 200},\\n    ]\\n    result = total_sales_by_category(records)\\n    assert result == {'livros': 80, 'eletronicos': 200}\\n\"}]}</tool_call><tool_result name=\"checker\" status=\"ok\">{\"passed\": true, \"errors\": [], \"stdout\": \".                                                                        [100%]\\n1 passed in 0.84s\\n\", \"stderr\": \"\", \"metadata\": {\"language\": \"python\", \"duration_ms\": 3796}}</tool_result><final>Encontrei informação em inglês sobre o padrão split-apply-combine do groupby, mas a resposta segue em português: groupby seguido de uma agregação resume os dados por grupo. Implementei total_sales_by_category(records) a partir disso, e a validação confirma que funciona.</final>"
+  }
+}

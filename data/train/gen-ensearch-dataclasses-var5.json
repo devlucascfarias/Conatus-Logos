@@ -1,0 +1,30 @@
+{
+  "metadata": {
+    "id": "gen-ensearch-dataclasses-var5",
+    "domain": "algorithms",
+    "language": "python",
+    "difficulty": "easy",
+    "tools_used": [
+      "web_search",
+      "write_file",
+      "checker"
+    ],
+    "num_steps": 3,
+    "task_type": "multi_tool_call",
+    "source": "phrasing_variant_of:gen-ensearch-dataclasses",
+    "license": "synthetic-no-license-needed",
+    "validation_status": "validated",
+    "execution_performed": true,
+    "split": "train",
+    "checker_used": "checker-python-1.0",
+    "expected_result": {
+      "passed": true
+    },
+    "execution_classification": "tested"
+  },
+  "trajectory": {
+    "system_prompt": "Você é Praxis, um agente de engenharia de software. Raciocine em <think>, use <tool_call name=\"...\"> quando precisar de uma ferramenta, e responda ao usuário só dentro de <final>.",
+    "user_request": "Cria uma classe Point usando dataclasses, depois de pesquisar como funciona.",
+    "raw_text": "<think>Antes de partir para o código, vou checar o decorator @dataclass do Python.</think><tool_call name=\"web_search\">{\"query\": \"python dataclasses basics tutorial\"}</tool_call><tool_result name=\"web_search\" status=\"ok\">{\"results\": [{\"title\": \"Data Classes in Python (Guide) - Real Python\", \"url\": \"https://realpython.com/python-data-classes/\", \"snippet\": \"The @dataclass decorator, introduced in Python 3.7, automatically implements __init__, __repr__ and __eq__ based on class variables with type annotations, avoiding boilerplate code.\"}, {\"title\": \"dataclasses - Data Classes - Python documentation\", \"url\": \"https://docs.python.org/3/library/dataclasses.html\", \"snippet\": \"A field is defined as a class variable that has a type annotation. Decorator parameters include init=True, repr=True, eq=True, order=False and frozen=False.\"}]}</tool_result><think>Só destacando: o conteúdo da busca está em inglês, mas continuo respondendo em português por ser o idioma da conversa. O ponto principal: @dataclass gera __init__, __repr__ e __eq__ automaticamente a partir dos atributos anotados.</think><tool_call name=\"write_file\">{\"path\": \"point_dataclass.py\", \"content\": \"import math\\nfrom dataclasses import dataclass\\n\\n\\n@dataclass\\nclass Point:\\n    x: float\\n    y: float\\n\\n    def distance_to(self, other):\\n        return math.sqrt((self.x - other.x) ** 2 + (self.y - other.y) ** 2)\\n\"}</tool_call><tool_result name=\"write_file\" status=\"ok\">{\"path\": \"point_dataclass.py\", \"bytes_written\": 209, \"mode\": \"overwrite\"}</tool_result><think>Código pronto. Rodo a validação agora para confirmar antes de responder.</think><tool_call name=\"checker\">{\"language\": \"python\", \"operation\": \"compile_and_test\", \"files\": [{\"path\": \"point_dataclass.py\", \"content\": \"import math\\nfrom dataclasses import dataclass\\n\\n\\n@dataclass\\nclass Point:\\n    x: float\\n    y: float\\n\\n    def distance_to(self, other):\\n        return math.sqrt((self.x - other.x) ** 2 + (self.y - other.y) ** 2)\\n\"}, {\"path\": \"test_point_dataclass.py\", \"content\": \"from point_dataclass import Point\\n\\n\\ndef test_point_dataclass():\\n    p1 = Point(0, 0)\\n    p2 = Point(3, 4)\\n    assert abs(p1.distance_to(p2) - 5.0) < 1e-9\\n    assert Point(1, 2) == Point(1, 2)\\n\"}]}</tool_call><tool_result name=\"checker\" status=\"ok\">{\"passed\": true, \"errors\": [], \"stdout\": \".                                                                        [100%]\\n1 passed in 0.02s\\n\", \"stderr\": \"\", \"metadata\": {\"language\": \"python\", \"duration_ms\": 3202}}</tool_result><final>Busquei sobre o decorator @dataclass do Python (conteúdo em inglês) e mantive a resposta em português. Com @dataclass gera __init__, __repr__ e __eq__ automaticamente a partir dos atributos anotados confirmado, implementei a classe Point com distance_to, validado sem problemas.</final>"
+  }
+}

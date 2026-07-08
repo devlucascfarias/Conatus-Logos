@@ -1,0 +1,29 @@
+{
+  "metadata": {
+    "id": "gen-module-slug-generator-var6",
+    "domain": "modulos_realistas",
+    "language": "python",
+    "difficulty": "medium",
+    "tools_used": [
+      "write_file",
+      "checker"
+    ],
+    "num_steps": 2,
+    "task_type": "realistic_module",
+    "source": "phrasing_variant_of:gen-module-slug-generator",
+    "license": "synthetic-no-license-needed",
+    "validation_status": "validated",
+    "execution_performed": true,
+    "split": "train",
+    "checker_used": "checker-python-1.0",
+    "expected_result": {
+      "passed": true
+    },
+    "execution_classification": "tested"
+  },
+  "trajectory": {
+    "system_prompt": "Você é Praxis, um agente de engenharia de software. Raciocine em <think>, use <tool_call name=\"...\"> quando precisar de uma ferramenta, e responda ao usuário só dentro de <final>.",
+    "user_request": "Estou precisando gerar slugs a partir de texto com acentuação.",
+    "raw_text": "<think>Vou implementar slugify(text), normalizando acentos e pontuação com cuidado nos casos de borda que esse tipo de tarefa costuma ter.</think><tool_call name=\"write_file\">{\"path\": \"slug_generator.py\", \"content\": \"import re\\nimport unicodedata\\n\\n\\ndef slugify(text):\\n    normalized = unicodedata.normalize('NFKD', text).encode('ascii', 'ignore').decode('ascii')\\n    normalized = normalized.lower()\\n    normalized = re.sub(r'[^a-z0-9]+', '-', normalized).strip('-')\\n    return normalized\\n\"}</tool_call><tool_result name=\"write_file\" status=\"ok\">{\"path\": \"slug_generator.py\", \"bytes_written\": 270, \"mode\": \"overwrite\"}</tool_result><think>Antes de finalizar, preciso rodar a validação para confirmar que está tudo certo.</think><tool_call name=\"checker\">{\"language\": \"python\", \"operation\": \"compile_and_test\", \"files\": [{\"path\": \"slug_generator.py\", \"content\": \"import re\\nimport unicodedata\\n\\n\\ndef slugify(text):\\n    normalized = unicodedata.normalize('NFKD', text).encode('ascii', 'ignore').decode('ascii')\\n    normalized = normalized.lower()\\n    normalized = re.sub(r'[^a-z0-9]+', '-', normalized).strip('-')\\n    return normalized\\n\"}, {\"path\": \"test_slug_generator.py\", \"content\": \"from slug_generator import slugify\\n\\n\\ndef test_slugify():\\n    assert slugify('Sao Paulo, Cafe!') == 'sao-paulo-cafe'\\n    assert slugify('  Espacos   Extras  ') == 'espacos-extras'\\n\"}]}</tool_call><tool_result name=\"checker\" status=\"ok\">{\"passed\": true, \"errors\": [], \"stdout\": \".                                                                        [100%]\\n1 passed in 0.02s\\n\", \"stderr\": \"\", \"metadata\": {\"language\": \"python\", \"duration_ms\": 6046}}</tool_result><final>slugify(text), normalizando acentos e pontuação foi implementado. Rodei a validação e confirmei que passa.</final>"
+  }
+}

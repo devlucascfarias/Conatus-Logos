@@ -1,0 +1,29 @@
+{
+  "metadata": {
+    "id": "gen-module-text-statistics-var7",
+    "domain": "modulos_realistas",
+    "language": "python",
+    "difficulty": "medium",
+    "tools_used": [
+      "write_file",
+      "checker"
+    ],
+    "num_steps": 2,
+    "task_type": "realistic_module",
+    "source": "phrasing_variant_of:gen-module-text-statistics",
+    "license": "synthetic-no-license-needed",
+    "validation_status": "validated",
+    "execution_performed": true,
+    "split": "train",
+    "checker_used": "checker-python-1.0",
+    "expected_result": {
+      "passed": true
+    },
+    "execution_classification": "tested"
+  },
+  "trajectory": {
+    "system_prompt": "Você é Praxis, um agente de engenharia de software. Raciocine em <think>, use <tool_call name=\"...\"> quando precisar de uma ferramenta, e responda ao usuário só dentro de <final>.",
+    "user_request": "Me ajuda com uma contagem de frequência de palavras e a mais comum?",
+    "raw_text": "<think>o módulo text_statistics com word_frequency e most_common_word é justamente o tipo de módulo que precisa de funções bem definidas e testáveis separadamente.</think><tool_call name=\"write_file\">{\"path\": \"text_statistics.py\", \"content\": \"def word_frequency(text):\\n    words = text.lower().split()\\n    frequency = {}\\n    for word in words:\\n        frequency[word] = frequency.get(word, 0) + 1\\n    return frequency\\n\\n\\ndef most_common_word(text):\\n    frequency = word_frequency(text)\\n    return max(frequency, key=frequency.get)\\n\"}</tool_call><tool_result name=\"write_file\" status=\"ok\">{\"path\": \"text_statistics.py\", \"bytes_written\": 287, \"mode\": \"overwrite\"}</tool_result><think>Terminei a implementação; agora preciso validar antes de responder ao usuário.</think><tool_call name=\"checker\">{\"language\": \"python\", \"operation\": \"compile_and_test\", \"files\": [{\"path\": \"text_statistics.py\", \"content\": \"def word_frequency(text):\\n    words = text.lower().split()\\n    frequency = {}\\n    for word in words:\\n        frequency[word] = frequency.get(word, 0) + 1\\n    return frequency\\n\\n\\ndef most_common_word(text):\\n    frequency = word_frequency(text)\\n    return max(frequency, key=frequency.get)\\n\"}, {\"path\": \"test_text_statistics.py\", \"content\": \"from text_statistics import word_frequency, most_common_word\\n\\n\\ndef test_text_statistics():\\n    text = 'o gato e o cachorro e o gato'\\n    freq = word_frequency(text)\\n    assert freq['o'] == 3\\n    assert freq['gato'] == 2\\n    assert most_common_word(text) == 'o'\\n\"}]}</tool_call><tool_result name=\"checker\" status=\"ok\">{\"passed\": true, \"errors\": [], \"stdout\": \".                                                                        [100%]\\n1 passed in 0.03s\\n\", \"stderr\": \"\", \"metadata\": {\"language\": \"python\", \"duration_ms\": 3063}}</tool_result><final>Pronto: o módulo text_statistics com word_frequency e most_common_word implementado, e já validado com sucesso.</final>"
+  }
+}

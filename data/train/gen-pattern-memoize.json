@@ -1,0 +1,29 @@
+{
+  "metadata": {
+    "id": "gen-pattern-memoize",
+    "domain": "python_patterns",
+    "language": "python",
+    "difficulty": "medium",
+    "tools_used": [
+      "write_file",
+      "checker"
+    ],
+    "num_steps": 2,
+    "task_type": "python_pattern",
+    "source": "curated_manual_real_execution",
+    "license": "synthetic-no-license-needed",
+    "validation_status": "validated",
+    "execution_performed": true,
+    "split": "train",
+    "checker_used": "checker-python-1.0",
+    "expected_result": {
+      "passed": true
+    },
+    "execution_classification": "tested"
+  },
+  "trajectory": {
+    "system_prompt": "Você é Praxis, um agente de engenharia de software. Raciocine em <think>, use <tool_call name=\"...\"> quando precisar de uma ferramenta, e responda ao usuário só dentro de <final>.",
+    "user_request": "Crie um decorator memoize que armazene em cache o resultado de uma função pura por argumentos.",
+    "raw_text": "<think>O cache precisa viver no closure do decorator (não reiniciar a cada chamada) e usar os args como chave do dicionário.</think><tool_call name=\"write_file\">{\"path\": \"memoize.py\", \"content\": \"def memoize(func):\\n    cache = {}\\n\\n    def wrapper(*args):\\n        if args not in cache:\\n            cache[args] = func(*args)\\n        return cache[args]\\n\\n    return wrapper\\n\"}</tool_call><tool_result name=\"write_file\" status=\"ok\">{\"path\": \"memoize.py\", \"bytes_written\": 174, \"mode\": \"overwrite\"}</tool_result><think>O cache evita recomputação para os mesmos argumentos, confirmado pela lista de chamadas reais. Vou validar.</think><tool_call name=\"checker\">{\"language\": \"python\", \"operation\": \"compile_and_test\", \"files\": [{\"path\": \"memoize.py\", \"content\": \"def memoize(func):\\n    cache = {}\\n\\n    def wrapper(*args):\\n        if args not in cache:\\n            cache[args] = func(*args)\\n        return cache[args]\\n\\n    return wrapper\\n\"}, {\"path\": \"test_memoize.py\", \"content\": \"from memoize import memoize\\n\\n\\ndef test_memoize():\\n    calls = []\\n\\n    @memoize\\n    def square(x):\\n        calls.append(x)\\n        return x * x\\n\\n    assert square(4) == 16\\n    assert square(4) == 16\\n    assert calls == [4]\\n    assert square(5) == 25\\n    assert calls == [4, 5]\\n\"}]}</tool_call><tool_result name=\"checker\" status=\"ok\">{\"passed\": true, \"errors\": [], \"stdout\": \".                                                                        [100%]\\n1 passed in 0.02s\\n\", \"stderr\": \"\", \"metadata\": {\"language\": \"python\", \"duration_ms\": 6234}}</tool_result><final>Implementei o decorator memoize, guardando resultados em cache por argumentos. A validação confirma que compila e o teste passa.</final>"
+  }
+}

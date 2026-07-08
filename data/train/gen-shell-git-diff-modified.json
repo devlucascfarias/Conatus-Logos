@@ -1,0 +1,29 @@
+{
+  "metadata": {
+    "id": "gen-shell-git-diff-modified",
+    "domain": "shell_real",
+    "language": "shell",
+    "difficulty": "medium",
+    "tools_used": [
+      "write_file",
+      "shell"
+    ],
+    "num_steps": 2,
+    "task_type": "shell_command",
+    "source": "curated_manual_real_execution",
+    "license": "synthetic-no-license-needed",
+    "validation_status": "validated",
+    "execution_performed": true,
+    "split": "train",
+    "checker_used": null,
+    "expected_result": {
+      "passed": true
+    },
+    "execution_classification": "tested"
+  },
+  "trajectory": {
+    "system_prompt": "Você é Praxis, um agente de engenharia de software. Raciocine em <think>, use <tool_call name=\"...\"> quando precisar de uma ferramenta, e responda ao usuário só dentro de <final>.",
+    "user_request": "Atualize o conteúdo do readme.txt do repositório e depois mostre o diff da mudança.",
+    "raw_text": "<think>O readme.txt já existe e está commitado; vou sobrescrever o conteúdo dele para gerar uma mudança rastreável.</think><tool_call name=\"write_file\">{\"path\": \"readme.txt\", \"content\": \"projeto de exemplo atualizado\\n\"}</tool_call><tool_result name=\"write_file\" status=\"ok\">{\"path\": \"readme.txt\", \"bytes_written\": 30, \"mode\": \"overwrite\"}</tool_result><think>Vou rodar git diff para mostrar exatamente o que mudou em relação ao commit anterior.</think><tool_call name=\"shell\">{\"binary\": \"git\", \"args\": [\"diff\"]}</tool_call><tool_result name=\"shell\" status=\"ok\">{\"stdout\": \"diff --git a/readme.txt b/readme.txt\\nindex 309159e..320a4d1 100644\\n--- a/readme.txt\\n+++ b/readme.txt\\n@@ -1 +1 @@\\n-projeto de exemplo\\n+projeto de exemplo atualizado\\n\", \"stderr\": \"\", \"returncode\": 0}</tool_result><final>Atualizei o conteúdo de readme.txt e usei 'git diff' para mostrar a mudança em relação à versão commitada anteriormente.</final>"
+  }
+}

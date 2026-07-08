@@ -1,0 +1,29 @@
+{
+  "metadata": {
+    "id": "gen-oop-matrix-var6",
+    "domain": "oop",
+    "language": "python",
+    "difficulty": "medium",
+    "tools_used": [
+      "write_file",
+      "checker"
+    ],
+    "num_steps": 2,
+    "task_type": "class_implementation",
+    "source": "phrasing_variant_of:gen-oop-matrix",
+    "license": "synthetic-no-license-needed",
+    "validation_status": "validated",
+    "execution_performed": true,
+    "split": "train",
+    "checker_used": "checker-python-1.0",
+    "expected_result": {
+      "passed": true
+    },
+    "execution_classification": "tested"
+  },
+  "trajectory": {
+    "system_prompt": "Você é Praxis, um agente de engenharia de software. Raciocine em <think>, use <tool_call name=\"...\"> quando precisar de uma ferramenta, e responda ao usuário só dentro de <final>.",
+    "user_request": "Estou precisando de uma classe Matrix com add e transpose.",
+    "raw_text": "<think>Vou usar uma classe Python aqui, não funções soltas, porque o comportamento pedido (soma e transposição de uma matriz) depende de estado interno.</think><tool_call name=\"write_file\">{\"path\": \"matrix.py\", \"content\": \"class Matrix:\\n    def __init__(self, rows):\\n        self.rows = rows\\n\\n    def add(self, other):\\n        if len(self.rows) != len(other.rows):\\n            raise ValueError('dimensoes incompativeis')\\n        return Matrix([\\n            [a + b for a, b in zip(row_a, row_b)]\\n            for row_a, row_b in zip(self.rows, other.rows)\\n        ])\\n\\n    def transpose(self):\\n        return Matrix([list(col) for col in zip(*self.rows)])\\n\"}</tool_call><tool_result name=\"write_file\" status=\"ok\">{\"path\": \"matrix.py\", \"bytes_written\": 430, \"mode\": \"overwrite\"}</tool_result><think>Antes de finalizar, preciso rodar a validação para confirmar que está tudo certo.</think><tool_call name=\"checker\">{\"language\": \"python\", \"operation\": \"compile_and_test\", \"files\": [{\"path\": \"matrix.py\", \"content\": \"class Matrix:\\n    def __init__(self, rows):\\n        self.rows = rows\\n\\n    def add(self, other):\\n        if len(self.rows) != len(other.rows):\\n            raise ValueError('dimensoes incompativeis')\\n        return Matrix([\\n            [a + b for a, b in zip(row_a, row_b)]\\n            for row_a, row_b in zip(self.rows, other.rows)\\n        ])\\n\\n    def transpose(self):\\n        return Matrix([list(col) for col in zip(*self.rows)])\\n\"}, {\"path\": \"test_matrix.py\", \"content\": \"import pytest\\n\\nfrom matrix import Matrix\\n\\n\\ndef test_matrix():\\n    m1 = Matrix([[1, 2], [3, 4]])\\n    m2 = Matrix([[5, 6], [7, 8]])\\n    assert m1.add(m2).rows == [[6, 8], [10, 12]]\\n    assert m1.transpose().rows == [[1, 3], [2, 4]]\\n    with pytest.raises(ValueError):\\n        m1.add(Matrix([[1]]))\\n\"}]}</tool_call><tool_result name=\"checker\" status=\"ok\">{\"passed\": true, \"errors\": [], \"stdout\": \".                                                                        [100%]\\n1 passed in 0.03s\\n\", \"stderr\": \"\", \"metadata\": {\"language\": \"python\", \"duration_ms\": 3141}}</tool_result><final>A classe Matrix foi implementada cobrindo soma e transposição de uma matriz. Rodei a validação e confirmei que passa.</final>"
+  }
+}
