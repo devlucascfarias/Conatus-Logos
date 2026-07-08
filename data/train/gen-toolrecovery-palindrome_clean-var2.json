@@ -1,0 +1,30 @@
+{
+  "metadata": {
+    "id": "gen-toolrecovery-palindrome_clean-var2",
+    "domain": "algorithms",
+    "language": "python",
+    "difficulty": "medium",
+    "tools_used": [
+      "web_search",
+      "write_file",
+      "checker"
+    ],
+    "num_steps": 3,
+    "task_type": "tool_unavailable",
+    "source": "phrasing_variant_of:gen-toolrecovery-palindrome_clean",
+    "license": "synthetic-no-license-needed",
+    "validation_status": "validated",
+    "execution_performed": true,
+    "split": "train",
+    "checker_used": "checker-python-1.0",
+    "expected_result": {
+      "passed": true
+    },
+    "execution_classification": "tested"
+  },
+  "trajectory": {
+    "system_prompt": "Você é Praxis, um agente de engenharia de software. Raciocine em <think>, use <tool_call name=\"...\"> quando precisar de uma ferramenta, e responda ao usuário só dentro de <final>.",
+    "user_request": "Pode escrever uma checagem de palíndromo que ignore pontuação e caixa?",
+    "raw_text": "<think>Antes de escrever o código, vou ver se acho algo sobre a forma mais robusta de normalizar a string.</think><tool_call name=\"web_search\">{\"query\": \"python check palindrome ignore spaces punctuation case\"}</tool_call><tool_result name=\"web_search\" status=\"error\">{\"code\": \"SANDBOX_ERROR\", \"message\": \"variável de ambiente 'PRAXIS_OLLAMA_SEARCH_API_KEY' não definida — a chave da API de busca da Ollama nunca é lida de um valor hardcoded (seções 5.4/7.8 do PLAN.md). Defina PRAXIS_OLLAMA_SEARCH_API_KEY no ambiente antes de usar provider='ollama'.\"}</tool_result><think>Isso não é um problema no meu raciocínio, é a ferramenta de busca que não está disponível agora. Sigo em frente mesmo assim.</think><tool_call name=\"write_file\">{\"path\": \"palindrome_clean.py\", \"content\": \"def is_palindrome_clean(text):\\n    normalized = ''.join(c.lower() for c in text if c.isalnum())\\n    return normalized == normalized[::-1]\\n\"}</tool_call><tool_result name=\"write_file\" status=\"ok\">{\"path\": \"palindrome_clean.py\", \"bytes_written\": 138, \"mode\": \"overwrite\"}</tool_result><think>Terminei a implementação; hora de rodar a validação.</think><tool_call name=\"checker\">{\"language\": \"python\", \"operation\": \"compile_and_test\", \"files\": [{\"path\": \"palindrome_clean.py\", \"content\": \"def is_palindrome_clean(text):\\n    normalized = ''.join(c.lower() for c in text if c.isalnum())\\n    return normalized == normalized[::-1]\\n\"}, {\"path\": \"test_palindrome_clean.py\", \"content\": \"from palindrome_clean import is_palindrome_clean\\n\\ndef test_is_palindrome_clean():\\n    assert is_palindrome_clean('A man a plan a canal Panama') is True\\n    assert is_palindrome_clean('hello') is False\\n    assert is_palindrome_clean('') is True\\n\"}]}</tool_call><tool_result name=\"checker\" status=\"ok\">{\"passed\": true, \"errors\": [], \"stdout\": \".                                                                        [100%]\\n1 passed in 0.02s\\n\", \"stderr\": \"\", \"metadata\": {\"language\": \"python\", \"duration_ms\": 2843}}</tool_result><final>A busca não funcionou aqui (limitação do ambiente, não da tarefa), mas isso não impede de entregar o resultado: implementei e validei is_palindrome_clean(text) (normalizando e comparando com o reverso) com sucesso.</final>"
+  }
+}

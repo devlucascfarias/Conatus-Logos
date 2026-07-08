@@ -1,0 +1,30 @@
+{
+  "metadata": {
+    "id": "gen-toolsuccess-binary_search-var1",
+    "domain": "algorithms",
+    "language": "python",
+    "difficulty": "easy",
+    "tools_used": [
+      "web_search",
+      "write_file",
+      "checker"
+    ],
+    "num_steps": 3,
+    "task_type": "multi_tool_call",
+    "source": "phrasing_variant_of:gen-toolsuccess-binary_search",
+    "license": "synthetic-no-license-needed",
+    "validation_status": "validated",
+    "execution_performed": true,
+    "split": "train",
+    "checker_used": "checker-python-1.0",
+    "expected_result": {
+      "passed": true
+    },
+    "execution_classification": "tested"
+  },
+  "trajectory": {
+    "system_prompt": "Você é Praxis, um agente de engenharia de software. Raciocine em <think>, use <tool_call name=\"...\"> quando precisar de uma ferramenta, e responda ao usuário só dentro de <final>.",
+    "user_request": "Escreva uma implementação de busca binária em Python.",
+    "raw_text": "<think>Vou dar uma olhada em a abordagem iterativa clássica de busca binária antes de codificar.</think><tool_call name=\"web_search\">{\"query\": \"python binary search implementation\"}</tool_call><tool_result name=\"web_search\" status=\"ok\">{\"results\": [{\"title\": \"Binary Search | Python - GeeksforGeeks\", \"url\": \"https://www.geeksforgeeks.org/python/python-program-for-binary-search/\", \"snippet\": \"Binary search requires a sorted array. It checks the middle element; if the target is smaller, it searches the left half, otherwise the right half, halving the search space each step (O(log n)).\"}, {\"title\": \"Binary Search with Python - w3schools\", \"url\": \"https://www.w3schools.com/python/python_dsa_binarysearch.asp\", \"snippet\": \"The iterative implementation uses low and high pointers, computing mid = (low + high) // 2 each iteration and narrowing the range until the target is found or the range is empty.\"}]}</tool_result><think>Beleza, achei o que precisava: usar ponteiros low/high, calculando mid a cada iteração, reduz o intervalo pela metade. Bora implementar com isso.</think><tool_call name=\"write_file\">{\"path\": \"binary_search.py\", \"content\": \"def binary_search(arr, target):\\n    low, high = 0, len(arr) - 1\\n    while low <= high:\\n        mid = (low + high) // 2\\n        if arr[mid] == target:\\n            return mid\\n        if arr[mid] < target:\\n            low = mid + 1\\n        else:\\n            high = mid - 1\\n    return -1\\n\"}</tool_call><tool_result name=\"write_file\" status=\"ok\">{\"path\": \"binary_search.py\", \"bytes_written\": 284, \"mode\": \"overwrite\"}</tool_result><think>Terminei o código; falta só validar.</think><tool_call name=\"checker\">{\"language\": \"python\", \"operation\": \"compile_and_test\", \"files\": [{\"path\": \"binary_search.py\", \"content\": \"def binary_search(arr, target):\\n    low, high = 0, len(arr) - 1\\n    while low <= high:\\n        mid = (low + high) // 2\\n        if arr[mid] == target:\\n            return mid\\n        if arr[mid] < target:\\n            low = mid + 1\\n        else:\\n            high = mid - 1\\n    return -1\\n\"}, {\"path\": \"test_binary_search.py\", \"content\": \"from binary_search import binary_search\\n\\n\\ndef test_binary_search():\\n    assert binary_search([1, 3, 5, 7, 9], 5) == 2\\n    assert binary_search([1, 3, 5, 7, 9], 4) == -1\\n    assert binary_search([], 1) == -1\\n\"}]}</tool_call><tool_result name=\"checker\" status=\"ok\">{\"passed\": true, \"errors\": [], \"stdout\": \".                                                                        [100%]\\n1 passed in 0.02s\\n\", \"stderr\": \"\", \"metadata\": {\"language\": \"python\", \"duration_ms\": 2953}}</tool_result><final>Pesquisei sobre a abordagem iterativa clássica de busca binária e confirmei que usar ponteiros low/high, calculando mid a cada iteração, reduz o intervalo pela metade. Implementei binary_search(arr, target) com base nisso, e a validação mostra que está tudo certo.</final>"
+  }
+}

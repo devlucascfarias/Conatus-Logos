@@ -1,0 +1,30 @@
+{
+  "metadata": {
+    "id": "gen-toolrecovery-transpose-var2",
+    "domain": "algorithms",
+    "language": "python",
+    "difficulty": "easy",
+    "tools_used": [
+      "web_search",
+      "write_file",
+      "checker"
+    ],
+    "num_steps": 3,
+    "task_type": "tool_unavailable",
+    "source": "phrasing_variant_of:gen-toolrecovery-transpose",
+    "license": "synthetic-no-license-needed",
+    "validation_status": "validated",
+    "execution_performed": true,
+    "split": "train",
+    "checker_used": "checker-python-1.0",
+    "expected_result": {
+      "passed": true
+    },
+    "execution_classification": "tested"
+  },
+  "trajectory": {
+    "system_prompt": "Você é Praxis, um agente de engenharia de software. Raciocine em <think>, use <tool_call name=\"...\"> quando precisar de uma ferramenta, e responda ao usuário só dentro de <final>.",
+    "user_request": "Pode escrever código que transpõe uma matriz representada como lista de listas?",
+    "raw_text": "<think>Antes de escrever o código, vou ver se acho algo sobre a forma mais idiomática de transpor uma matriz.</think><tool_call name=\"web_search\">{\"query\": \"python transpose matrix list of lists zip\"}</tool_call><tool_result name=\"web_search\" status=\"error\">{\"code\": \"SANDBOX_ERROR\", \"message\": \"variável de ambiente 'PRAXIS_OLLAMA_SEARCH_API_KEY' não definida — a chave da API de busca da Ollama nunca é lida de um valor hardcoded (seções 5.4/7.8 do PLAN.md). Defina PRAXIS_OLLAMA_SEARCH_API_KEY no ambiente antes de usar provider='ollama'.\"}</tool_result><think>Isso não é um problema no meu raciocínio, é a ferramenta de busca que não está disponível agora. Sigo em frente mesmo assim.</think><tool_call name=\"write_file\">{\"path\": \"transpose.py\", \"content\": \"def transpose(matrix):\\n    return [list(row) for row in zip(*matrix)]\\n\"}</tool_call><tool_result name=\"write_file\" status=\"ok\">{\"path\": \"transpose.py\", \"bytes_written\": 70, \"mode\": \"overwrite\"}</tool_result><think>Terminei a implementação; hora de rodar a validação.</think><tool_call name=\"checker\">{\"language\": \"python\", \"operation\": \"compile_and_test\", \"files\": [{\"path\": \"transpose.py\", \"content\": \"def transpose(matrix):\\n    return [list(row) for row in zip(*matrix)]\\n\"}, {\"path\": \"test_transpose.py\", \"content\": \"from transpose import transpose\\n\\ndef test_transpose():\\n    assert transpose([[1, 2], [3, 4], [5, 6]]) == [[1, 3, 5], [2, 4, 6]]\\n    assert transpose([[1]]) == [[1]]\\n\"}]}</tool_call><tool_result name=\"checker\" status=\"ok\">{\"passed\": true, \"errors\": [], \"stdout\": \".                                                                        [100%]\\n1 passed in 0.02s\\n\", \"stderr\": \"\", \"metadata\": {\"language\": \"python\", \"duration_ms\": 2968}}</tool_result><final>A busca não funcionou aqui (limitação do ambiente, não da tarefa), mas isso não impede de entregar o resultado: implementei e validei transpose(matrix) (usando zip(*matrix)) com sucesso.</final>"
+  }
+}

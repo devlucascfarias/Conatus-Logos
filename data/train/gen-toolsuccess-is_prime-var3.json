@@ -1,0 +1,30 @@
+{
+  "metadata": {
+    "id": "gen-toolsuccess-is_prime-var3",
+    "domain": "algorithms",
+    "language": "python",
+    "difficulty": "easy",
+    "tools_used": [
+      "web_search",
+      "write_file",
+      "checker"
+    ],
+    "num_steps": 3,
+    "task_type": "multi_tool_call",
+    "source": "phrasing_variant_of:gen-toolsuccess-is_prime",
+    "license": "synthetic-no-license-needed",
+    "validation_status": "validated",
+    "execution_performed": true,
+    "split": "train",
+    "checker_used": "checker-python-1.0",
+    "expected_result": {
+      "passed": true
+    },
+    "execution_classification": "tested"
+  },
+  "trajectory": {
+    "system_prompt": "Você é Praxis, um agente de engenharia de software. Raciocine em <think>, use <tool_call name=\"...\"> quando precisar de uma ferramenta, e responda ao usuário só dentro de <final>.",
+    "user_request": "Pode escrever uma função is_prime otimizada?",
+    "raw_text": "<think>Antes de partir pro código, vou checar a forma mais eficiente de testar primalidade para números pequenos/moderados.</think><tool_call name=\"web_search\">{\"query\": \"python efficient primality test algorithm\"}</tool_call><tool_result name=\"web_search\" status=\"ok\">{\"results\": [{\"title\": \"Primality Testing in Python: From Trial Division to Sieve\", \"url\": \"https://www.digibeatrix.com/python/en/syntax-control/python-prime-number-detection-guide/\", \"snippet\": \"Trial division only needs to check divisors up to the square root of n, since any factor larger than the square root would pair with one smaller than it.\"}, {\"title\": \"Euclidean algorithms (Basic and Extended) - GeeksforGeeks\", \"url\": \"https://www.geeksforgeeks.org/dsa/euclidean-algorithms-basic-and-extended/\", \"snippet\": \"For small to moderate numbers, trial division up to sqrt(n), skipping even numbers after checking 2, is a simple and efficient primality test.\"}]}</tool_result><think>Ótimo, os resultados confirmam que divisão por tentativa só até a raiz quadrada de n, pulando pares, já é suficiente. Vou usar isso.</think><tool_call name=\"write_file\">{\"path\": \"is_prime.py\", \"content\": \"def is_prime(n):\\n    if n < 2:\\n        return False\\n    if n == 2:\\n        return True\\n    if n % 2 == 0:\\n        return False\\n    i = 3\\n    while i * i <= n:\\n        if n % i == 0:\\n            return False\\n        i += 2\\n    return True\\n\"}</tool_call><tool_result name=\"write_file\" status=\"ok\">{\"path\": \"is_prime.py\", \"bytes_written\": 238, \"mode\": \"overwrite\"}</tool_result><think>Pronto o suficiente para validar agora.</think><tool_call name=\"checker\">{\"language\": \"python\", \"operation\": \"compile_and_test\", \"files\": [{\"path\": \"is_prime.py\", \"content\": \"def is_prime(n):\\n    if n < 2:\\n        return False\\n    if n == 2:\\n        return True\\n    if n % 2 == 0:\\n        return False\\n    i = 3\\n    while i * i <= n:\\n        if n % i == 0:\\n            return False\\n        i += 2\\n    return True\\n\"}, {\"path\": \"test_is_prime.py\", \"content\": \"from is_prime import is_prime\\n\\n\\ndef test_is_prime():\\n    assert is_prime(17) is True\\n    assert is_prime(1) is False\\n    assert is_prime(2) is True\\n    assert is_prime(15) is False\\n\"}]}</tool_call><tool_result name=\"checker\" status=\"ok\">{\"passed\": true, \"errors\": [], \"stdout\": \".                                                                        [100%]\\n1 passed in 0.02s\\n\", \"stderr\": \"\", \"metadata\": {\"language\": \"python\", \"duration_ms\": 3000}}</tool_result><final>Busquei informação sobre a forma mais eficiente de testar primalidade para números pequenos/moderados: divisão por tentativa só até a raiz quadrada de n, pulando pares, já é suficiente. Usei isso para implementar is_prime(n), validado com sucesso pelo checker.</final>"
+  }
+}
