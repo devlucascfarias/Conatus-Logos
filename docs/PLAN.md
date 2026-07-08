@@ -333,7 +333,41 @@ escolhido pelo harness. Consequências:
   (seção 6), que é "uma ação por passo, verifica, continua"; multi-comando vira múltiplas
   chamadas de ferramenta, não uma string opaca.
 
-### 4.6 Fase 2+: `apply_patch`, `search_code`, `git_diff`, `web_search` (esboço de contrato)
+### 4.6 `web_search` (habilitada — D14)
+
+```json
+{
+  "name": "web_search",
+  "version": "1.0",
+  "input_schema": {
+    "type": "object",
+    "required": ["query"],
+    "properties": {
+      "query": {"type": "string", "minLength": 1},
+      "max_results": {"type": "integer", "minimum": 1, "maximum": 20, "default": 5}
+    }
+  },
+  "requires_confirmation": false,
+  "side_effects": "read"
+}
+```
+
+Saída:
+
+```json
+{"results": [{"title": "...", "url": "...", "snippet": "..."}]}
+```
+
+**D14**: diferente das outras ferramentas do MVP, `web_search` não fala direto com um processo local —
+passa por uma interface `SearchBackend` (`src/search/base.py`) selecionável via
+`configs/search_backend.yaml` (`provider: ollama|mock|...`), resolvida por uma factory
+(`build_search_backend`) — o executor (`src/tools/executors/web_search_tool.py`) nunca
+instancia um backend concreto diretamente. Backend inicial é a API de busca da Ollama; trocar
+de motor no futuro é mudar a config, não o código chamador. Falha de rede/config vira
+`SANDBOX_ERROR` (não é tratada como comportamento incorreto do modelo — a ferramenta estava
+disponível e o modelo a usou corretamente, o problema é externo).
+
+### 4.7 Fase 2+: `apply_patch`, `search_code`, `git_diff` (esboço de contrato, desabilitadas — D5)
 
 ```json
 // apply_patch — fase 2
@@ -346,9 +380,6 @@ escolhido pelo harness. Consequências:
 
 // git_diff — fase 2
 {"input_schema": {"type": "object", "properties": {"path": {"type": "string", "default": "."}, "staged": {"type": "boolean", "default": false}}}}
-
-// web_search — fase 2, backend mockável via interface abstrata (ver 5.4)
-{"input_schema": {"type": "object", "required": ["query"], "properties": {"query": {"type": "string"}}}}
 ```
 
 ---
