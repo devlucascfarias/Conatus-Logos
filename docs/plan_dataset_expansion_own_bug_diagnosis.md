@@ -1,8 +1,8 @@
 # Plano: diagnóstico correto de bug autoral + edição real na retentativa (Gap 6)
 
-Status: **planejado, não executado** (ver `D-own-bug-diagnosis-plan` em `docs/PLAN.md`, seção
-2). Execução fica para a mesma leva futura do Gap 5 (`docs/plan_dataset_expansion_confabulation_gap.md`),
-quando a decisão de retreino for tomada.
+Status: **executado em 2026-07-08** (ver `D-own-bug-diagnosis-expansion` em `docs/PLAN.md`,
+seção 2). 20 exemplos gerados (4 base + 16 variantes), na mesma leva do Gap 5 — retreino ainda
+pendente de decisão.
 
 ## 1. Motivação
 

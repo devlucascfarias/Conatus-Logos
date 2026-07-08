@@ -27,6 +27,7 @@ SIMILARITY_THRESHOLD = 0.90
 _PREFIXES = (
     "gen-oop-", "gen-error-", "gen-pattern-", "gen-module-", "gen-ensearch-", "gen-shell-",
     "gen-checkerinfra-", "gen-jsonrecovery-", "gen-multifile-", "gen-trapword-", "gen-hyprevision-",
+    "gen-confab-", "gen-ownbug-",
 )
 
 _TAG_RE = re.compile(r"<tool_call[^>]*>.*?</tool_call>|<tool_result[^>]*>.*?</tool_result>", re.DOTALL)

@@ -1,7 +1,7 @@
 # Plano: confabulação de correção inexistente (Gap 5)
 
-Status: **planejado, não executado** (ver `D-confabulation-gap-plan` em `docs/PLAN.md`,
-seção 2). Execução fica para depois da decisão de consolidação/retreino em pauta.
+Status: **executado em 2026-07-08** (ver `D-confabulation-gap-expansion` em `docs/PLAN.md`,
+seção 2). 20 exemplos gerados (4 base + 16 variantes) — retreino ainda pendente de decisão.
 
 ## 1. Motivação
 

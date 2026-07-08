@@ -13,6 +13,7 @@ DATA_DIR = REPO_ROOT / "data" / "train"
 _PREFIXES = (
     "gen-oop-", "gen-error-", "gen-pattern-", "gen-module-", "gen-ensearch-", "gen-shell-",
     "gen-checkerinfra-", "gen-jsonrecovery-", "gen-multifile-", "gen-trapword-", "gen-hyprevision-",
+    "gen-confab-", "gen-ownbug-",
 )
 _PATTERNS = ["PRAXIS_OLLAMA", "PLAN.md", "AppData", "Pichau", "Desktop\\Logos", "C:\\Users", "Traceback"]
 
