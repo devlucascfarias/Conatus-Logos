@@ -21,7 +21,20 @@ from .base import Completion
 
 
 class TransformersModelRunner:
-    def __init__(self, model_name_or_path: str, adapter_path: Optional[str] = None, device: str = "cuda"):
+    def __init__(
+        self,
+        model_name_or_path: str,
+        adapter_path: Optional[str] = None,
+        device: str = "cuda",
+        quantization_config: Optional[Any] = None,
+    ):
+        """`quantization_config` (ex.: `transformers.BitsAndBytesConfig` em 4-bit NF4) é
+        OPCIONAL mas altamente recomendado ao carregar um modelo de vários bilhões de
+        parâmetros direto (sem reaproveitar um `model` já em memória via `from_loaded`) — sem
+        isso, `from_pretrained` carrega em precisão cheia (ex.: ~32 GB para um modelo de 8B em
+        fp32), o que não cabe numa L4 de 24 GB e faz OOM já no carregamento, antes de qualquer
+        geração. O chamador decide o `quantization_config` (normalmente o mesmo usado no
+        treino, via `TrainConfig`) — este módulo não depende de `TrainConfig` de propósito."""
         try:
             from peft import PeftModel
             from transformers import AutoModelForCausalLM, AutoTokenizer
@@ -38,7 +51,9 @@ class TransformersModelRunner:
             # definido — usar eos_token como pad é a convenção padrão para geração em lote/máscara.
             self._tokenizer.pad_token = self._tokenizer.eos_token
 
-        base_model = AutoModelForCausalLM.from_pretrained(model_name_or_path, device_map=device)
+        base_model = AutoModelForCausalLM.from_pretrained(
+            model_name_or_path, device_map=device, quantization_config=quantization_config
+        )
         self._model = PeftModel.from_pretrained(base_model, adapter_path) if adapter_path else base_model
         self._model.eval()
 
