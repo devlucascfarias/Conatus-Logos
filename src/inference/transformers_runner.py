@@ -27,6 +27,7 @@ class TransformersModelRunner:
         adapter_path: Optional[str] = None,
         device: str = "cuda",
         quantization_config: Optional[Any] = None,
+        repetition_penalty: float = 1.15,
     ):
         """`quantization_config` (ex.: `transformers.BitsAndBytesConfig` em 4-bit NF4) é
         OPCIONAL mas altamente recomendado ao carregar um modelo de vários bilhões de
@@ -34,7 +35,10 @@ class TransformersModelRunner:
         isso, `from_pretrained` carrega em precisão cheia (ex.: ~32 GB para um modelo de 8B em
         fp32), o que não cabe numa L4 de 24 GB e faz OOM já no carregamento, antes de qualquer
         geração. O chamador decide o `quantization_config` (normalmente o mesmo usado no
-        treino, via `TrainConfig`) — este módulo não depende de `TrainConfig` de propósito."""
+        treino, via `TrainConfig`) — este módulo não depende de `TrainConfig` de propósito.
+
+        `repetition_penalty` (D-repetition-loop): 1.0 desativa. Valor moderado (1.15) por
+        padrão — ver nota em `generate()`."""
         try:
             from peft import PeftModel
             from transformers import AutoModelForCausalLM, AutoTokenizer
@@ -56,9 +60,12 @@ class TransformersModelRunner:
         )
         self._model = PeftModel.from_pretrained(base_model, adapter_path) if adapter_path else base_model
         self._model.eval()
+        self._repetition_penalty = repetition_penalty
 
     @classmethod
-    def from_loaded(cls, model: Any, tokenizer: Any) -> "TransformersModelRunner":
+    def from_loaded(
+        cls, model: Any, tokenizer: Any, repetition_penalty: float = 1.15
+    ) -> "TransformersModelRunner":
         """Reaproveita um modelo/tokenizer JÁ carregados em memória, sem chamar
         `from_pretrained` de novo — evita duplicar a VRAM ao avaliar logo após o treino, no
         mesmo processo/notebook (`OutOfMemoryError` confirmado no Colab: carregar uma segunda
@@ -69,6 +76,7 @@ class TransformersModelRunner:
             instance._tokenizer.pad_token = instance._tokenizer.eos_token
         instance._model = model
         instance._model.eval()
+        instance._repetition_penalty = repetition_penalty
         return instance
 
     def generate(self, prompt: str, stop: list[str], max_tokens: int = 1024) -> Completion:
@@ -117,6 +125,17 @@ class TransformersModelRunner:
                 # use_cache=True aqui sempre, independente do que ficou configurado no
                 # model.config depois do treino.
                 use_cache=True,
+                # D-repetition-loop: decodificação gulosa (do_sample=False) sem nenhuma
+                # penalidade de repetição não tem como escapar de um loop assim que o modelo
+                # começa a repetir uma frase — repetir vira, token a token, a opção de maior
+                # probabilidade. Confirmado num caso real no Colab (adapter pós-D-hypothesis-
+                # revision-expansion): um <think> de diagnóstico entrou em loop de repetição
+                # da mesma frase até UNTERMINATED_TAG, quatro vezes seguidas, até
+                # MAX_STEPS_EXCEEDED — sem fabricação (o harness segurou a honestidade), mas
+                # a tarefa nunca foi concluída. 1.15 é moderado de propósito: alto o
+                # suficiente pra quebrar loops, baixo o suficiente pra não penalizar
+                # repetição legítima de código (indentação, `self.`, `def `, chaves de teste).
+                repetition_penalty=self._repetition_penalty,
             )
 
         generated_ids = output_ids[0][prompt_len:]

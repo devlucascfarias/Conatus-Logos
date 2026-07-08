@@ -37,13 +37,16 @@ def test_generate_respects_max_tokens_when_no_stop_matches(runner: TransformersM
 
 
 def test_generate_stops_exactly_at_stop_sequence(runner: TransformersModelRunner):
-    # Geração é gulosa (do_sample=False) e determinística — "ct" aparece nesse modelo de teste
+    # Geração é gulosa (do_sample=False) e determinística — "if" aparece nesse modelo de teste
     # bem antes de 50 tokens, o que prova que o StoppingCriteria realmente corta a geração no
-    # ponto certo, não só decodifica tudo e checa o sufixo por acaso.
-    result = runner.generate("Hello world", stop=["ct"], max_tokens=50)
+    # ponto certo, não só decodifica tudo e checa o sufixo por acaso. Substring escolhida
+    # depois de D-repetition-loop adicionar repetition_penalty ao generate() — "ct" (usado
+    # antes) parou de aparecer na saída determinística deste modelo de pesos aleatórios com a
+    # penalidade ativa; "if" continua confiável.
+    result = runner.generate("Hello world", stop=["if"], max_tokens=50)
     assert result.stop_reason == "stop_sequence"
-    assert result.matched_stop == "ct"
-    assert result.text.endswith("ct")
+    assert result.matched_stop == "if"
+    assert result.text.endswith("if")
 
 
 def test_generate_returns_completion_with_correct_types(runner: TransformersModelRunner):
@@ -63,10 +66,10 @@ def test_from_loaded_reuses_existing_model_without_reloading():
     model = AutoModelForCausalLM.from_pretrained(_TINY_MODEL)
 
     runner = TransformersModelRunner.from_loaded(model, tokenizer)
-    result = runner.generate("Hello world", stop=["ct"], max_tokens=50)
+    result = runner.generate("Hello world", stop=["if"], max_tokens=50)
 
     assert result.stop_reason == "stop_sequence"
-    assert result.matched_stop == "ct"
+    assert result.matched_stop == "if"
 
 
 def test_missing_dependencies_raises_clear_runtime_error(monkeypatch):
