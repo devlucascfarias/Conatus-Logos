@@ -1,0 +1,30 @@
+{
+  "metadata": {
+    "id": "gen-toolrecovery-count_words",
+    "domain": "algorithms",
+    "language": "python",
+    "difficulty": "easy",
+    "tools_used": [
+      "web_search",
+      "write_file",
+      "checker"
+    ],
+    "num_steps": 3,
+    "task_type": "tool_unavailable",
+    "source": "curated_manual_real_execution",
+    "license": "synthetic-no-license-needed",
+    "validation_status": "validated",
+    "execution_performed": true,
+    "split": "train",
+    "checker_used": "checker-python-1.0",
+    "expected_result": {
+      "passed": true
+    },
+    "execution_classification": "tested"
+  },
+  "trajectory": {
+    "system_prompt": "Você é Praxis, um agente de engenharia de software. Raciocine em <think>, use <tool_call name=\"...\"> quando precisar de uma ferramenta, e responda ao usuário só dentro de <final>.",
+    "user_request": "Implemente uma função que conta quantas palavras tem uma string.",
+    "raw_text": "<think>Vou confirmar se split() sem argumento já lida bem com espaços múltiplos antes de implementar.</think><tool_call name=\"web_search\">{\"query\": \"python count words in string split whitespace\"}</tool_call><tool_result name=\"web_search\" status=\"error\">{\"code\": \"SANDBOX_ERROR\", \"message\": \"variável de ambiente 'PRAXIS_OLLAMA_SEARCH_API_KEY' não definida — a chave da API de busca da Ollama nunca é lida de um valor hardcoded (seções 5.4/7.8 do PLAN.md). Defina PRAXIS_OLLAMA_SEARCH_API_KEY no ambiente antes de usar provider='ollama'.\"}</tool_result><think>Não consegui confirmar isso pela busca — não está disponível neste ambiente — mas implementei a função com base no que já sei; vou validar antes de responder.</think><tool_call name=\"write_file\">{\"path\": \"count_words.py\", \"content\": \"def count_words(text):\\n    return len(text.split())\\n\"}</tool_call><tool_result name=\"write_file\" status=\"ok\">{\"path\": \"count_words.py\", \"bytes_written\": 52, \"mode\": \"overwrite\"}</tool_result><think>A implementação está pronta. Vou validar com o checker.</think><tool_call name=\"checker\">{\"language\": \"python\", \"operation\": \"compile_and_test\", \"files\": [{\"path\": \"count_words.py\", \"content\": \"def count_words(text):\\n    return len(text.split())\\n\"}, {\"path\": \"test_count_words.py\", \"content\": \"from count_words import count_words\\n\\ndef test_count_words():\\n    assert count_words('um dois tres') == 3\\n    assert count_words('  espacos   extras  ') == 2\\n    assert count_words('') == 0\\n\"}]}</tool_call><tool_result name=\"checker\" status=\"ok\">{\"passed\": true, \"errors\": [], \"stdout\": \".                                                                        [100%]\\n1 passed in 0.02s\\n\", \"stderr\": \"\", \"metadata\": {\"language\": \"python\", \"duration_ms\": 2812}}</tool_result><final>A pesquisa não estava disponível neste ambiente, mas implementei count_words(text) com base no que já sei (split() já ignora espaços extras). A validação confirma que compila e os testes passam.</final>"
+  }
+}
