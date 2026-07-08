@@ -3,6 +3,9 @@
 Status: **planejado, não iniciado**. Combinado em conversa em 2026-07-08, depois dos testes
 manuais pós-retreino (rodadas 1-3, `docs/PLAN.md` seção 2: `D-retrain-oop-expansion-results`,
 `D-maxtokens-oop-confirmed`, `D-oop-expansion-round2-tests`, `D-oop-expansion-round3-ood-tests`).
+Consolidado em uma leva única de propósito: créditos de Colab limitados até a próxima renovação,
+então geração+validação local (grátis) acontece toda de uma vez, para um retreino só cobrir
+tudo (em vez de vários ciclos pequenos gastando crédito repetidamente).
 
 ## 1. Motivação
 
@@ -40,6 +43,14 @@ específicos (investigado, não é ausência total):**
   falha genuinamente", nenhum ensina diagnosticar QUAL dos múltiplos arquivos enviados ao
   `checker` tem o defeito real e corrigir só esse.
 
+**Gap 3 — tool-choice equivocado em pergunta curta/direta (adicionado a esta leva por ser
+igualmente barato e os créditos de Colab estarem escassos).** No probe #20 da suíte de 25
+(`docs/PLAN.md`, testes pós-retreino), a pergunta "responda em uma frase: para que serve o
+comando import?" levou o modelo a chamar uma ferramenta sem necessidade — provavelmente a
+palavra "comando" puxou associação com shell/tool. `probe_direct_vs_tool_choice` já existe como
+categoria, mas o dataset original tem poucos exemplos de perguntas CURTAS e diretas com
+palavras que soam a ferramenta (comando, rodar, executar) sem exigir uma de verdade.
+
 ## 2. Categorias e escala-alvo
 
 | Categoria | Tarefas-base | Variantes de frase | Total aprox. |
@@ -47,10 +58,11 @@ específicos (investigado, não é ausência total):**
 | Recuperação de falha de `checker` por infra (Gap 1) | 5-6 | 4-5 | ~25-30 |
 | JSON malformado em código complexo, execução real (Gap 2a) | 4-5 | 4-5 | ~20-25 |
 | Diagnóstico de arquivo com bug real entre vários (Gap 2b) | 4-5 | 4-5 | ~20-25 |
-| **Total** | **~14-16** | — | **~65-80** |
+| Tool-choice em pergunta curta com palavra-armadilha (Gap 3) | 5-6 | 4-5 | ~20-25 |
+| **Total** | **~19-22** | — | **~85-105** |
 
 Escala bem menor que a expansão de ontem (85 tarefas-base/765 exemplos) — de propósito: são
-três comportamentos estreitos e específicos, não categorias inteiras de domínio. Referência de
+quatro comportamentos estreitos e específicos, não categorias inteiras de domínio. Referência de
 proporção: os pilotos de recuperação de `web_search` (`D-tool-recovery-pilot`/
 `D-tool-success-pilot`) foram 5 tarefas-base × 4-5 variantes ≈ 25-40 exemplos cada, e
 resolveram um gap do mesmo porte.
@@ -85,6 +97,12 @@ resolveram um gap do mesmo porte.
   ("o JSON da minha chamada estava malformado, vou corrigir" / "o bug está no arquivo de
   teste, não na implementação — vou corrigir o teste"), evitando a linguagem de
   "culpar a ferramenta/ambiente" que causou o comportamento problemático nos dois casos reais.
+- **Gap 3 — perguntas curtas com palavra-armadilha, sem ferramenta nenhuma.** Cada exemplo é
+  `task_type: direct_answer` (`num_steps: 0`, sem `tool_call`), igual ao padrão já existente de
+  `probe_direct_vs_tool_choice`. O pedido usa palavras que soam a ação de ferramenta ("comando",
+  "rodar", "executar", "arquivo") mas pede só explicação conceitual — o `<think>` precisa
+  reconhecer explicitamente que, apesar da palavra, não há nada para escrever/validar/rodar de
+  verdade.
 
 ## 4. AVISO CRÍTICO — mesmo cuidado de sempre com repetição de template
 
