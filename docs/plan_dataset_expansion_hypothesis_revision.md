@@ -1,10 +1,9 @@
 # Plano: revisão de hipótese após segunda falha real (Gap 4)
 
-Status: **planejado, não iniciado**. Combinado em conversa em 2026-07-08, depois de revisar o
-CoT do modelo pós-retreino nos casos Go e Sudoku (`docs/PLAN.md` seção 2:
-`D-oop-expansion-round3-ood-tests`) e de consolidar o plano de recuperação de erro
-(`D-error-recovery-expansion`). Créditos de Colab limitados até a renovação — geração/validação
-local acontece agora, junto do resto, para um único retreino cobrir tudo.
+Status: **executado em 2026-07-08** (ver `D-hypothesis-revision-expansion` em `docs/PLAN.md`,
+seção 2). 20 exemplos gerados (4 base + 16 variantes), com um problema de repetição de template
+achado e corrigido ANTES de aceitar o lote (ver detalhe na decisão do PLAN.md). Este arquivo
+permanece como registro do plano original.
 
 ## 1. Motivação
 
