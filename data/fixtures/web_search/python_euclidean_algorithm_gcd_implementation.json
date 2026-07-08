@@ -1,0 +1,12 @@
+[
+  {
+    "title": "Euclidean algorithms (Basic and Extended) - GeeksforGeeks",
+    "url": "https://www.geeksforgeeks.org/dsa/euclidean-algorithms-basic-and-extended/",
+    "snippet": "The Euclidean algorithm computes the greatest common divisor (GCD) of two numbers. Iterative approach: while b != 0, set a, b = b, a % b; return a when b reaches 0."
+  },
+  {
+    "title": "Calculating GCD Using Euclid Algorithm In Python - djangocentral",
+    "url": "https://djangocentral.com/gcd-using-euclid-algorithm-in-python/",
+    "snippet": "The iterative version is more memory-efficient for large inputs than the recursive version, since it avoids growing the call stack."
+  }
+]

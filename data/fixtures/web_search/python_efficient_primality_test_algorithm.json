@@ -1,0 +1,12 @@
+[
+  {
+    "title": "Primality Testing in Python: From Trial Division to Sieve",
+    "url": "https://www.digibeatrix.com/python/en/syntax-control/python-prime-number-detection-guide/",
+    "snippet": "Trial division only needs to check divisors up to the square root of n, since any factor larger than the square root would pair with one smaller than it."
+  },
+  {
+    "title": "Euclidean algorithms (Basic and Extended) - GeeksforGeeks",
+    "url": "https://www.geeksforgeeks.org/dsa/euclidean-algorithms-basic-and-extended/",
+    "snippet": "For small to moderate numbers, trial division up to sqrt(n), skipping even numbers after checking 2, is a simple and efficient primality test."
+  }
+]

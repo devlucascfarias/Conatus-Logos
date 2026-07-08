@@ -1,0 +1,12 @@
+[
+  {
+    "title": "numpy.fft.fft — NumPy v2.4 Manual",
+    "url": "https://numpy.org/doc/stable/reference/generated/numpy.fft.fft.html",
+    "snippet": "fft.fft(a, n=None, axis=-1, norm=None, out=None). Compute the one-dimensional discrete Fourier Transform using the efficient Fast Fourier Transform (FFT) algorithm."
+  },
+  {
+    "title": "Discrete Fourier Transform — NumPy v2.4 Manual",
+    "url": "https://numpy.org/doc/stable/reference/routines.fft.html",
+    "snippet": "fft(a[, n, axis, norm, out]) computes the one-dimensional discrete Fourier Transform. fftn computes the N-dimensional discrete Fourier Transform. The DFT has become a mainstay of numerical computing because of the Fast Fourier Transform (FFT) algorithm."
+  }
+]

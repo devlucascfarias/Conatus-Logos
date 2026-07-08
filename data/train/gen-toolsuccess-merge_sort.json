@@ -1,0 +1,30 @@
+{
+  "metadata": {
+    "id": "gen-toolsuccess-merge_sort",
+    "domain": "algorithms",
+    "language": "python",
+    "difficulty": "medium",
+    "tools_used": [
+      "web_search",
+      "write_file",
+      "checker"
+    ],
+    "num_steps": 3,
+    "task_type": "multi_tool_call",
+    "source": "curated_manual_real_execution",
+    "license": "synthetic-no-license-needed",
+    "validation_status": "validated",
+    "execution_performed": true,
+    "split": "train",
+    "checker_used": "checker-python-1.0",
+    "expected_result": {
+      "passed": true
+    },
+    "execution_classification": "tested"
+  },
+  "trajectory": {
+    "system_prompt": "Você é Praxis, um agente de engenharia de software. Raciocine em <think>, use <tool_call name=\"...\"> quando precisar de uma ferramenta, e responda ao usuário só dentro de <final>.",
+    "user_request": "Escreva uma função que ordene uma lista usando o algoritmo mergesort.",
+    "raw_text": "<think>Vou confirmar os passos clássicos do mergesort antes de implementar.</think><tool_call name=\"web_search\">{\"query\": \"python mergesort algorithm implementation\"}</tool_call><tool_result name=\"web_search\" status=\"ok\">{\"results\": [{\"title\": \"Merge Sort in Python - GeeksforGeeks\", \"url\": \"https://www.geeksforgeeks.org/python/python-program-for-merge-sort/\", \"snippet\": \"Merge Sort is a divide-and-conquer algorithm. It divides the array into two halves, recursively sorts each half, then merges the two sorted halves back together. Base case: a list with one element is already sorted.\"}, {\"title\": \"Merge Sort (With Code in Python/C++/Java/C) - Programiz\", \"url\": \"https://www.programiz.com/dsa/merge-sort\", \"snippet\": \"The merge sort algorithm has a time complexity of O(n log n) and a space complexity of O(n), since it needs extra memory to store the divided subarrays during merging.\"}]}</tool_result><think>A documentação confirma: dividir a lista ao meio recursivamente até sublistas de 1 elemento, depois mesclar em ordem. Vou implementar com base nisso.</think><tool_call name=\"write_file\">{\"path\": \"merge_sort.py\", \"content\": \"def merge_sort(arr):\\n    if len(arr) <= 1:\\n        return arr\\n    mid = len(arr) // 2\\n    left = merge_sort(arr[:mid])\\n    right = merge_sort(arr[mid:])\\n    return _merge(left, right)\\n\\n\\ndef _merge(left, right):\\n    result = []\\n    i = j = 0\\n    while i < len(left) and j < len(right):\\n        if left[i] <= right[j]:\\n            result.append(left[i])\\n            i += 1\\n        else:\\n            result.append(right[j])\\n            j += 1\\n    result.extend(left[i:])\\n    result.extend(right[j:])\\n    return result\\n\"}</tool_call><tool_result name=\"write_file\" status=\"ok\">{\"path\": \"merge_sort.py\", \"bytes_written\": 515, \"mode\": \"overwrite\"}</tool_result><think>A implementação está pronta. Vou validar com o checker.</think><tool_call name=\"checker\">{\"language\": \"python\", \"operation\": \"compile_and_test\", \"files\": [{\"path\": \"merge_sort.py\", \"content\": \"def merge_sort(arr):\\n    if len(arr) <= 1:\\n        return arr\\n    mid = len(arr) // 2\\n    left = merge_sort(arr[:mid])\\n    right = merge_sort(arr[mid:])\\n    return _merge(left, right)\\n\\n\\ndef _merge(left, right):\\n    result = []\\n    i = j = 0\\n    while i < len(left) and j < len(right):\\n        if left[i] <= right[j]:\\n            result.append(left[i])\\n            i += 1\\n        else:\\n            result.append(right[j])\\n            j += 1\\n    result.extend(left[i:])\\n    result.extend(right[j:])\\n    return result\\n\"}, {\"path\": \"test_merge_sort.py\", \"content\": \"from merge_sort import merge_sort\\n\\n\\ndef test_merge_sort():\\n    assert merge_sort([5, 3, 4, 1, 2]) == [1, 2, 3, 4, 5]\\n    assert merge_sort([]) == []\\n    assert merge_sort([1]) == [1]\\n\"}]}</tool_call><tool_result name=\"checker\" status=\"ok\">{\"passed\": true, \"errors\": [], \"stdout\": \".                                                                        [100%]\\n1 passed in 0.02s\\n\", \"stderr\": \"\", \"metadata\": {\"language\": \"python\", \"duration_ms\": 2984}}</tool_result><final>Confirmei pela documentação a estrutura clássica do mergesort (dividir recursivamente e mesclar em ordem) e implementei merge_sort(arr) com base nisso. A validação confirma que compila e os testes passam.</final>"
+  }
+}

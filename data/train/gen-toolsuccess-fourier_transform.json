@@ -1,0 +1,30 @@
+{
+  "metadata": {
+    "id": "gen-toolsuccess-fourier_transform",
+    "domain": "algorithms",
+    "language": "python",
+    "difficulty": "medium",
+    "tools_used": [
+      "web_search",
+      "write_file",
+      "checker"
+    ],
+    "num_steps": 3,
+    "task_type": "multi_tool_call",
+    "source": "curated_manual_real_execution",
+    "license": "synthetic-no-license-needed",
+    "validation_status": "validated",
+    "execution_performed": true,
+    "split": "train",
+    "checker_used": "checker-python-1.0",
+    "expected_result": {
+      "passed": true
+    },
+    "execution_classification": "tested"
+  },
+  "trajectory": {
+    "system_prompt": "Você é Praxis, um agente de engenharia de software. Raciocine em <think>, use <tool_call name=\"...\"> quando precisar de uma ferramenta, e responda ao usuário só dentro de <final>.",
+    "user_request": "Faça um código que calcule a transformada de Fourier de um sinal usando numpy.",
+    "raw_text": "<think>Vou confirmar a função certa do numpy antes de implementar.</think><tool_call name=\"web_search\">{\"query\": \"numpy fft\"}</tool_call><tool_result name=\"web_search\" status=\"ok\">{\"results\": [{\"title\": \"numpy.fft.fft — NumPy v2.4 Manual\", \"url\": \"https://numpy.org/doc/stable/reference/generated/numpy.fft.fft.html\", \"snippet\": \"fft.fft(a, n=None, axis=-1, norm=None, out=None). Compute the one-dimensional discrete Fourier Transform using the efficient Fast Fourier Transform (FFT) algorithm.\"}, {\"title\": \"Discrete Fourier Transform — NumPy v2.4 Manual\", \"url\": \"https://numpy.org/doc/stable/reference/routines.fft.html\", \"snippet\": \"fft(a[, n, axis, norm, out]) computes the one-dimensional discrete Fourier Transform. fftn computes the N-dimensional discrete Fourier Transform. The DFT has become a mainstay of numerical computing because of the Fast Fourier Transform (FFT) algorithm.\"}]}</tool_result><think>A documentação confirma: numpy.fft.fft calcula a transformada discreta de Fourier em 1D. Vou implementar com base nisso.</think><tool_call name=\"write_file\">{\"path\": \"fourier_transform.py\", \"content\": \"import numpy as np\\n\\n\\ndef fourier_transform(signal):\\n    return np.fft.fft(signal)\\n\"}</tool_call><tool_result name=\"write_file\" status=\"ok\">{\"path\": \"fourier_transform.py\", \"bytes_written\": 82, \"mode\": \"overwrite\"}</tool_result><think>A implementação está pronta. Vou validar com o checker.</think><tool_call name=\"checker\">{\"language\": \"python\", \"operation\": \"compile_and_test\", \"files\": [{\"path\": \"fourier_transform.py\", \"content\": \"import numpy as np\\n\\n\\ndef fourier_transform(signal):\\n    return np.fft.fft(signal)\\n\"}, {\"path\": \"test_fourier_transform.py\", \"content\": \"from fourier_transform import fourier_transform\\n\\n\\ndef test_fourier_transform():\\n    result = fourier_transform([1, 2, 3, 4])\\n    assert len(result) == 4\\n    assert abs(result[0].real - 10) < 1e-9\\n\"}]}</tool_call><tool_result name=\"checker\" status=\"ok\">{\"passed\": true, \"errors\": [], \"stdout\": \".                                                                        [100%]\\n1 passed in 0.16s\\n\", \"stderr\": \"\", \"metadata\": {\"language\": \"python\", \"duration_ms\": 3233}}</tool_result><final>Confirmei pela documentação do numpy que numpy.fft.fft é a função certa para a transformada discreta de Fourier em 1D e implementei fourier_transform(signal) com base nisso. A validação confirma que compila e o teste passa.</final>"
+  }
+}

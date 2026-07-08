@@ -1,0 +1,12 @@
+[
+  {
+    "title": "Binary Search | Python - GeeksforGeeks",
+    "url": "https://www.geeksforgeeks.org/python/python-program-for-binary-search/",
+    "snippet": "Binary search requires a sorted array. It checks the middle element; if the target is smaller, it searches the left half, otherwise the right half, halving the search space each step (O(log n))."
+  },
+  {
+    "title": "Binary Search with Python - w3schools",
+    "url": "https://www.w3schools.com/python/python_dsa_binarysearch.asp",
+    "snippet": "The iterative implementation uses low and high pointers, computing mid = (low + high) // 2 each iteration and narrowing the range until the target is found or the range is empty."
+  }
+]

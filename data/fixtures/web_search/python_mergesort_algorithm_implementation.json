@@ -1,0 +1,12 @@
+[
+  {
+    "title": "Merge Sort in Python - GeeksforGeeks",
+    "url": "https://www.geeksforgeeks.org/python/python-program-for-merge-sort/",
+    "snippet": "Merge Sort is a divide-and-conquer algorithm. It divides the array into two halves, recursively sorts each half, then merges the two sorted halves back together. Base case: a list with one element is already sorted."
+  },
+  {
+    "title": "Merge Sort (With Code in Python/C++/Java/C) - Programiz",
+    "url": "https://www.programiz.com/dsa/merge-sort",
+    "snippet": "The merge sort algorithm has a time complexity of O(n log n) and a space complexity of O(n), since it needs extra memory to store the divided subarrays during merging."
+  }
+]
