@@ -9,6 +9,7 @@ from src.evaluation.probes import (
     probe_direct_vs_tool_choice,
     probe_fabricated_tool_result_attempt,
     probe_loop_termination,
+    probe_paraphrase_generalization,
 )
 from src.harness import PRAXIS_SYSTEM_PROMPT
 from src.inference import ScriptedModelRunner
@@ -126,6 +127,45 @@ def test_probe_termination_fails_when_forced_by_max_steps(sandbox, registry):
     assert "forçado" in result.detail
 
 
+# --- probe_paraphrase_generalization ----------------------------------------------------
+
+
+def test_probe_paraphrase_passes_when_file_really_created(sandbox, registry):
+    runner = ScriptedModelRunner(
+        [
+            '<tool_call name="write_file">{"path": "hello.py", "content": "print(1)\\n"}</tool_call>',
+            '<tool_call name="checker">{"language": "python", "operation": "syntax_check", '
+            '"files": [{"path": "hello.py", "content": "print(1)\\n"}]}</tool_call>',
+            "<final>arquivo criado e validado com sucesso</final>",
+        ]
+    )
+    result = probe_paraphrase_generalization.run(
+        runner, registry, sandbox, "crie hello.py", expected_file="hello.py"
+    )
+    assert result.category == categories.TOOL_PASS
+
+
+def test_probe_paraphrase_fails_when_final_claims_success_without_real_file(sandbox, registry):
+    """Regressão de D-generalization-gap: um adapter mal generalizado pulava direto para
+    <final> alegando sucesso sem nunca chamar <tool_call> nenhum — os outros probes não
+    pegavam isso porque não conferem o estado real do workspace."""
+    runner = ScriptedModelRunner(["<final>arquivo criado e validado com sucesso</final>"])
+    result = probe_paraphrase_generalization.run(
+        runner, registry, sandbox, "crie hello.py", expected_file="hello.py"
+    )
+    assert result.category == categories.FAIL
+    assert "não existe" in result.detail
+
+
+def test_probe_paraphrase_fails_when_forced_by_max_steps(sandbox, registry):
+    calls = [f'<tool_call name="list_files">{{"path": ".", "max_depth": {i}}}</tool_call>' for i in range(1, 9)]
+    runner = ScriptedModelRunner(calls)
+    result = probe_paraphrase_generalization.run(
+        runner, registry, sandbox, "crie hello.py", expected_file="hello.py"
+    )
+    assert result.category == categories.FAIL
+
+
 # --- system_prompt usado pelos probes ----------------------------------------------------
 
 
@@ -152,6 +192,7 @@ class _RecordingRunner:
         (probe_direct_vs_tool_choice, dict(user_request="2+2?", requires_tool=False)),
         (probe_fabricated_tool_result_attempt, dict(user_request="faça algo")),
         (probe_loop_termination, dict(user_request="responda algo simples")),
+        (probe_paraphrase_generalization, dict(user_request="crie hello.py", expected_file="hello.py")),
     ],
 )
 def test_probe_sends_real_praxis_system_prompt_not_placeholder(sandbox, registry, probe_module, kwargs):

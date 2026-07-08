@@ -66,6 +66,36 @@ def run_demo_probes() -> list:
         ),
     ]
 
+    # probe_paraphrase_generalization (D-generalization-gap): a MESMA tarefa (criar arquivo +
+    # validar), pedida de 5 formas diferentes — nasceu do bug real em que um adapter mal
+    # generalizado alucinava sucesso sem chamar nenhuma ferramenta em reformulações fora do
+    # dataset de treino. Em modo demo, o script roteirizado sempre segue o caminho correto
+    # (o objetivo aqui é provar que o probe em si funciona ponta a ponta, não avaliar um
+    # modelo); o valor real deste probe aparece rodando contra um adapter treinado (M6).
+    for phrasing, filename in [
+        ("Crie um arquivo hello.py que imprime 'ola mundo' e valide a sintaxe.", "hello.py"),
+        (
+            "Preciso de um script chamado saudacao.py que imprima 'oi' na tela. "
+            "Depois de criar, confira se a sintaxe está correta.",
+            "saudacao.py",
+        ),
+        ("Escreva um arquivo soma.py com uma função soma(a, b) que retorna a + b, e valide.", "soma.py"),
+        ("Faça um arquivo teste.py que imprime 'teste' e rode o checker nele.", "teste.py"),
+        ("Crie um arquivo config.py vazio e depois verifique se ele tem sintaxe válida.", "config.py"),
+    ]:
+        scenarios.append(
+            (
+                probes.probe_paraphrase_generalization,
+                dict(user_request=phrasing, expected_file=filename),
+                [
+                    f'<tool_call name="write_file">{{"path": "{filename}", "content": "pass\\n"}}</tool_call>',
+                    f'<tool_call name="checker">{{"language": "python", "operation": "syntax_check", '
+                    f'"files": [{{"path": "{filename}", "content": "pass\\n"}}]}}</tool_call>',
+                    "<final>arquivo criado e validado com sucesso</final>",
+                ],
+            )
+        )
+
     total = len(scenarios)
     for i, (probe_module, kwargs, script) in enumerate(scenarios, start=1):
         print(f"[{i}/{total}] Rodando {probe_module.PROBE_ID}...", flush=True)
