@@ -35,10 +35,16 @@ class AgentLoopConfig:
     # um modelo que não emite a stop-sequence de forma limpa gera até o default do backend
     # (1024 em TransformersModelRunner) em cada um dos até `max_steps` passos — o contexto
     # acumulado pode explodir a ponto de estourar VRAM só no prefill da próxima chamada
-    # (OutOfMemoryError de ~6.67 GiB numa única atenção, confirmado no Colab). 256 é generoso
-    # para as trajetórias curtas do dataset desta geração (seção 8); ajustar se exemplos mais
-    # longos entrarem no dataset depois.
-    max_tokens_per_step: int = 256
+    # (OutOfMemoryError de ~6.67 GiB numa única atenção, confirmado no Colab).
+    # D-maxtokens-oop: 256 bastava para as trajetórias curtas da geração anterior, mas a
+    # expansão de dataset OOP/erro/padrões/módulos (docs/plan_dataset_expansion_oop_shell.md)
+    # inclui `checker` chamado com uma classe inteira + arquivo de teste inteiro embutidos no
+    # mesmo JSON — confirmado em teste real pós-retreino: a chamada de `checker` para a classe
+    # Calculator truncava no meio (`UNTERMINATED_TAG`) e, após falhas repetidas, o modelo
+    # chegou a tentar fabricar um `<tool_result>` (bloqueado pelo harness) antes de esgotar
+    # `max_steps`. 512 dá margem para esses payloads maiores sem reabrir o risco de OOM que
+    # motivou o teto original.
+    max_tokens_per_step: int = 512
 
 
 @dataclass
