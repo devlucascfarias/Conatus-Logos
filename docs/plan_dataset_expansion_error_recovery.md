@@ -1,11 +1,9 @@
 # Plano: expansão pequena — recuperação de falha de `checker`/infra e diagnóstico de causa raiz
 
-Status: **planejado, não iniciado**. Combinado em conversa em 2026-07-08, depois dos testes
-manuais pós-retreino (rodadas 1-3, `docs/PLAN.md` seção 2: `D-retrain-oop-expansion-results`,
-`D-maxtokens-oop-confirmed`, `D-oop-expansion-round2-tests`, `D-oop-expansion-round3-ood-tests`).
-Consolidado em uma leva única de propósito: créditos de Colab limitados até a próxima renovação,
-então geração+validação local (grátis) acontece toda de uma vez, para um retreino só cobrir
-tudo (em vez de vários ciclos pequenos gastando crédito repetidamente).
+Status: **executado em 2026-07-08** (mesmo dia do planejamento, ver `D-error-recovery-expansion`
+em `docs/PLAN.md`, seção 2). 100 exemplos gerados (30+20+20+30), todos com execução real,
+suite/similaridade/vazamento limpos. Este arquivo permanece como registro do plano original; o
+resultado real está consolidado na decisão do PLAN.md.
 
 ## 1. Motivação
 

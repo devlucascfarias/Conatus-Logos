@@ -24,7 +24,10 @@ sys.path.insert(0, str(REPO_ROOT))
 DATA_DIR = REPO_ROOT / "data" / "train"
 SIMILARITY_THRESHOLD = 0.90
 
-_PREFIXES = ("gen-oop-", "gen-error-", "gen-pattern-", "gen-module-", "gen-ensearch-", "gen-shell-")
+_PREFIXES = (
+    "gen-oop-", "gen-error-", "gen-pattern-", "gen-module-", "gen-ensearch-", "gen-shell-",
+    "gen-checkerinfra-", "gen-jsonrecovery-", "gen-multifile-", "gen-trapword-",
+)
 
 _TAG_RE = re.compile(r"<tool_call[^>]*>.*?</tool_call>|<tool_result[^>]*>.*?</tool_result>", re.DOTALL)
 _STRIP_TAGS_RE = re.compile(r"</?(?:think|final)>")

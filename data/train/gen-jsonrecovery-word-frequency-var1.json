@@ -1,0 +1,29 @@
+{
+  "metadata": {
+    "id": "gen-jsonrecovery-word-frequency-var1",
+    "domain": "tratamento_erro",
+    "language": "python",
+    "difficulty": "hard",
+    "tools_used": [
+      "write_file",
+      "checker"
+    ],
+    "num_steps": 3,
+    "task_type": "tool_call_json_recovery",
+    "source": "phrasing_variant_of:gen-jsonrecovery-word-frequency",
+    "license": "synthetic-no-license-needed",
+    "validation_status": "validated",
+    "execution_performed": true,
+    "split": "train",
+    "checker_used": "checker-python-1.0",
+    "expected_result": {
+      "passed": true
+    },
+    "execution_classification": "tested"
+  },
+  "trajectory": {
+    "system_prompt": "Você é Praxis, um agente de engenharia de software. Raciocine em <think>, use <tool_call name=\"...\"> quando precisar de uma ferramenta, e responda ao usuário só dentro de <final>.",
+    "user_request": "Preciso contar a frequência de cada palavra num texto, ignorando maiúsculas.",
+    "raw_text": "<think>Vou implementar word_frequency(text), contando frequência de palavras ignorando maiúsculas.</think><tool_call name=\"write_file\">{\"path\": \"word_frequency.py\", \"content\": \"def word_frequency(text):\\n    freq = {}\\n    words = text.lower().split()\\n    for word in words:\\        if word in freq:\\n            freq[word] += 1\\n        else:\\n            freq[word] = 1\\n    return freq\\n\"}</tool_call><tool_result name=\"write_file\" status=\"error\">{\"code\": \"TOOL_CALL_PARSE_ERROR\", \"message\": \"Invalid \\\\escape: line 1 column 141 (char 140)\"}</tool_result><think>O JSON da minha última chamada estava malformado (uma barra invertida solta antes de um espaço). É um erro meu de formatação, não da ferramenta — vou corrigir e tentar de novo.</think><tool_call name=\"write_file\">{\"path\": \"word_frequency.py\", \"content\": \"def word_frequency(text):\\n    freq = {}\\n    words = text.lower().split()\\n    for word in words:\\n        if word in freq:\\n            freq[word] += 1\\n        else:\\n            freq[word] = 1\\n    return freq\\n\"}</tool_call><tool_result name=\"write_file\" status=\"ok\">{\"path\": \"word_frequency.py\", \"bytes_written\": 206, \"mode\": \"overwrite\"}</tool_result><think>JSON corrigido e código pronto. Vou validar.</think><tool_call name=\"checker\">{\"language\": \"python\", \"operation\": \"compile_and_test\", \"files\": [{\"path\": \"word_frequency.py\", \"content\": \"def word_frequency(text):\\n    freq = {}\\n    words = text.lower().split()\\n    for word in words:\\n        if word in freq:\\n            freq[word] += 1\\n        else:\\n            freq[word] = 1\\n    return freq\\n\"}, {\"path\": \"test_word_frequency.py\", \"content\": \"from word_frequency import word_frequency\\n\\n\\ndef test_word_frequency():\\n    result = word_frequency('O gato e o cachorro e o gato')\\n    assert result['o'] == 3\\n    assert result['gato'] == 2\\n\"}]}</tool_call><tool_result name=\"checker\" status=\"ok\">{\"passed\": true, \"errors\": [], \"stdout\": \".                                                                        [100%]\\n1 passed in 0.02s\\n\", \"stderr\": \"\", \"metadata\": {\"language\": \"python\", \"duration_ms\": 4077}}</tool_result><final>Implementei word_frequency(text), contando frequência de palavras ignorando maiúsculas. A validação confirma que compila e o teste passa.</final>"
+  }
+}

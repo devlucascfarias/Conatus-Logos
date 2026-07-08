@@ -1,0 +1,29 @@
+{
+  "metadata": {
+    "id": "gen-jsonrecovery-matrix-is-diagonal-var2",
+    "domain": "tratamento_erro",
+    "language": "python",
+    "difficulty": "hard",
+    "tools_used": [
+      "write_file",
+      "checker"
+    ],
+    "num_steps": 3,
+    "task_type": "tool_call_json_recovery",
+    "source": "phrasing_variant_of:gen-jsonrecovery-matrix-is-diagonal",
+    "license": "synthetic-no-license-needed",
+    "validation_status": "validated",
+    "execution_performed": true,
+    "split": "train",
+    "checker_used": "checker-python-1.0",
+    "expected_result": {
+      "passed": true
+    },
+    "execution_classification": "tested"
+  },
+  "trajectory": {
+    "system_prompt": "Você é Praxis, um agente de engenharia de software. Raciocine em <think>, use <tool_call name=\"...\"> quando precisar de uma ferramenta, e responda ao usuário só dentro de <final>.",
+    "user_request": "Pode implementar uma checagem de matriz diagonal?",
+    "raw_text": "<think>Vou escrever is_diagonal_matrix(matrix), verificando se é diagonal agora.</think><tool_call name=\"write_file\">{\"path\": \"matrix_diagonal.py\", \"content\": \"def is_diagonal_matrix(matrix):\\n    n = len(matrix)\\n    for i in range(n):\\        for j in range(n):\\n            if i != j and matrix[i][j] != 0:\\n                return False\\n    return True\\n\"}</tool_call><tool_result name=\"write_file\" status=\"error\">{\"code\": \"TOOL_CALL_PARSE_ERROR\", \"message\": \"Invalid \\\\escape: line 1 column 120 (char 119)\"}</tool_result><think>Minha chamada anterior tinha um JSON malformado por minha causa, não da ferramenta — vou reescrever com o escaping correto.</think><tool_call name=\"write_file\">{\"path\": \"matrix_diagonal.py\", \"content\": \"def is_diagonal_matrix(matrix):\\n    n = len(matrix)\\n    for i in range(n):\\n        for j in range(n):\\n            if i != j and matrix[i][j] != 0:\\n                return False\\n    return True\\n\"}</tool_call><tool_result name=\"write_file\" status=\"ok\">{\"path\": \"matrix_diagonal.py\", \"bytes_written\": 192, \"mode\": \"overwrite\"}</tool_result><think>Com o JSON corrigido, falta só rodar a validação.</think><tool_call name=\"checker\">{\"language\": \"python\", \"operation\": \"compile_and_test\", \"files\": [{\"path\": \"matrix_diagonal.py\", \"content\": \"def is_diagonal_matrix(matrix):\\n    n = len(matrix)\\n    for i in range(n):\\n        for j in range(n):\\n            if i != j and matrix[i][j] != 0:\\n                return False\\n    return True\\n\"}, {\"path\": \"test_matrix_diagonal.py\", \"content\": \"from matrix_diagonal import is_diagonal_matrix\\n\\n\\ndef test_is_diagonal_matrix():\\n    assert is_diagonal_matrix([[1, 0], [0, 2]]) is True\\n    assert is_diagonal_matrix([[1, 1], [0, 2]]) is False\\n\"}]}</tool_call><tool_result name=\"checker\" status=\"ok\">{\"passed\": true, \"errors\": [], \"stdout\": \".                                                                        [100%]\\n1 passed in 0.02s\\n\", \"stderr\": \"\", \"metadata\": {\"language\": \"python\", \"duration_ms\": 6577}}</tool_result><final>is_diagonal_matrix(matrix), verificando se é diagonal está pronto e validado — o teste passa.</final>"
+  }
+}

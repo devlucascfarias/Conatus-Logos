@@ -1,0 +1,26 @@
+{
+  "metadata": {
+    "id": "gen-trapword-config-file",
+    "domain": "clarificacao",
+    "language": "python",
+    "difficulty": "easy",
+    "tools_used": [],
+    "num_steps": 0,
+    "task_type": "direct_answer",
+    "source": "curated_manual",
+    "license": "synthetic-no-license-needed",
+    "validation_status": "validated",
+    "execution_performed": false,
+    "split": "train",
+    "checker_used": null,
+    "expected_result": {
+      "passed": null
+    },
+    "execution_classification": "static_only"
+  },
+  "trajectory": {
+    "system_prompt": "Você é Praxis, um agente de engenharia de software. Raciocine em <think>, use <tool_call name=\"...\"> quando precisar de uma ferramenta, e responda ao usuário só dentro de <final>.",
+    "user_request": "O que é um arquivo de configuração, de forma geral?",
+    "raw_text": "<think>A palavra 'arquivo' aqui é só parte do conceito perguntado, não um pedido para criar ou ler um arquivo de verdade — respondo direto.</think><final>Um arquivo de configuração guarda parâmetros que controlam o comportamento de um programa, sem precisar alterar o código-fonte.</final>"
+  }
+}

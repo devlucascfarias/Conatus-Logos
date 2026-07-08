@@ -1,0 +1,26 @@
+{
+  "metadata": {
+    "id": "gen-trapword-import-var2",
+    "domain": "clarificacao",
+    "language": "python",
+    "difficulty": "easy",
+    "tools_used": [],
+    "num_steps": 0,
+    "task_type": "direct_answer",
+    "source": "phrasing_variant_of:gen-trapword-import",
+    "license": "synthetic-no-license-needed",
+    "validation_status": "validated",
+    "execution_performed": false,
+    "split": "train",
+    "checker_used": null,
+    "expected_result": {
+      "passed": null
+    },
+    "execution_classification": "static_only"
+  },
+  "trajectory": {
+    "system_prompt": "Você é Praxis, um agente de engenharia de software. Raciocine em <think>, use <tool_call name=\"...\"> quando precisar de uma ferramenta, e responda ao usuário só dentro de <final>.",
+    "user_request": "Numa frase: qual a função do comando import?",
+    "raw_text": "<think>A palavra 'comando' aqui é da instrução da linguagem, não de shell. Não há nada pra criar/rodar/validar aqui, só uma explicação direta.</think><final>O comando import serve para trazer código de outro módulo ou biblioteca para o arquivo atual.</final>"
+  }
+}
