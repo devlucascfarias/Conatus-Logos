@@ -10,6 +10,7 @@ import (
 	"github.com/charmbracelet/bubbles/textinput"
 	"github.com/charmbracelet/bubbles/viewport"
 	tea "github.com/charmbracelet/bubbletea"
+	"github.com/charmbracelet/lipgloss"
 
 	"github.com/devlucascfarias/Conatus-Logos/cli/internal/agent"
 	"github.com/devlucascfarias/Conatus-Logos/cli/internal/ollamaclient"
@@ -53,6 +54,13 @@ func New(client *ollamaclient.Client) Model {
 	ti.Focus()
 	ti.CharLimit = 2000
 	ti.Prompt = "❯ "
+	// A lib tem cor padrão própria (rosa/roxo) pra prompt/cursor/placeholder — sem
+	// sobrescrever isso explicitamente, ela vaza por cima da paleta bege/madeira.
+	ti.PromptStyle = lipgloss.NewStyle().Foreground(colorWoodLabel)
+	ti.TextStyle = lipgloss.NewStyle().Foreground(colorWoodBase)
+	ti.PlaceholderStyle = lipgloss.NewStyle().Foreground(colorWoodMuted)
+	ti.Cursor.Style = lipgloss.NewStyle().Foreground(colorWoodLabel)
+	ti.Cursor.TextStyle = lipgloss.NewStyle().Foreground(colorWoodBase)
 
 	sp := spinner.New()
 	sp.Spinner = spinner.Dot
@@ -250,13 +258,36 @@ func welcomeText() string {
 }
 
 // renderClosedTrajectory estiliza uma trajetória totalmente finalizada — sem gradiente, tudo
-// já "assentado" na cor bege base.
+// já "assentado" na cor bege base. Dois comportamentos deliberados, diferentes da renderização
+// ao vivo: (1) segmentos "Thinking" são OMITIDOS aqui — só aparecem enquanto a geração está
+// rolando (renderLiveTrajectory), somem do registro permanente quando a resposta termina; (2)
+// usa ParseWithTail, não Parse, porque uma resposta pode ser cortada antes de fechar a última
+// tag (ex.: limite de tokens) — descartar essa cauda incompleta faria o texto gerado
+// desaparecer silenciosamente em vez de aparecer truncado.
 func renderClosedTrajectory(rawText string) string {
-	segs := segments.Parse(rawText)
+	segs, tail := segments.ParseWithTail(rawText)
 	var blocks []string
 	for _, seg := range segs {
+		if seg.Kind == segments.KindThink {
+			continue
+		}
 		blocks = append(blocks, renderSegment(seg))
 	}
+
+	if trimmedTail := strings.TrimSpace(tail); trimmedTail != "" {
+		kind, toolName, status, body, ok := detectOpenSegment(tail)
+		switch {
+		case ok && kind == segments.KindThink:
+			// Thinking incompleto — mesma regra, não aparece no registro final.
+		case ok:
+			blocks = append(blocks, renderSegment(segments.Segment{Kind: kind, ToolName: toolName, Status: status, Body: body}))
+		default:
+			// Fragmento cru não reconhecido (cortou no meio de uma tag) — mostra mesmo
+			// assim, sem rótulo, pra não perder conteúdo que o modelo realmente gerou.
+			blocks = append(blocks, styleFinalBody.Render(trimmedTail))
+		}
+	}
+
 	return strings.Join(blocks, "\n")
 }
 
@@ -288,7 +319,11 @@ func renderLiveTrajectory(rawText string, glowing bool) string {
 
 	label, bodyText := labelAndBodyFor(kind, toolName, status, body)
 	if glowing {
-		blocks = append(blocks, label+"\n"+renderGlowTail(bodyText, rgbWoodBase))
+		glowed := renderGlowTail(bodyText, rgbWoodBase)
+		if label != "" {
+			glowed = label + "\n" + glowed
+		}
+		blocks = append(blocks, glowed)
 	} else {
 		blocks = append(blocks, renderSegment(segments.Segment{Kind: kind, ToolName: toolName, Status: status, Body: body}))
 	}
@@ -309,7 +344,7 @@ func labelAndBodyFor(kind segments.Kind, toolName, status, body string) (label, 
 		}
 		return styleToolResultErrLabel.Render(fmt.Sprintf("tool_result · %s · error", toolName)), trimmed
 	case segments.KindFinal:
-		return styleFinalLabel.Render("resposta"), trimmed
+		return "", trimmed
 	default:
 		return "", trimmed
 	}
@@ -364,7 +399,7 @@ func renderSegment(seg segments.Segment) string {
 		label := styleToolResultErrLabel.Render(fmt.Sprintf("tool_result · %s · error", seg.ToolName))
 		return label + "\n" + styleToolResultErrBodyTxt.Render(strings.TrimSpace(seg.Body))
 	case segments.KindFinal:
-		return styleFinalLabel.Render("resposta") + "\n" + styleFinalBody.Render(strings.TrimSpace(seg.Body))
+		return styleFinalBody.Render(strings.TrimSpace(seg.Body))
 	default:
 		return strings.TrimSpace(seg.Body)
 	}
