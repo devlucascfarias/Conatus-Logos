@@ -86,3 +86,61 @@ func TestRenderClosedTrajectoryOmitsUnclosedThinking(t *testing.T) {
 		t.Errorf("Thinking incompleto não deveria aparecer no registro finalizado: %q", out)
 	}
 }
+
+func TestRenderClosedTrajectoryCollapsesToolCallResultNeverShowsJSON(t *testing.T) {
+	raw := `<tool_call name="write_file">{"path": "a.py", "content": "x"}</tool_call>` +
+		`<tool_result name="write_file" status="ok">{"path": "a.py", "bytes_written": 1, "mode": "overwrite"}</tool_result>` +
+		`<final>pronto</final>`
+	out := renderClosedTrajectory(raw)
+
+	if strings.Contains(out, "bytes_written") || strings.Contains(out, `"path"`) {
+		t.Errorf("JSON cru não deveria aparecer na visão colapsada: %q", out)
+	}
+	if !strings.Contains(out, "└") || !strings.Contains(out, "write_file") {
+		t.Errorf("esperava conector estático com o nome da ferramenta: %q", out)
+	}
+}
+
+func TestRenderClosedTrajectoryShowsRealErrorMessageForFailedTool(t *testing.T) {
+	raw := `<tool_call name="checker">{}</tool_call>` +
+		`<tool_result name="checker" status="error">{"code": "UNSUPPORTED_TOOL", "message": "ferramenta desconhecida/desabilitada: checker"}</tool_result>` +
+		`<final>não deu</final>`
+	out := renderClosedTrajectory(raw)
+
+	if !strings.Contains(out, "ferramenta desconhecida/desabilitada: checker") {
+		t.Errorf("mensagem de erro real deveria aparecer: %q", out)
+	}
+	if strings.Contains(out, `"code"`) {
+		t.Errorf("JSON cru não deveria aparecer: %q", out)
+	}
+}
+
+func TestRenderLiveTrajectoryShowsSpinnerWhileToolStillExecuting(t *testing.T) {
+	// tool_call já fechou, mas o tool_result ainda não chegou — ferramenta real ainda
+	// executando (ex.: checker rodando pytest de verdade, pode levar segundos).
+	raw := `<tool_call name="checker">{"language": "python"}</tool_call>`
+	out := renderLiveTrajectory(raw, true, "⠋")
+
+	if !strings.Contains(out, "⠋") {
+		t.Errorf("esperava o spinner enquanto o resultado não chega: %q", out)
+	}
+	if strings.Contains(out, `"language"`) {
+		t.Errorf("JSON cru não deveria aparecer nem durante a execução: %q", out)
+	}
+}
+
+func TestExtractErrorMessageHandlesSimpleAndCheckerShapes(t *testing.T) {
+	simple := `{"code": "FILE_NOT_FOUND", "message": "caminho escapa do workspace: ../x"}`
+	if got := extractErrorMessage(simple); got != "caminho escapa do workspace: ../x" {
+		t.Errorf("formato simples: veio %q", got)
+	}
+
+	checkerShape := `{"passed": false, "errors": [{"code": "SYNTAX_ERROR", "message": "erro de sintaxe real"}], "stdout": "", "stderr": ""}`
+	if got := extractErrorMessage(checkerShape); got != "erro de sintaxe real" {
+		t.Errorf("formato do checker: veio %q", got)
+	}
+
+	if got := extractErrorMessage("not json at all"); got != "" {
+		t.Errorf("JSON inválido deveria devolver string vazia, veio %q", got)
+	}
+}

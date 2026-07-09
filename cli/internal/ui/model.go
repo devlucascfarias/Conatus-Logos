@@ -2,6 +2,7 @@ package ui
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"strings"
 	"time"
@@ -357,19 +358,19 @@ func welcomeText(workDir string) string {
 // desaparecer silenciosamente em vez de aparecer truncado.
 func renderClosedTrajectory(rawText string) string {
 	segs, tail := segments.ParseWithTail(rawText)
-	var blocks []string
-	for _, seg := range segs {
-		if seg.Kind == segments.KindThink {
-			continue
-		}
-		blocks = append(blocks, renderSegment(seg))
-	}
+	blocks := renderCollapsedSegments(segs, true, "")
 
 	if trimmedTail := strings.TrimSpace(tail); trimmedTail != "" {
 		kind, toolName, status, body, ok := detectOpenSegment(tail)
 		switch {
 		case ok && kind == segments.KindThink:
 			// Thinking incompleto — mesma regra, não aparece no registro final.
+		case ok && kind == segments.KindToolCall:
+			// resposta cortada bem no meio de uma chamada de ferramenta — sem resultado
+			// pra parear, não dá pra saber se passou ou falhou.
+			blocks = append(blocks, styleToolResultErrLabel.Render("⋯ "+toolName+" (cortado antes do resultado)"))
+		case ok && kind == segments.KindToolResult:
+			blocks = append(blocks, renderToolResultLine(toolName, status, body))
 		case ok:
 			blocks = append(blocks, renderSegment(segments.Segment{Kind: kind, ToolName: toolName, Status: status, Body: body}))
 		default:
@@ -383,22 +384,22 @@ func renderClosedTrajectory(rawText string) string {
 }
 
 // renderLiveTrajectory renderiza segmentos já fechados normalmente e, se `glowing`, aplica o
-// rastro de gradiente branco->bege no trecho ainda sendo gerado (tag aberta ou fragmento
-// incompleto) — é o que dá o efeito de "cursor" de digitação em tempo real. `spinnerView` só é
-// usado ao lado do rótulo "Thinking" enquanto ele está em aberto (a mesma animação que já
-// aparecia no rodapé, agora também junto do raciocínio que está sendo gerado).
+// rastro de gradiente branco->bege no trecho de think/final ainda sendo gerado — é o que dá
+// o efeito de "cursor" de digitação em tempo real. Chamadas de ferramenta NUNCA mostram o
+// JSON dos argumentos/resultado (D-cli-tool-connector-view): enquanto não há
+// `tool_result` pareado ainda (a ferramenta está executando de verdade — pode levar
+// segundos num `checker` com pytest), mostra spinner + nome, animado; assim que o resultado
+// chega, vira uma linha estática "└ nome" (dourado se ok, rust se erro, com a mensagem de
+// erro real embaixo quando aplicável).
 func renderLiveTrajectory(rawText string, glowing bool, spinnerView string) string {
 	segs, tail := segments.ParseWithTail(rawText)
-	var blocks []string
-	for _, seg := range segs {
-		blocks = append(blocks, renderSegment(seg))
-	}
+	blocks := renderCollapsedSegments(segs, false, spinnerView)
 
 	if tail == "" {
 		return strings.Join(blocks, "\n")
 	}
 
-	kind, toolName, status, body, ok := detectOpenSegment(tail)
+	kind, toolName, _, body, ok := detectOpenSegment(tail)
 	if !ok {
 		// Ainda digitando a própria tag de abertura (ex.: "<thi") — não dá pra saber o
 		// tipo ainda, mostra só o rastro cru por um instante muito breve.
@@ -410,40 +411,109 @@ func renderLiveTrajectory(rawText string, glowing bool, spinnerView string) stri
 		return strings.Join(blocks, "\n")
 	}
 
-	label, bodyText := labelAndBodyFor(kind, toolName, status, body)
-	if glowing && kind == segments.KindThink && label != "" {
-		label = spinnerView + " " + label
-	}
-	if glowing {
-		glowed := renderGlowTail(bodyText, rgbGlowSettle)
-		if label != "" {
-			glowed = label + "\n" + glowed
+	bodyText := strings.TrimSpace(body)
+	switch kind {
+	case segments.KindToolCall:
+		// Nome da ferramenta já reconhecido (achou o `">` de fechamento do atributo
+		// name), mesmo que os argumentos ainda estejam sendo digitados — nunca mostra
+		// esse JSON, só o indicador animado.
+		blocks = append(blocks, renderToolPendingLine(toolName, spinnerView))
+	case segments.KindThink:
+		label := spinnerView + " " + styleThinkLabel.Render("Thinking")
+		if glowing {
+			blocks = append(blocks, label+"\n"+renderGlowTail(bodyText, rgbGlowSettle))
+		} else {
+			blocks = append(blocks, label+"\n"+styleThinkBody.Render(bodyText))
 		}
-		blocks = append(blocks, glowed)
-	} else {
-		blocks = append(blocks, renderSegment(segments.Segment{Kind: kind, ToolName: toolName, Status: status, Body: body}))
+	case segments.KindFinal:
+		if glowing {
+			blocks = append(blocks, renderGlowTail(bodyText, rgbGlowSettle))
+		} else {
+			blocks = append(blocks, styleFinalBody.Render(bodyText))
+		}
+	default:
+		// tool_result nunca deveria chegar parcialmente formado (é montado inteiro pelo
+		// nosso próprio código, não gerado token a token pelo modelo), mas não trava se
+		// acontecer.
+		blocks = append(blocks, renderToolPendingLine(toolName, spinnerView))
 	}
 
 	return strings.Join(blocks, "\n")
 }
 
-func labelAndBodyFor(kind segments.Kind, toolName, status, body string) (label, bodyText string) {
-	trimmed := strings.TrimSpace(body)
-	switch kind {
-	case segments.KindThink:
-		return styleThinkLabel.Render("Thinking"), trimmed
-	case segments.KindToolCall:
-		return styleToolCallLabel.Render(fmt.Sprintf("tool_call · %s", toolName)), trimmed
-	case segments.KindToolResult:
-		if status == "ok" {
-			return styleToolResultOKLabel.Render(fmt.Sprintf("tool_result · %s · ok", toolName)), trimmed
+// renderCollapsedSegments varre os segmentos JÁ FECHADOS em ordem e funde cada par
+// tool_call+tool_result adjacente numa única linha compacta — nunca mostra o JSON de
+// argumentos nem o corpo bruto do resultado. Um tool_call sem o tool_result logo em
+// seguida significa que a ferramenta ainda está executando de verdade (spinnerView anima
+// isso); só acontece na visão ao vivo, nunca numa trajetória já finalizada.
+func renderCollapsedSegments(segs []segments.Segment, skipThink bool, spinnerView string) []string {
+	var blocks []string
+	for i := 0; i < len(segs); i++ {
+		seg := segs[i]
+		switch seg.Kind {
+		case segments.KindThink:
+			if !skipThink {
+				blocks = append(blocks, renderSegment(seg))
+			}
+		case segments.KindToolCall:
+			if i+1 < len(segs) && segs[i+1].Kind == segments.KindToolResult {
+				next := segs[i+1]
+				blocks = append(blocks, renderToolResultLine(next.ToolName, next.Status, next.Body))
+				i++
+			} else {
+				blocks = append(blocks, renderToolPendingLine(seg.ToolName, spinnerView))
+			}
+		case segments.KindToolResult:
+			// Órfão (não deveria acontecer — todo tool_result vem logo após seu
+			// tool_call), mas renderiza igual pra não perder informação real.
+			blocks = append(blocks, renderToolResultLine(seg.ToolName, seg.Status, seg.Body))
+		default:
+			blocks = append(blocks, renderSegment(seg))
 		}
-		return styleToolResultErrLabel.Render(fmt.Sprintf("tool_result · %s · error", toolName)), trimmed
-	case segments.KindFinal:
-		return "", trimmed
-	default:
-		return "", trimmed
 	}
+	return blocks
+}
+
+// renderToolPendingLine é o estado ANIMADO — ferramenta chamada, resultado ainda não
+// chegou (execução real em andamento, ex.: checker rodando pytest de verdade).
+func renderToolPendingLine(toolName, spinnerView string) string {
+	return spinnerView + " " + styleToolCallLabel.Render(toolName)
+}
+
+// renderToolResultLine é o estado ESTÁTICO — resultado já chegou. Conector "└" fixo, sem
+// spinner. Nunca mostra o corpo bruto do resultado; pra erro, extrai só a mensagem real
+// (extractErrorMessage) pra continuar útil sem virar um dump de JSON.
+func renderToolResultLine(toolName, status, body string) string {
+	if status == "ok" {
+		return "└ " + styleToolResultOKLabel.Render(toolName)
+	}
+	line := "└ " + styleToolResultErrLabel.Render(toolName)
+	if msg := extractErrorMessage(body); msg != "" {
+		line += "\n" + styleToolResultErrBodyTxt.Render("  "+msg)
+	}
+	return line
+}
+
+// extractErrorMessage tenta achar a mensagem de erro real dentro do JSON do tool_result —
+// aceita tanto o formato simples ({"code","message"}, usado por write_file/read_file/
+// list_files/UNSUPPORTED_TOOL) quanto o formato do checker ({"errors":[{"message":...}]}).
+// Nunca inventa uma mensagem — se não achar nenhum campo reconhecido, devolve "".
+func extractErrorMessage(body string) string {
+	var parsed map[string]any
+	if err := json.Unmarshal([]byte(body), &parsed); err != nil {
+		return ""
+	}
+	if msg, ok := parsed["message"].(string); ok && msg != "" {
+		return msg
+	}
+	if rawErrors, ok := parsed["errors"].([]any); ok && len(rawErrors) > 0 {
+		if first, ok := rawErrors[0].(map[string]any); ok {
+			if msg, ok := first["message"].(string); ok {
+				return msg
+			}
+		}
+	}
+	return ""
 }
 
 // detectOpenSegment reconhece o tipo de uma tag que já ABRIU mas ainda não fechou — permite
@@ -480,20 +550,12 @@ func detectOpenSegment(tail string) (kind segments.Kind, toolName, status, body 
 	}
 }
 
+// renderSegment só lida com Think/Final agora — tool_call/tool_result são sempre
+// interceptados antes por renderCollapsedSegments (vira "└ nome"/spinner, nunca JSON cru).
 func renderSegment(seg segments.Segment) string {
 	switch seg.Kind {
 	case segments.KindThink:
 		return styleThinkLabel.Render("Thinking") + "\n" + styleThinkBody.Render(strings.TrimSpace(seg.Body))
-	case segments.KindToolCall:
-		label := styleToolCallLabel.Render(fmt.Sprintf("tool_call · %s", seg.ToolName))
-		return label + "\n" + styleToolCallBody.Render(strings.TrimSpace(seg.Body))
-	case segments.KindToolResult:
-		if seg.Status == "ok" {
-			label := styleToolResultOKLabel.Render(fmt.Sprintf("tool_result · %s · ok", seg.ToolName))
-			return label + "\n" + styleToolResultBody.Render(strings.TrimSpace(seg.Body))
-		}
-		label := styleToolResultErrLabel.Render(fmt.Sprintf("tool_result · %s · error", seg.ToolName))
-		return label + "\n" + styleToolResultErrBodyTxt.Render(strings.TrimSpace(seg.Body))
 	case segments.KindFinal:
 		return styleFinalBody.Render(strings.TrimSpace(seg.Body))
 	default:

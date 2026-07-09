@@ -20,12 +20,10 @@ var (
 	styleThinkBody  = lipgloss.NewStyle().Foreground(colorAgentText).Italic(true).PaddingLeft(2)
 
 	styleToolCallLabel = lipgloss.NewStyle().Foreground(colorWoodLabel).Bold(true)
-	styleToolCallBody  = lipgloss.NewStyle().Foreground(colorAgentText).PaddingLeft(2)
 
 	styleToolResultOKLabel    = lipgloss.NewStyle().Foreground(colorOKGold).Bold(true)
 	styleToolResultErrLabel   = lipgloss.NewStyle().Foreground(colorErrorRust).Bold(true)
-	styleToolResultBody       = lipgloss.NewStyle().Foreground(colorAgentText).PaddingLeft(2)
-	styleToolResultErrBodyTxt = lipgloss.NewStyle().Foreground(colorAgentText).PaddingLeft(2)
+	styleToolResultErrBodyTxt = lipgloss.NewStyle().Foreground(colorErrorRust).PaddingLeft(2)
 
 	styleFinalLabel = lipgloss.NewStyle().Foreground(colorWoodLabel).Bold(true)
 	styleFinalBody  = lipgloss.NewStyle().Foreground(colorAgentText).PaddingLeft(2)

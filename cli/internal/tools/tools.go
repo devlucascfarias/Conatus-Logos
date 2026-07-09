@@ -33,6 +33,7 @@ var Registry = map[string]Executor{
 	"write_file": writeFile,
 	"read_file":  readFile,
 	"list_files": listFiles,
+	"checker":    checker,
 }
 
 // resolvePath junta workDir + relPath, resolve pra absoluto, e confere que o resultado
