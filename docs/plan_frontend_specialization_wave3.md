@@ -268,14 +268,28 @@ afirmar "ficou elegante" sobre algo que não foi renderizado de verdade.
      estruturado até lá.
    - ⬜ Design tokens (camada 4) e build real React/Vue (camada 2): adiados pra quando a
      fase 2 começar.
-4. **Gerar um lote-piloto pequeno de frontend** (landing pages estáticas), validar qualidade
-   com o checker novo + julgamento manual, antes de escalar.
+4. ✅ **Gerar um lote-piloto pequeno de frontend** — feito (`D-frontend-pilot-batch`,
+   `docs/PLAN.md` seção 10.4.2): 5 exemplos reais em `data/train` (`gen-frontend-*.json`),
+   validados pelo checker `html` novo (não só "compilou" — renderizado de verdade em Chromium,
+   incluindo um ciclo real de falha→correção). Decisão tomada sem perguntar (CSS puro com
+   tokens em `:root`, não Tailwind — ver seção 11 atualizada): mantém o corpus livre de
+   dependência de CDN/rede durante a geração, e dá um artefato de tokens concreto e checável
+   por `search_code`, que é exatamente a dimensão 6 do `<think>` técnico (seção 6). Ainda
+   pequeno demais pra escalar sem julgamento manual — próximo passo real antes do passo 5 é
+   olhar os 5 exemplos (texto + rodar `scripts/render_frontend_preview.py` neles) e decidir se
+   o padrão vale escalar como está.
 5. **Retreinar e avaliar** com o checker de frontend como métrica de progresso.
 6. **Fase 2 (React/Vue + R3F)** só depois que a fase 1 estiver sólida.
 
 ## 11. Perguntas em aberto (decisões que faltam antes de executar)
 
-- Tailwind (via CDN na fase 1) como design system, ou CSS puro com tokens próprios?
+- ~~Tailwind (via CDN na fase 1) como design system, ou CSS puro com tokens próprios?~~
+  **Decidido no lote-piloto (`D-frontend-pilot-batch`): CSS puro com tokens em `:root`.** Sem
+  dependência de rede na geração/checker, e dá um artefato concreto (`tokens.css`) que
+  `search_code` consegue checar de verdade (dimensão 6 do `<think>`, seção 6) — Tailwind via
+  CDN faria isso virar "confiar que a classe utilitária certa foi usada", sem um jeito barato
+  de verificar objetivamente. Pode ser revisitado se a fase 2 (React/Vue) tornar Tailwind mais
+  natural.
 - O system prompt muda o texto-base (regera dataset) ou a especialização fica só implícita?
 - React ou Vue pra fase 2? (usuário disse "React/Vue" — escolher um pra focar).
 - Manter os ~2455 exemplos genéricos atuais no treino (pra não perder capacidade base de

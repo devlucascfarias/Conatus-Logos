@@ -1,0 +1,31 @@
+{
+  "metadata": {
+    "id": "gen-frontend-landing_hero_cta",
+    "domain": "frontend",
+    "language": "html",
+    "difficulty": "easy",
+    "tools_used": [
+      "search_code",
+      "write_file",
+      "write_file",
+      "checker"
+    ],
+    "num_steps": 4,
+    "task_type": "multi_tool_call",
+    "source": "curated_manual_real_execution",
+    "license": "synthetic-no-license-needed",
+    "validation_status": "validated",
+    "execution_performed": true,
+    "split": "train",
+    "checker_used": "checker-html-1.0",
+    "expected_result": {
+      "passed": true
+    },
+    "execution_classification": "interpreted"
+  },
+  "trajectory": {
+    "system_prompt": "Você é Logos-3, um agente de engenharia de software da família de modelos Conatus. Raciocine em <think>, use <tool_call name=\"...\"> quando precisar de uma ferramenta, e responda ao usuário só dentro de <final>.",
+    "user_request": "Crie uma landing page simples com um hero, um título, uma descrição curta e um botão de call-to-action.",
+    "raw_text": "<think>É um projeto novo, vou verificar se já existe algum arquivo de estilos antes de inventar tokens do zero.</think><tool_call name=\"search_code\">{\"pattern\": \"--color-primary\", \"path\": \".\"}</tool_call><tool_result name=\"search_code\" status=\"ok\">{\"matches\": [], \"truncated\": false}</tool_result><think>Não encontrei nada — projeto vazio. Vou definir tokens de cor/espaçamento num arquivo próprio em vez de espalhar valores soltos pelo HTML, assim qualquer página futura reaproveita as mesmas variáveis.</think><tool_call name=\"write_file\">{\"path\": \"tokens.css\", \"content\": \":root {\\n  --color-bg: #0f0f11;\\n  --color-surface: #1a1a1e;\\n  --color-text: #f5f5f7;\\n  --color-muted: #a1a1aa;\\n  --color-primary: #6366f1;\\n  --space-sm: 0.5rem;\\n  --space-md: 1rem;\\n  --space-lg: 2rem;\\n  --space-xl: 4rem;\\n  --radius-md: 0.5rem;\\n}\\n\"}</tool_call><tool_result name=\"write_file\" status=\"ok\">{\"path\": \"tokens.css\", \"bytes_written\": 245, \"mode\": \"overwrite\"}</tool_result><think>Para o hero, uma única coluna centralizada não precisa de Grid — Flexbox com direção coluna resolve com menos código e é a ferramenta certa quando só existe um eixo de alinhamento.</think><tool_call name=\"write_file\">{\"path\": \"index.html\", \"content\": \"<!doctype html>\\n<html lang=\\\"pt-br\\\">\\n<head>\\n<meta charset=\\\"utf-8\\\">\\n<title>Landing</title>\\n<link rel=\\\"stylesheet\\\" href=\\\"tokens.css\\\">\\n<style>\\nbody { margin: 0; background: var(--color-bg); color: var(--color-text); font-family: system-ui, sans-serif; }\\n.hero { display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 100vh; text-align: center; gap: var(--space-md); padding: var(--space-lg); }\\n.hero h1 { font-size: 2.5rem; margin: 0; }\\n.hero p { color: var(--color-muted); max-width: 32rem; margin: 0; }\\n.btn { display: inline-block; padding: var(--space-sm) var(--space-lg); background: var(--color-primary); color: var(--color-text); border: none; border-radius: var(--radius-md); font-weight: 600; cursor: pointer; }\\n</style>\\n</head>\\n<body>\\n<section class=\\\"hero\\\">\\n<h1>Construa mais rápido</h1>\\n<p>Uma ferramenta pequena, direta ao ponto, sem enrolação.</p>\\n<button class=\\\"btn\\\">Começar agora</button>\\n</section>\\n</body>\\n</html>\\n\"}</tool_call><tool_result name=\"write_file\" status=\"ok\">{\"path\": \"index.html\", \"bytes_written\": 973, \"mode\": \"overwrite\"}</tool_result><think>A página está pronta. Antes de responder, vou renderizar de verdade num navegador e conferir o console — não vou considerar isso pronto só porque o HTML parece correto na leitura.</think><tool_call name=\"checker\">{\"language\": \"html\", \"operation\": \"run\", \"files\": [{\"path\": \"tokens.css\", \"content\": \":root {\\n  --color-bg: #0f0f11;\\n  --color-surface: #1a1a1e;\\n  --color-text: #f5f5f7;\\n  --color-muted: #a1a1aa;\\n  --color-primary: #6366f1;\\n  --space-sm: 0.5rem;\\n  --space-md: 1rem;\\n  --space-lg: 2rem;\\n  --space-xl: 4rem;\\n  --radius-md: 0.5rem;\\n}\\n\"}, {\"path\": \"index.html\", \"content\": \"<!doctype html>\\n<html lang=\\\"pt-br\\\">\\n<head>\\n<meta charset=\\\"utf-8\\\">\\n<title>Landing</title>\\n<link rel=\\\"stylesheet\\\" href=\\\"tokens.css\\\">\\n<style>\\nbody { margin: 0; background: var(--color-bg); color: var(--color-text); font-family: system-ui, sans-serif; }\\n.hero { display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 100vh; text-align: center; gap: var(--space-md); padding: var(--space-lg); }\\n.hero h1 { font-size: 2.5rem; margin: 0; }\\n.hero p { color: var(--color-muted); max-width: 32rem; margin: 0; }\\n.btn { display: inline-block; padding: var(--space-sm) var(--space-lg); background: var(--color-primary); color: var(--color-text); border: none; border-radius: var(--radius-md); font-weight: 600; cursor: pointer; }\\n</style>\\n</head>\\n<body>\\n<section class=\\\"hero\\\">\\n<h1>Construa mais rápido</h1>\\n<p>Uma ferramenta pequena, direta ao ponto, sem enrolação.</p>\\n<button class=\\\"btn\\\">Começar agora</button>\\n</section>\\n</body>\\n</html>\\n\"}], \"entrypoint\": \"index.html\"}</tool_call><tool_result name=\"checker\" status=\"ok\">{\"passed\": true, \"errors\": [], \"stdout\": \"\", \"stderr\": \"\", \"metadata\": {\"language\": \"html\", \"duration_ms\": 6828, \"console_warnings\": []}}</tool_result><final>Criei a landing page em index.html com um hero centralizado (Flexbox em coluna, já que só há um eixo de alinhamento aqui, Grid seria complexidade sem benefício), extraí cores e espaçamentos para tokens.css em vez de valores soltos, e confirmei renderizando num navegador de verdade que a página carrega sem erro de console.</final>"
+  }
+}
