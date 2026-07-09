@@ -1,11 +1,17 @@
-# Configuração de treino para NVIDIA L4 / Google Colab (seções 11 e 12 do PLAN.md).
+# Configuração de treino (seções 11 e 12 do PLAN.md).
 # Valores são baseline experimental (seção 11.2), não definitivos — ajustar após profiling
 # real de VRAM na primeira execução (célula 9 do notebook, torch.cuda.max_memory_allocated()).
+#
+# D-frontend-pivot-model-swap (2026-07-09, docs/plan_frontend_specialization_wave3.md seção 2):
+# trocado de ibm-granite/granite-4.1-8b para Qwen/Qwen3-4B-Instruct-2507 — modelo 4B, sem modo
+# de "thinking" nativo (não briga com a gramática <think>/<tool_call>/<final> treinada por
+# cima), base mais leve pro hardware disponível (a A2000 12GB penava com o 8B mesmo em
+# sequence_length=1024).
 
 version: 1
 
 model:
-  base_model: "ibm-granite/granite-4.1-8b"
+  base_model: "Qwen/Qwen3-4B-Instruct-2507"
   load_in_4bit: true
   bnb_4bit_quant_type: "nf4"
   bnb_4bit_compute_dtype: "bfloat16"
@@ -15,10 +21,14 @@ lora:
   r: 16
   alpha: 32
   dropout: 0.05
-  # Ajustar após inspecionar named_modules() do Granite-4.1-8B (risco registrado na seção 17).
+  # D-qwen3-qknorm-lora: Qwen3 aplica RMSNorm em q/k DEPOIS do reshape da projeção (QK-norm) —
+  # colocar adapter LoRA em q_proj/k_proj introduz tensores com shape incompatível nesse
+  # caminho de normalização, e isso já foi reportado travando com erro CUBLAS na primeira
+  # camada de atenção. Por isso o conjunto de target_modules aqui EXCLUI q_proj/k_proj,
+  # diferente do que era usado para o Granite. Ainda assim, confirme via
+  # model.named_modules() na primeira carga real (mesmo espírito da seção 17 do PLAN.md) —
+  # isso veio de pesquisa, não de execução real neste projeto ainda.
   target_modules:
-    - "q_proj"
-    - "k_proj"
     - "v_proj"
     - "o_proj"
     - "gate_proj"

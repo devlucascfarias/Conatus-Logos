@@ -14,12 +14,17 @@ def _char_level_offsets(text: str) -> list[tuple[int, int]]:
 
 
 def test_train_config_loads_from_default_yaml():
+    # D-frontend-pivot-model-swap: base trocada pra Qwen3-4B-Instruct-2507 (docs/
+    # plan_frontend_specialization_wave3.md). target_modules NÃO inclui q_proj/k_proj —
+    # QK-norm do Qwen3 é incompatível com LoRA nessas duas projeções (D-qwen3-qknorm-lora).
     config = TrainConfig.load()
-    assert config.base_model == "ibm-granite/granite-4.1-8b"
+    assert config.base_model == "Qwen/Qwen3-4B-Instruct-2507"
     assert config.load_in_4bit is True
     assert config.lora_r == 16
     assert config.lora_alpha == 32
-    assert "q_proj" in config.lora_target_modules
+    assert "q_proj" not in config.lora_target_modules
+    assert "k_proj" not in config.lora_target_modules
+    assert "v_proj" in config.lora_target_modules
     assert config.sequence_length == 4096
     assert config.optim == "paged_adamw_8bit"
     assert config.require_gpu_name_contains == "L4"

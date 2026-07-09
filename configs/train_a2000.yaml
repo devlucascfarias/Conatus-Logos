@@ -1,15 +1,22 @@
 # Config de treino real pra RTX A2000 12GB.
 #
-# Histórico de validação real (2026-07-09):
+# Histórico de validação real com o Granite-4.1-8B (2026-07-09, antes do pivô de modelo):
 # - sequence_length=1536 passou no smoketest isolado (scripts/vram_smoketest.py --longest
 #   --num-examples 1: 9.49 GB alocado / 10.79 GB reservado), mas OOM real de verdade dentro do
 #   SFTTrainer (trainer.train(), primeiro passo, cross_entropy_loss) quando rodado via VS Code
 #   — o VS Code em si fica aberto o treino inteiro nesse fluxo (diferente de rodar via
 #   `nohup`, onde dava pra fechar tudo), consumindo VRAM que o smoketest isolado não contava.
-#   Erro real: "Tried to allocate 1.15 GiB... only 288.56 MiB is free... process has 10.38 GiB
-#   memory in use".
-# - Reduzido pra 1024: afeta 82 de 2455 exemplos em data/train (3.3%, ante 2.3% em 1536) —
-#   perda de sinal de treino ainda pequena, ganho real de margem de VRAM.
+# - Reduzido pra 1024 pro Granite-4.1-8B. Perda de sinal pequena (3.3% de data/train truncado),
+#   ganho real de margem, mas ainda apertado — foi exatamente essa dor que motivou o pivô de
+#   modelo (docs/plan_frontend_specialization_wave3.md).
+#
+# D-frontend-pivot-model-swap: base trocada pra Qwen/Qwen3-4B-Instruct-2507 (4B, ~metade do
+# tamanho do Granite-4.1-8B em 4-bit) — sequence_length devolvido pra 2048 como ponto de
+# partida (era o valor testado ANTES de precisar cair pra 1024 no 8B), mas isso é uma
+# expectativa, não medição — RODE scripts/vram_smoketest.py --longest --num-examples 1 de novo
+# antes de confiar nisso pra um treino completo. Com um modelo bem menor, é bem provável que
+# caiba com folga suficiente pra nem precisar reduzir, mas ainda não foi medido de verdade
+# com o Qwen3.
 #
 # Use com o notebook via a variável de ambiente TRAIN_CONFIG_PATH (ver notebooks/
 # train_granite_l4.ipynb, célula 4):
@@ -20,7 +27,7 @@
 version: 1
 
 model:
-  base_model: "ibm-granite/granite-4.1-8b"
+  base_model: "Qwen/Qwen3-4B-Instruct-2507"
   load_in_4bit: true
   bnb_4bit_quant_type: "nf4"
   bnb_4bit_compute_dtype: "bfloat16"
@@ -30,9 +37,10 @@ lora:
   r: 16
   alpha: 32
   dropout: 0.05
+  # D-qwen3-qknorm-lora (ver mesma nota em train_l4.yaml): Qwen3 usa QK-norm, LoRA em
+  # q_proj/k_proj é incompatível com esse caminho de normalização (erro CUBLAS reportado).
+  # Excluído aqui também. Confirmar via named_modules() na primeira carga real.
   target_modules:
-    - "q_proj"
-    - "k_proj"
     - "v_proj"
     - "o_proj"
     - "gate_proj"
@@ -42,7 +50,7 @@ lora:
 data:
   train_path: "data/train"
   validation_path: "data/validation"
-  sequence_length: 1024
+  sequence_length: 2048
   group_by_length: true
 
 training:
