@@ -49,7 +49,8 @@ type Model struct {
 
 	history        []agent.Turn // turnos concluídos desta sessão (D-cli-session-history)
 	currentRequest string       // pedido que iniciou o turno em andamento, pra virar Turn ao finalizar
-	contextTokens  int          // último prompt_eval_count real reportado pela Ollama
+	sessionTokens  int          // SOMA de todo prompt_eval_count real reportado pela Ollama nesta sessão
+	promptCalls    int          // quantas chamadas reais de generate() contribuíram pra sessionTokens
 
 	renderedLog []string // trajetórias já finalizadas
 	currentRaw  string   // raw_text completo recebido até agora (fonte da verdade)
@@ -127,7 +128,8 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 				break
 			}
 			m.history = nil
-			m.contextTokens = 0
+			m.sessionTokens = 0
+			m.promptCalls = 0
 			m.renderedLog = append(m.renderedLog, styleStatusBar.Render("— sessão reiniciada, histórico limpo —"))
 			m.refreshViewport()
 		case tea.KeyEnter:
@@ -163,7 +165,8 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			break
 		}
 		if msg.ContextTokens > 0 {
-			m.contextTokens = msg.ContextTokens
+			m.sessionTokens += msg.ContextTokens
+			m.promptCalls++
 		}
 		if msg.Delta != "" {
 			m.currentRaw += msg.Delta
@@ -253,20 +256,23 @@ func (m Model) statusLine() string {
 	)
 }
 
-// contextLine monta o lado direito do rodapé — tokens de PROMPT reais (system + histórico +
-// turno atual), reportados pela própria Ollama (prompt_eval_count), sobre o num_ctx que o
-// cliente pediu explicitamente. Fica vazio antes do primeiro turno completar (ainda não
-// temos nenhum valor real pra mostrar, e não vamos estimar).
+// contextLine monta o lado direito do rodapé — SOMA de tokens de prompt reais (não
+// estimados) reportados pela própria Ollama (prompt_eval_count) em cada chamada de
+// generate() feita nesta sessão. É um contador de custo/uso acumulado, não "quanto da
+// janela de contexto está preenchida agora" — cada chamada reprocessa o prompt inteiro do
+// zero (a Ollama não reaproveita KV cache entre requisições HTTP separadas aqui), então
+// somar é a contagem honesta de quanto foi processado de verdade, não uma métrica de
+// ocupação da janela (por isso não comparamos mais contra NumCtx). Persiste até Ctrl+R —
+// nunca decresce nem reseta sozinho.
 func (m Model) contextLine() string {
-	if m.contextTokens == 0 {
+	if m.sessionTokens == 0 {
 		return ""
 	}
-	pct := float64(m.contextTokens) / float64(m.client.NumCtx) * 100
 	turns := fmt.Sprintf("%d turno", len(m.history))
 	if len(m.history) != 1 {
 		turns += "s"
 	}
-	return fmt.Sprintf("contexto: %d/%d tokens (%.0f%%) · %s · Ctrl+R reinicia", m.contextTokens, m.client.NumCtx, pct, turns)
+	return fmt.Sprintf("%d tokens (sessão, %d chamadas) · %s · Ctrl+R reinicia", m.sessionTokens, m.promptCalls, turns)
 }
 
 func appTitle(client *ollamaclient.Client, workDir string) string {
