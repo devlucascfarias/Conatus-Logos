@@ -42,6 +42,7 @@ type Model struct {
 	renderedLog []string // trajetórias já finalizadas
 	currentRaw  string   // raw_text completo recebido até agora (fonte da verdade)
 	revealedLen int      // quantos runes de currentRaw já foram "digitados" na tela
+	genStarted  time.Time
 
 	width  int
 	height int
@@ -123,6 +124,7 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			m.streamErr = nil
 			m.currentRaw = ""
 			m.revealedLen = 0
+			m.genStarted = time.Now()
 
 			ch := make(chan agent.Event)
 			m.streamCh = ch
@@ -186,20 +188,35 @@ func (m Model) View() string {
 	}
 
 	header := styleTitle.Render(appTitle(m.client))
-
-	status := "pronto"
-	if m.generating {
-		status = m.spinner.View() + " gerando..."
-	}
-	if m.streamErr != nil {
-		status = styleToolResultErrLabel.Render("erro: " + m.streamErr.Error())
-	}
-	statusBar := styleStatusBar.Render(status)
+	statusBar := styleStatusBar.Render(m.statusLine())
 
 	body := styleViewport.Width(m.width - 2).Render(m.viewport.View())
 	input := styleInputBox.Width(m.width - 2).Render(m.textinput.View())
 
 	return lipglossJoinVertical(header, body, input, statusBar)
+}
+
+// statusLine monta o texto do rodapé — "Ready" parado, ou "Ready" + spinner + tempo
+// decorrido + taxa real de caracteres/s enquanto gera (nada de token/s estimado — não temos
+// contagem de token de verdade nesta build, só caracteres, então é isso que reportamos).
+func (m Model) statusLine() string {
+	if m.streamErr != nil {
+		return styleToolResultErrLabel.Render("erro: " + m.streamErr.Error())
+	}
+	if !m.generating {
+		return "Ready"
+	}
+
+	elapsed := time.Since(m.genStarted)
+	chars := len([]rune(m.currentRaw))
+	rate := 0.0
+	if elapsed.Seconds() > 0 {
+		rate = float64(chars) / elapsed.Seconds()
+	}
+	return fmt.Sprintf(
+		"%s gerando... %.1fs · %d caracteres · %.0f car/s",
+		m.spinner.View(), elapsed.Seconds(), chars, rate,
+	)
 }
 
 func appTitle(client *ollamaclient.Client) string {
@@ -229,9 +246,17 @@ func (m *Model) refreshViewport() {
 
 	content := m.renderedLog
 	if visible != "" {
-		content = append(append([]string{}, m.renderedLog...), renderLiveTrajectory(visible, stillTyping))
+		content = append(append([]string{}, m.renderedLog...), renderLiveTrajectory(visible, stillTyping, m.spinner.View()))
 	}
-	m.viewport.SetContent(strings.Join(content, "\n\n"))
+
+	joined := strings.Join(content, "\n\n")
+	// viewport da bubbles NÃO quebra linha sozinho — sem isso, qualquer linha mais longa
+	// que a largura da caixa fica cortada até a janela ser redimensionada (o redraw força
+	// um recálculo). O Width() do lipgloss é ANSI-aware, não estraga as cores já aplicadas.
+	if m.viewport.Width > 0 {
+		joined = lipgloss.NewStyle().Width(m.viewport.Width).Render(joined)
+	}
+	m.viewport.SetContent(joined)
 	m.viewport.GotoBottom()
 }
 
@@ -293,8 +318,10 @@ func renderClosedTrajectory(rawText string) string {
 
 // renderLiveTrajectory renderiza segmentos já fechados normalmente e, se `glowing`, aplica o
 // rastro de gradiente branco->bege no trecho ainda sendo gerado (tag aberta ou fragmento
-// incompleto) — é o que dá o efeito de "cursor" de digitação em tempo real.
-func renderLiveTrajectory(rawText string, glowing bool) string {
+// incompleto) — é o que dá o efeito de "cursor" de digitação em tempo real. `spinnerView` só é
+// usado ao lado do rótulo "Thinking" enquanto ele está em aberto (a mesma animação que já
+// aparecia no rodapé, agora também junto do raciocínio que está sendo gerado).
+func renderLiveTrajectory(rawText string, glowing bool, spinnerView string) string {
 	segs, tail := segments.ParseWithTail(rawText)
 	var blocks []string
 	for _, seg := range segs {
@@ -318,6 +345,9 @@ func renderLiveTrajectory(rawText string, glowing bool) string {
 	}
 
 	label, bodyText := labelAndBodyFor(kind, toolName, status, body)
+	if glowing && kind == segments.KindThink && label != "" {
+		label = label + " " + spinnerView
+	}
 	if glowing {
 		glowed := renderGlowTail(bodyText, rgbGlowSettle)
 		if label != "" {
