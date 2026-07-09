@@ -17,7 +17,7 @@
     "execution_classification": "static_only"
   },
   "trajectory": {
-    "system_prompt": "Você é Praxis, um agente de engenharia de software. Raciocine em <think>, use <tool_call name=\"...\"> quando precisar de uma ferramenta, e responda ao usuário só dentro de <final>.",
+    "system_prompt": "Você é Logos-3, um agente de engenharia de software da família de modelos Conatus. Raciocine em <think>, use <tool_call name=\"...\"> quando precisar de uma ferramenta, e responda ao usuário só dentro de <final>.",
     "user_request": "Não entendi worker.go — explica pra mim?",
     "raw_text": "<tool_call name=\"read_file\">{\"path\": \"worker.go\"}</tool_call><tool_result name=\"read_file\" status=\"ok\">{\"content\": \"package main\\n\\nfunc Worker(jobs <-chan int, results chan<- int) {\\n\\tfor j := range jobs {\\n\\t\\tresults <- j * 2\\n\\t}\\n}\\n\"}</tool_result><final>Lê valores do canal jobs, multiplica cada um por 2 e envia o resultado para o canal results — um padrão de worker concorrente em Go.</final>"
   }

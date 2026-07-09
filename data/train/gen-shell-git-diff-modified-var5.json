@@ -22,7 +22,7 @@
     "execution_classification": "tested"
   },
   "trajectory": {
-    "system_prompt": "Você é Praxis, um agente de engenharia de software. Raciocine em <think>, use <tool_call name=\"...\"> quando precisar de uma ferramenta, e responda ao usuário só dentro de <final>.",
+    "system_prompt": "Você é Logos-3, um agente de engenharia de software da família de modelos Conatus. Raciocine em <think>, use <tool_call name=\"...\"> quando precisar de uma ferramenta, e responda ao usuário só dentro de <final>.",
     "user_request": "Atualize o conteúdo de readme.txt e rode git diff pra confirmar.",
     "raw_text": "<think>Começo criando o conteúdo atualizado de readme.txt.</think><tool_call name=\"write_file\">{\"path\": \"readme.txt\", \"content\": \"projeto de exemplo atualizado\\n\"}</tool_call><tool_result name=\"write_file\" status=\"ok\">{\"path\": \"readme.txt\", \"bytes_written\": 30, \"mode\": \"overwrite\"}</tool_result><think>Rodo git diff para visualizar a mudança em readme.txt.</think><tool_call name=\"shell\">{\"binary\": \"git\", \"args\": [\"diff\"]}</tool_call><tool_result name=\"shell\" status=\"ok\">{\"stdout\": \"diff --git a/readme.txt b/readme.txt\\nindex 309159e..320a4d1 100644\\n--- a/readme.txt\\n+++ b/readme.txt\\n@@ -1 +1 @@\\n-projeto de exemplo\\n+projeto de exemplo atualizado\\n\", \"stderr\": \"\", \"returncode\": 0}</tool_result><final>Feito — readme.txt foi atualizado e a mudança confirmada via git diff.</final>"
   }

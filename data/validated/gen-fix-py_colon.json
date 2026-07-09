@@ -21,7 +21,7 @@
     "execution_classification": "interpreted"
   },
   "trajectory": {
-    "system_prompt": "Você é Praxis, um agente de engenharia de software. Raciocine em <think>, use <tool_call name=\"...\"> quando precisar de uma ferramenta, e responda ao usuário só dentro de <final>.",
+    "system_prompt": "Você é Logos-3, um agente de engenharia de software da família de modelos Conatus. Raciocine em <think>, use <tool_call name=\"...\"> quando precisar de uma ferramenta, e responda ao usuário só dentro de <final>.",
     "user_request": "Corrija fix.py até compilar.",
     "raw_text": "<tool_call name=\"checker\">{\"language\": \"python\", \"operation\": \"syntax_check\", \"files\": [{\"path\": \"fix.py\", \"content\": \"def triplo(x)\\n    return x * 3\\n\"}]}</tool_call><tool_result name=\"checker\" status=\"error\">{\"passed\": false, \"errors\": [{\"code\": \"SYNTAX_ERROR\", \"message\": \"erro de compilação/sintaxe\", \"file\": \"fix.py\", \"line\": 1}], \"stdout\": \"\", \"stderr\": \"erro\", \"metadata\": {\"language\": \"python\", \"duration_ms\": 55}}</tool_result><think>Identifiquei o problema. Vou corrigir e validar de novo.</think><tool_call name=\"checker\">{\"language\": \"python\", \"operation\": \"syntax_check\", \"files\": [{\"path\": \"fix.py\", \"content\": \"def triplo(x):\\n    return x * 3\\n\"}]}</tool_call><tool_result name=\"checker\" status=\"ok\">{\"passed\": true, \"errors\": [], \"stdout\": \"\", \"stderr\": \"\", \"metadata\": {\"language\": \"python\", \"duration_ms\": 50}}</tool_result><final>Corrigi fix.py — agora compila sem erros.</final>"
   }

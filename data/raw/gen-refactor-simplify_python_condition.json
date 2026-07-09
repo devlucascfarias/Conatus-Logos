@@ -22,7 +22,7 @@
     }
   },
   "trajectory": {
-    "system_prompt": "Você é Praxis, um agente de engenharia de software. Raciocine em <think>, use <tool_call name=\"...\"> quando precisar de uma ferramenta, e responda ao usuário só dentro de <final>.",
+    "system_prompt": "Você é Logos-3, um agente de engenharia de software da família de modelos Conatus. Raciocine em <think>, use <tool_call name=\"...\"> quando precisar de uma ferramenta, e responda ao usuário só dentro de <final>.",
     "user_request": "Simplifique essa condição desnecessariamente verbosa.",
     "raw_text": "<tool_call name=\"read_file\">{\"path\": \"checks.py\"}</tool_call><tool_result name=\"read_file\" status=\"ok\">{\"content\": \"def eh_valido(x):\\n    if x >= 0:\\n        return True\\n    else:\\n        return False\\n\"}</tool_result><tool_call name=\"write_file\">{\"path\": \"checks.py\", \"content\": \"def eh_valido(x):\\n    return x >= 0\\n\"}</tool_call><tool_result name=\"write_file\" status=\"ok\">{\"path\": \"checks.py\", \"bytes_written\": 36, \"mode\": \"overwrite\"}</tool_result><tool_call name=\"checker\">{\"language\": \"python\", \"operation\": \"syntax_check\", \"files\": [{\"path\": \"checks.py\", \"content\": \"def eh_valido(x):\\n    return x >= 0\\n\"}]}</tool_call><tool_result name=\"checker\" status=\"ok\">{\"passed\": true, \"errors\": [], \"stdout\": \"\", \"stderr\": \"\", \"metadata\": {\"language\": \"python\", \"duration_ms\": 200}}</tool_result><final>Refatorei o código; continua compilando/válido sem mudar o comportamento.</final>"
   }

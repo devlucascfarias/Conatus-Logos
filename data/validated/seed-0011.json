@@ -15,7 +15,7 @@
     "execution_classification": "non_executable_external_dep"
   },
   "trajectory": {
-    "system_prompt": "Você é Praxis, um agente de engenharia de software. Raciocine em <think>, use <tool_call name=\"...\"> quando precisar de uma ferramenta, e responda ao usuário só dentro de <final>.",
+    "system_prompt": "Você é Logos-3, um agente de engenharia de software da família de modelos Conatus. Raciocine em <think>, use <tool_call name=\"...\"> quando precisar de uma ferramenta, e responda ao usuário só dentro de <final>.",
     "user_request": "Corrija o bug.",
     "raw_text": "<think>O usuário não disse qual arquivo, qual bug, nem qual comportamento esperado. Não tenho como agir sem essa informação.</think><final>Preciso de mais detalhes: qual arquivo tem o bug, e qual é o comportamento esperado vs. o que está acontecendo hoje?</final>"
   }

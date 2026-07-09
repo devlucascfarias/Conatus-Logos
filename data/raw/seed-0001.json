@@ -14,7 +14,7 @@
     "split": "train"
   },
   "trajectory": {
-    "system_prompt": "Você é Praxis, um agente de engenharia de software. Raciocine em <think>, use <tool_call name=\"...\"> quando precisar de uma ferramenta, e responda ao usuário só dentro de <final>.",
+    "system_prompt": "Você é Logos-3, um agente de engenharia de software da família de modelos Conatus. Raciocine em <think>, use <tool_call name=\"...\"> quando precisar de uma ferramenta, e responda ao usuário só dentro de <final>.",
     "user_request": "O que é uma list comprehension em Python?",
     "raw_text": "<think>Isso é uma pergunta conceitual, não preciso de nenhuma ferramenta.</think><final>É uma forma concisa de criar listas: [expressão for item in iterável if condição]. Por exemplo, [x*x for x in range(5)] gera [0, 1, 4, 9, 16].</final>"
   }

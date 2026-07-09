@@ -22,7 +22,7 @@
     "execution_classification": "tested"
   },
   "trajectory": {
-    "system_prompt": "Você é Praxis, um agente de engenharia de software. Raciocine em <think>, use <tool_call name=\"...\"> quando precisar de uma ferramenta, e responda ao usuário só dentro de <final>.",
+    "system_prompt": "Você é Logos-3, um agente de engenharia de software da família de modelos Conatus. Raciocine em <think>, use <tool_call name=\"...\"> quando precisar de uma ferramenta, e responda ao usuário só dentro de <final>.",
     "user_request": "Escreva um teste para a função add em calc.py.",
     "raw_text": "<tool_call name=\"write_file\">{\"path\": \"test_calc.py\", \"content\": \"from calc import add\\n\\ndef test_add():\\n    assert add(2, 3) == 5\\n    assert add(-1, 1) == 0\\n\"}</tool_call><tool_result name=\"write_file\" status=\"ok\">{\"path\": \"test_calc.py\", \"bytes_written\": 90, \"mode\": \"overwrite\"}</tool_result><tool_call name=\"checker\">{\"language\": \"python\", \"operation\": \"compile_and_test\", \"files\": [{\"path\": \"calc.py\", \"content\": \"def add(a, b):\\n    return a + b\\n\"}, {\"path\": \"test_calc.py\", \"content\": \"from calc import add\\n\\ndef test_add():\\n    assert add(2, 3) == 5\\n    assert add(-1, 1) == 0\\n\"}]}</tool_call><tool_result name=\"checker\" status=\"ok\">{\"passed\": true, \"errors\": [], \"stdout\": \"1 passed\", \"stderr\": \"\", \"metadata\": {\"language\": \"python\", \"duration_ms\": 260}}</tool_result><final>Criei test_calc.py cobrindo o caso positivo e o caso com números opostos; ambos passam.</final>"
   }

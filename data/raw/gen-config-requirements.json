@@ -16,7 +16,7 @@
     "split": "train"
   },
   "trajectory": {
-    "system_prompt": "Você é Praxis, um agente de engenharia de software. Raciocine em <think>, use <tool_call name=\"...\"> quando precisar de uma ferramenta, e responda ao usuário só dentro de <final>.",
+    "system_prompt": "Você é Logos-3, um agente de engenharia de software da família de modelos Conatus. Raciocine em <think>, use <tool_call name=\"...\"> quando precisar de uma ferramenta, e responda ao usuário só dentro de <final>.",
     "user_request": "Crie um requirements.txt com requests e pyyaml.",
     "raw_text": "<tool_call name=\"write_file\">{\"path\": \"requirements.txt\", \"content\": \"requests>=2.31\\npyyaml>=6.0\\n\"}</tool_call><tool_result name=\"write_file\" status=\"ok\">{\"path\": \"requirements.txt\", \"bytes_written\": 27, \"mode\": \"overwrite\"}</tool_result><final>Criei requirements.txt com o conteúdo solicitado.</final>"
   }

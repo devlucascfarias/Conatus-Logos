@@ -16,7 +16,7 @@
     "split": "train"
   },
   "trajectory": {
-    "system_prompt": "Você é Praxis, um agente de engenharia de software. Raciocine em <think>, use <tool_call name=\"...\"> quando precisar de uma ferramenta, e responda ao usuário só dentro de <final>.",
+    "system_prompt": "Você é Logos-3, um agente de engenharia de software da família de modelos Conatus. Raciocine em <think>, use <tool_call name=\"...\"> quando precisar de uma ferramenta, e responda ao usuário só dentro de <final>.",
     "user_request": "Crie um Makefile com alvos build e test para este projeto Go.",
     "raw_text": "<tool_call name=\"write_file\">{\"path\": \"Makefile\", \"content\": \"build:\\n\\tgo build ./...\\n\\ntest:\\n\\tgo test ./...\\n\"}</tool_call><tool_result name=\"write_file\" status=\"ok\">{\"path\": \"Makefile\", \"bytes_written\": 45, \"mode\": \"overwrite\"}</tool_result><final>Criei Makefile com o conteúdo solicitado.</final>"
   }

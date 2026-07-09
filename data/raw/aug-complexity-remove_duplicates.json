@@ -16,7 +16,7 @@
     "split": "train"
   },
   "trajectory": {
-    "system_prompt": "Você é Praxis, um agente de engenharia de software. Raciocine em <think>, use <tool_call name=\"...\"> quando precisar de uma ferramenta, e responda ao usuário só dentro de <final>.",
+    "system_prompt": "Você é Logos-3, um agente de engenharia de software da família de modelos Conatus. Raciocine em <think>, use <tool_call name=\"...\"> quando precisar de uma ferramenta, e responda ao usuário só dentro de <final>.",
     "user_request": "Qual a complexidade de tempo de remove_duplicates?",
     "raw_text": "<tool_call name=\"read_file\">{\"path\": \"remove_duplicates.py\"}</tool_call><tool_result name=\"read_file\" status=\"ok\">{\"content\": \"def remove_duplicates(lista):\\n    return list(dict.fromkeys(lista))\\n\"}</tool_result><final>É O(n): um loop sobre a lista, com lookup O(1) médio no dicionário usado internamente.</final>"
   }

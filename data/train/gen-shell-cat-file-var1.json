@@ -22,7 +22,7 @@
     "execution_classification": "tested"
   },
   "trajectory": {
-    "system_prompt": "Você é Praxis, um agente de engenharia de software. Raciocine em <think>, use <tool_call name=\"...\"> quando precisar de uma ferramenta, e responda ao usuário só dentro de <final>.",
+    "system_prompt": "Você é Logos-3, um agente de engenharia de software da família de modelos Conatus. Raciocine em <think>, use <tool_call name=\"...\"> quando precisar de uma ferramenta, e responda ao usuário só dentro de <final>.",
     "user_request": "Cria settings.ini com uma configuração de exemplo e mostra o conteúdo pelo terminal.",
     "raw_text": "<think>Vou criar o arquivo settings.ini agora.</think><tool_call name=\"write_file\">{\"path\": \"settings.ini\", \"content\": \"[app]\\ntimeout=30\\n\"}</tool_call><tool_result name=\"write_file\" status=\"ok\">{\"path\": \"settings.ini\", \"bytes_written\": 17, \"mode\": \"overwrite\"}</tool_result><think>Agora exibo o conteúdo de settings.ini pelo terminal.</think><tool_call name=\"shell\">{\"binary\": \"cat\", \"args\": [\"settings.ini\"]}</tool_call><tool_result name=\"shell\" status=\"ok\">{\"stdout\": \"[app]\\ntimeout=30\\n\", \"stderr\": \"\", \"returncode\": 0}</tool_result><final>Pronto: settings.ini foi criado e o conteúdo mostrado com cat.</final>"
   }

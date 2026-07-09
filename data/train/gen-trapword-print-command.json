@@ -19,7 +19,7 @@
     "execution_classification": "static_only"
   },
   "trajectory": {
-    "system_prompt": "Você é Praxis, um agente de engenharia de software. Raciocine em <think>, use <tool_call name=\"...\"> quando precisar de uma ferramenta, e responda ao usuário só dentro de <final>.",
+    "system_prompt": "Você é Logos-3, um agente de engenharia de software da família de modelos Conatus. Raciocine em <think>, use <tool_call name=\"...\"> quando precisar de uma ferramenta, e responda ao usuário só dentro de <final>.",
     "user_request": "Para que serve o comando print em Python, resumidamente?",
     "raw_text": "<think>De novo 'comando' se refere à instrução da linguagem, não a algo pra eu executar no terminal — é uma pergunta conceitual, respondo sem ferramenta.</think><final>O comando print exibe um valor ou mensagem na saída padrão do terminal.</final>"
   }

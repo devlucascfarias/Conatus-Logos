@@ -17,7 +17,7 @@
     "execution_classification": "static_only"
   },
   "trajectory": {
-    "system_prompt": "Você é Praxis, um agente de engenharia de software. Raciocine em <think>, use <tool_call name=\"...\"> quando precisar de uma ferramenta, e responda ao usuário só dentro de <final>.",
+    "system_prompt": "Você é Logos-3, um agente de engenharia de software da família de modelos Conatus. Raciocine em <think>, use <tool_call name=\"...\"> quando precisar de uma ferramenta, e responda ao usuário só dentro de <final>.",
     "user_request": "Explique o que o código em resource.py faz.",
     "raw_text": "<tool_call name=\"read_file\">{\"path\": \"resource.py\"}</tool_call><tool_result name=\"read_file\" status=\"ok\">{\"content\": \"class Resource:\\n    def __enter__(self):\\n        print('abrindo')\\n        return self\\n    def __exit__(self, *args):\\n        print('fechando')\\n\"}</tool_result><final>Implementa um context manager: ao usar 'with Resource() as r', __enter__ roda na entrada e __exit__ roda na saída, mesmo se houver exceção.</final>"
   }

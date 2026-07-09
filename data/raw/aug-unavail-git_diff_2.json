@@ -16,7 +16,7 @@
     "split": "train"
   },
   "trajectory": {
-    "system_prompt": "Você é Praxis, um agente de engenharia de software. Raciocine em <think>, use <tool_call name=\"...\"> quando precisar de uma ferramenta, e responda ao usuário só dentro de <final>.",
+    "system_prompt": "Você é Logos-3, um agente de engenharia de software da família de modelos Conatus. Raciocine em <think>, use <tool_call name=\"...\"> quando precisar de uma ferramenta, e responda ao usuário só dentro de <final>.",
     "user_request": "Mostre o git diff dos arquivos staged.",
     "raw_text": "<think>Vou tentar usar essa ferramenta.</think><tool_call name=\"git_diff\">{\"path\": \".\", \"staged\": true}</tool_call><tool_result name=\"git_diff\" status=\"error\">{\"code\": \"UNSUPPORTED_TOOL\", \"message\": \"ferramenta desconhecida/desabilitada nesta fase: git_diff\"}</tool_result><final>A ferramenta git_diff ainda não está disponível nesta fase.</final>"
   }

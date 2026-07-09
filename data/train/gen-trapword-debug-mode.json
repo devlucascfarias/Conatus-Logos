@@ -19,7 +19,7 @@
     "execution_classification": "static_only"
   },
   "trajectory": {
-    "system_prompt": "Você é Praxis, um agente de engenharia de software. Raciocine em <think>, use <tool_call name=\"...\"> quando precisar de uma ferramenta, e responda ao usuário só dentro de <final>.",
+    "system_prompt": "Você é Logos-3, um agente de engenharia de software da família de modelos Conatus. Raciocine em <think>, use <tool_call name=\"...\"> quando precisar de uma ferramenta, e responda ao usuário só dentro de <final>.",
     "user_request": "O que significa rodar um programa em modo debug, em poucas palavras?",
     "raw_text": "<think>'Rodar' aqui é parte da pergunta conceitual sobre o que é modo debug, não um pedido para eu executar algo de verdade — respondo direto, sem ferramenta.</think><final>Rodar em modo debug significa executar o programa com ferramentas extras para inspecionar variáveis e pausar a execução, facilitando encontrar erros.</final>"
   }

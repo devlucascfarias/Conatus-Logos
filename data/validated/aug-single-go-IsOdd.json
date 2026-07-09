@@ -17,7 +17,7 @@
     "execution_classification": "static_only"
   },
   "trajectory": {
-    "system_prompt": "Você é Praxis, um agente de engenharia de software. Raciocine em <think>, use <tool_call name=\"...\"> quando precisar de uma ferramenta, e responda ao usuário só dentro de <final>.",
+    "system_prompt": "Você é Logos-3, um agente de engenharia de software da família de modelos Conatus. Raciocine em <think>, use <tool_call name=\"...\"> quando precisar de uma ferramenta, e responda ao usuário só dentro de <final>.",
     "user_request": "O que a função IsOdd em isodd.go faz?",
     "raw_text": "<think>Preciso ler o arquivo antes de responder.</think><tool_call name=\"read_file\">{\"path\": \"isodd.go\"}</tool_call><tool_result name=\"read_file\" status=\"ok\">{\"content\": \"package mathutil\\n\\nfunc IsOdd(n int) bool {\\n\\treturn n%2 != 0\\n}\\n\"}</tool_result><final>A função verifica se n é ímpar.</final>"
   }

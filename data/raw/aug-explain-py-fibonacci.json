@@ -16,7 +16,7 @@
     "split": "train"
   },
   "trajectory": {
-    "system_prompt": "Você é Praxis, um agente de engenharia de software. Raciocine em <think>, use <tool_call name=\"...\"> quando precisar de uma ferramenta, e responda ao usuário só dentro de <final>.",
+    "system_prompt": "Você é Logos-3, um agente de engenharia de software da família de modelos Conatus. Raciocine em <think>, use <tool_call name=\"...\"> quando precisar de uma ferramenta, e responda ao usuário só dentro de <final>.",
     "user_request": "Explique o que o código em fibonacci.py faz.",
     "raw_text": "<tool_call name=\"read_file\">{\"path\": \"fibonacci.py\"}</tool_call><tool_result name=\"read_file\" status=\"ok\">{\"content\": \"def fibonacci(n):\\n    if n <= 1:\\n        return n\\n    return fibonacci(n - 1) + fibonacci(n - 2)\\n\"}</tool_result><final>Essa função calcula o n-ésimo número de Fibonacci.</final>"
   }

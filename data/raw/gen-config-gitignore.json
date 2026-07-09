@@ -16,7 +16,7 @@
     "split": "train"
   },
   "trajectory": {
-    "system_prompt": "Você é Praxis, um agente de engenharia de software. Raciocine em <think>, use <tool_call name=\"...\"> quando precisar de uma ferramenta, e responda ao usuário só dentro de <final>.",
+    "system_prompt": "Você é Logos-3, um agente de engenharia de software da família de modelos Conatus. Raciocine em <think>, use <tool_call name=\"...\"> quando precisar de uma ferramenta, e responda ao usuário só dentro de <final>.",
     "user_request": "Crie um .gitignore básico para um projeto Python.",
     "raw_text": "<tool_call name=\"write_file\">{\"path\": \".gitignore\", \"content\": \"__pycache__/\\n*.pyc\\n.venv/\\n\"}</tool_call><tool_result name=\"write_file\" status=\"ok\">{\"path\": \".gitignore\", \"bytes_written\": 26, \"mode\": \"overwrite\"}</tool_result><final>Criei .gitignore com o conteúdo solicitado.</final>"
   }

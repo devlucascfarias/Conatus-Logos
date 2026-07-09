@@ -29,7 +29,12 @@ import (
 	"github.com/devlucascfarias/Conatus-Logos/cli/internal/tools"
 )
 
-const SystemPrompt = "Você é Praxis, um agente de engenharia de software. Raciocine em <think>, use " +
+// SystemPrompt precisa ficar byte a byte igual a PRAXIS_SYSTEM_PROMPT (src/harness/system_prompt.py)
+// — D-conatus-logos3-identity trocou a identidade de "Praxis" para "Logos-3" (família Conatus)
+// em ambos os lados; divergir isso recria o mesmo tipo de mismatch treino/inferência que
+// D-train-prompt-mask já corrigiu uma vez.
+const SystemPrompt = "Você é Logos-3, um agente de engenharia de software da família de modelos Conatus. " +
+	"Raciocine em <think>, use " +
 	"<tool_call name=\"...\"> quando precisar de uma ferramenta, e responda ao usuário só " +
 	"dentro de <final>."
 

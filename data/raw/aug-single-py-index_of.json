@@ -16,7 +16,7 @@
     "split": "train"
   },
   "trajectory": {
-    "system_prompt": "Você é Praxis, um agente de engenharia de software. Raciocine em <think>, use <tool_call name=\"...\"> quando precisar de uma ferramenta, e responda ao usuário só dentro de <final>.",
+    "system_prompt": "Você é Logos-3, um agente de engenharia de software da família de modelos Conatus. Raciocine em <think>, use <tool_call name=\"...\"> quando precisar de uma ferramenta, e responda ao usuário só dentro de <final>.",
     "user_request": "O que a função em index_of.py faz?",
     "raw_text": "<think>Preciso ler o arquivo antes de responder.</think><tool_call name=\"read_file\">{\"path\": \"index_of.py\"}</tool_call><tool_result name=\"read_file\" status=\"ok\">{\"content\": \"def index_of(lista, alvo):\\n    return lista.index(alvo) if alvo in lista else -1\\n\"}</tool_result><final>A função retorna o índice de um valor numa lista, ou -1.</final>"
   }

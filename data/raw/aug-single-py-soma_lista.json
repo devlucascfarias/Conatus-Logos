@@ -16,7 +16,7 @@
     "split": "validation"
   },
   "trajectory": {
-    "system_prompt": "Você é Praxis, um agente de engenharia de software. Raciocine em <think>, use <tool_call name=\"...\"> quando precisar de uma ferramenta, e responda ao usuário só dentro de <final>.",
+    "system_prompt": "Você é Logos-3, um agente de engenharia de software da família de modelos Conatus. Raciocine em <think>, use <tool_call name=\"...\"> quando precisar de uma ferramenta, e responda ao usuário só dentro de <final>.",
     "user_request": "O que a função em soma_lista.py faz?",
     "raw_text": "<think>Preciso ler o arquivo antes de responder.</think><tool_call name=\"read_file\">{\"path\": \"soma_lista.py\"}</tool_call><tool_result name=\"read_file\" status=\"ok\">{\"content\": \"def soma_lista(lista):\\n    return sum(lista)\\n\"}</tool_result><final>A função soma todos os valores de uma lista.</final>"
   }

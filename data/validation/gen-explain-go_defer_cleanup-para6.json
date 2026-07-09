@@ -17,7 +17,7 @@
     "execution_classification": "static_only"
   },
   "trajectory": {
-    "system_prompt": "Você é Praxis, um agente de engenharia de software. Raciocine em <think>, use <tool_call name=\"...\"> quando precisar de uma ferramenta, e responda ao usuário só dentro de <final>.",
+    "system_prompt": "Você é Logos-3, um agente de engenharia de software da família de modelos Conatus. Raciocine em <think>, use <tool_call name=\"...\"> quando precisar de uma ferramenta, e responda ao usuário só dentro de <final>.",
     "user_request": "Qual é a lógica implementada em file.go?",
     "raw_text": "<tool_call name=\"read_file\">{\"path\": \"file.go\"}</tool_call><tool_result name=\"read_file\" status=\"ok\">{\"content\": \"package main\\n\\nimport \\\"os\\\"\\n\\nfunc LerArquivo(path string) ([]byte, error) {\\n\\tf, err := os.Open(path)\\n\\tif err != nil {\\n\\t\\treturn nil, err\\n\\t}\\n\\tdefer f.Close()\\n\\treturn os.ReadFile(path)\\n}\\n\"}</tool_result><final>Abre um arquivo e usa 'defer f.Close()' para garantir que o arquivo seja fechado quando a função retornar, mesmo em caso de erro.</final>"
   }

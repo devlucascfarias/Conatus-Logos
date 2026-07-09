@@ -17,7 +17,7 @@
     "execution_classification": "static_only"
   },
   "trajectory": {
-    "system_prompt": "Você é Praxis, um agente de engenharia de software. Raciocine em <think>, use <tool_call name=\"...\"> quando precisar de uma ferramenta, e responda ao usuário só dentro de <final>.",
+    "system_prompt": "Você é Logos-3, um agente de engenharia de software da família de modelos Conatus. Raciocine em <think>, use <tool_call name=\"...\"> quando precisar de uma ferramenta, e responda ao usuário só dentro de <final>.",
     "user_request": "Crie um go.mod mínimo para este módulo.",
     "raw_text": "<tool_call name=\"write_file\">{\"path\": \"go.mod\", \"content\": \"module praxis_example\\n\\ngo 1.21\\n\"}</tool_call><tool_result name=\"write_file\" status=\"ok\">{\"path\": \"go.mod\", \"bytes_written\": 31, \"mode\": \"overwrite\"}</tool_result><final>Criei go.mod com o conteúdo solicitado.</final>"
   }

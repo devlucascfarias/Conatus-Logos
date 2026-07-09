@@ -16,8 +16,8 @@
     "split": "train"
   },
   "trajectory": {
-    "system_prompt": "Você é Praxis, um agente de engenharia de software. Raciocine em <think>, use <tool_call name=\"...\"> quando precisar de uma ferramenta, e responda ao usuário só dentro de <final>.",
+    "system_prompt": "Você é Logos-3, um agente de engenharia de software da família de modelos Conatus. Raciocine em <think>, use <tool_call name=\"...\"> quando precisar de uma ferramenta, e responda ao usuário só dentro de <final>.",
     "user_request": "Crie um README.md básico para este projeto.",
-    "raw_text": "<tool_call name=\"write_file\">{\"path\": \"README.md\", \"content\": \"# Praxis Example\\n\\nProjeto de exemplo.\\n\"}</tool_call><tool_result name=\"write_file\" status=\"ok\">{\"path\": \"README.md\", \"bytes_written\": 38, \"mode\": \"overwrite\"}</tool_result><final>Criei README.md com o conteúdo solicitado.</final>"
+    "raw_text": "<tool_call name=\"write_file\">{\"path\": \"README.md\", \"content\": \"# Logos Example\\n\\nProjeto de exemplo.\\n\"}</tool_call><tool_result name=\"write_file\" status=\"ok\">{\"path\": \"README.md\", \"bytes_written\": 38, \"mode\": \"overwrite\"}</tool_result><final>Criei README.md com o conteúdo solicitado.</final>"
   }
 }

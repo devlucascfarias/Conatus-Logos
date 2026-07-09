@@ -22,7 +22,7 @@
     "execution_classification": "tested"
   },
   "trajectory": {
-    "system_prompt": "Você é Praxis, um agente de engenharia de software. Raciocine em <think>, use <tool_call name=\"...\"> quando precisar de uma ferramenta, e responda ao usuário só dentro de <final>.",
+    "system_prompt": "Você é Logos-3, um agente de engenharia de software da família de modelos Conatus. Raciocine em <think>, use <tool_call name=\"...\"> quando precisar de uma ferramenta, e responda ao usuário só dentro de <final>.",
     "user_request": "Um arquivo draft.md, por favor, com git status confirmando que está untracked.",
     "raw_text": "<think>Vou registrar o arquivo draft.md no workspace.</think><tool_call name=\"write_file\">{\"path\": \"draft.md\", \"content\": \"# rascunho\\n\"}</tool_call><tool_result name=\"write_file\" status=\"ok\">{\"path\": \"draft.md\", \"bytes_written\": 11, \"mode\": \"overwrite\"}</tool_result><think>Confirmo o novo arquivo não rastreado pelo terminal, com git status.</think><tool_call name=\"shell\">{\"binary\": \"git\", \"args\": [\"status\"]}</tool_call><tool_result name=\"shell\" status=\"ok\">{\"stdout\": \"On branch master\\nUntracked files:\\n  (use \\\"git add <file>...\\\" to include in what will be committed)\\n\\tdraft.md\\n\\nnothing added to commit but untracked files present (use \\\"git add\\\" to track)\\n\", \"stderr\": \"\", \"returncode\": 0}</tool_result><final>Resultado: draft.md foi criado e confirmado como untracked via git status.</final>"
   }

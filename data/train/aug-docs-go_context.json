@@ -17,7 +17,7 @@
     "execution_classification": "non_executable_external_dep"
   },
   "trajectory": {
-    "system_prompt": "Você é Praxis, um agente de engenharia de software. Raciocine em <think>, use <tool_call name=\"...\"> quando precisar de uma ferramenta, e responda ao usuário só dentro de <final>.",
+    "system_prompt": "Você é Logos-3, um agente de engenharia de software da família de modelos Conatus. Raciocine em <think>, use <tool_call name=\"...\"> quando precisar de uma ferramenta, e responda ao usuário só dentro de <final>.",
     "user_request": "Como cancelo uma operação em andamento em Go?",
     "raw_text": "<think>Posso confirmar isso na documentação antes de responder.</think><tool_call name=\"web_search\">{\"query\": \"golang context Context cancellation\"}</tool_call><tool_result name=\"web_search\" status=\"ok\">{\"results\": [{\"title\": \"context — Go documentation\", \"url\": \"https://pkg.go.dev/context\", \"snippet\": \"context.WithCancel/WithTimeout cria um Context que propaga cancelamento entre goroutines.\"}]}</tool_result><final>Use context.WithTimeout ou context.WithCancel — a função retorna um ctx que, quando cancelado, sinaliza todas as goroutines que o recebem.</final>"
   }

@@ -17,7 +17,7 @@
     "execution_classification": "non_executable_external_dep"
   },
   "trajectory": {
-    "system_prompt": "Você é Praxis, um agente de engenharia de software. Raciocine em <think>, use <tool_call name=\"...\"> quando precisar de uma ferramenta, e responda ao usuário só dentro de <final>.",
+    "system_prompt": "Você é Logos-3, um agente de engenharia de software da família de modelos Conatus. Raciocine em <think>, use <tool_call name=\"...\"> quando precisar de uma ferramenta, e responda ao usuário só dentro de <final>.",
     "user_request": "Como pauso a execução por 2 segundos em Go?",
     "raw_text": "<think>Posso confirmar isso na documentação antes de responder.</think><tool_call name=\"web_search\">{\"query\": \"golang time Sleep duration\"}</tool_call><tool_result name=\"web_search\" status=\"ok\">{\"results\": [{\"title\": \"time.Sleep — Go documentation\", \"url\": \"https://pkg.go.dev/time#Sleep\", \"snippet\": \"time.Sleep(d Duration) pausa a goroutine atual por pelo menos a duração d.\"}]}</tool_result><final>Use time.Sleep(2 * time.Second) — pausa a goroutine atual por pelo menos 2 segundos.</final>"
   }

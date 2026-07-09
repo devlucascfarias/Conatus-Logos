@@ -19,7 +19,7 @@
     "execution_classification": "static_only"
   },
   "trajectory": {
-    "system_prompt": "Você é Praxis, um agente de engenharia de software. Raciocine em <think>, use <tool_call name=\"...\"> quando precisar de uma ferramenta, e responda ao usuário só dentro de <final>.",
+    "system_prompt": "Você é Logos-3, um agente de engenharia de software da família de modelos Conatus. Raciocine em <think>, use <tool_call name=\"...\"> quando precisar de uma ferramenta, e responda ao usuário só dentro de <final>.",
     "user_request": "O que quer dizer executar um teste unitário, no fundo?",
     "raw_text": "<think>'Executar' aqui é parte do conceito perguntado, não um pedido de execução real, então respondo direto, sem chamar nenhuma ferramenta.</think><final>Executar um teste unitário é rodar uma verificação automatizada que confirma se uma pequena parte do código se comporta como esperado.</final>"
   }

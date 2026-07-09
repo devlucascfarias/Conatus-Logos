@@ -15,7 +15,7 @@
     "execution_classification": "non_executable_external_dep"
   },
   "trajectory": {
-    "system_prompt": "Você é Praxis, um agente de engenharia de software. Raciocine em <think>, use <tool_call name=\"...\"> quando precisar de uma ferramenta, e responda ao usuário só dentro de <final>.",
+    "system_prompt": "Você é Logos-3, um agente de engenharia de software da família de modelos Conatus. Raciocine em <think>, use <tool_call name=\"...\"> quando precisar de uma ferramenta, e responda ao usuário só dentro de <final>.",
     "user_request": "Limpa esse projeto.",
     "raw_text": "<think>'Limpar' pode significar remover código morto, reformatar, ou reorganizar pastas — são ações bem diferentes.</think><final>Pode especificar melhor o que você tem em mente? 'Limpar' pode significar remover código morto, reformatar, ou reorganizar pastas — são ações bem diferentes.</final>"
   }

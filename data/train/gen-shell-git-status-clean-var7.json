@@ -21,7 +21,7 @@
     "execution_classification": "tested"
   },
   "trajectory": {
-    "system_prompt": "Você é Praxis, um agente de engenharia de software. Raciocine em <think>, use <tool_call name=\"...\"> quando precisar de uma ferramenta, e responda ao usuário só dentro de <final>.",
+    "system_prompt": "Você é Logos-3, um agente de engenharia de software da família de modelos Conatus. Raciocine em <think>, use <tool_call name=\"...\"> quando precisar de uma ferramenta, e responda ao usuário só dentro de <final>.",
     "user_request": "Uma checagem de mudanças pendentes, por favor, via git status.",
     "raw_text": "<think>Vou olhar se há mudança pendente usando git status.</think><tool_call name=\"shell\">{\"binary\": \"git\", \"args\": [\"status\"]}</tool_call><tool_result name=\"shell\" status=\"ok\">{\"stdout\": \"On branch master\\nnothing to commit, working tree clean\\n\", \"stderr\": \"\", \"returncode\": 0}</tool_result><final>Resultado: confirmado com git status que a árvore de trabalho está limpa.</final>"
   }

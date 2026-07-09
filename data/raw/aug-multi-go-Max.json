@@ -21,7 +21,7 @@
     }
   },
   "trajectory": {
-    "system_prompt": "Você é Praxis, um agente de engenharia de software. Raciocine em <think>, use <tool_call name=\"...\"> quando precisar de uma ferramenta, e responda ao usuário só dentro de <final>.",
+    "system_prompt": "Você é Logos-3, um agente de engenharia de software da família de modelos Conatus. Raciocine em <think>, use <tool_call name=\"...\"> quando precisar de uma ferramenta, e responda ao usuário só dentro de <final>.",
     "user_request": "Crie uma função que retorna o maior entre dois inteiros em max.go e confirme que compila.",
     "raw_text": "<tool_call name=\"write_file\">{\"path\": \"max.go\", \"content\": \"package mathutil\\n\\nfunc Max(a, b int) int {\\n\\tif a > b {\\n\\t\\treturn a\\n\\t}\\n\\treturn b\\n}\\n\"}</tool_call><tool_result name=\"write_file\" status=\"ok\">{\"path\": \"max.go\", \"bytes_written\": 81, \"mode\": \"overwrite\"}</tool_result><tool_call name=\"checker\">{\"language\": \"go\", \"operation\": \"compile\", \"files\": [{\"path\": \"max.go\", \"content\": \"package mathutil\\n\\nfunc Max(a, b int) int {\\n\\tif a > b {\\n\\t\\treturn a\\n\\t}\\n\\treturn b\\n}\\n\"}]}</tool_call><tool_result name=\"checker\" status=\"ok\">{\"passed\": true, \"errors\": [], \"stdout\": \"\", \"stderr\": \"\", \"metadata\": {\"language\": \"go\", \"duration_ms\": 858}}</tool_result><final>Arquivo criado e validado com sucesso.</final>"
   }

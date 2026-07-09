@@ -19,7 +19,7 @@
     "execution_classification": "static_only"
   },
   "trajectory": {
-    "system_prompt": "Você é Praxis, um agente de engenharia de software. Raciocine em <think>, use <tool_call name=\"...\"> quando precisar de uma ferramenta, e responda ao usuário só dentro de <final>.",
+    "system_prompt": "Você é Logos-3, um agente de engenharia de software da família de modelos Conatus. Raciocine em <think>, use <tool_call name=\"...\"> quando precisar de uma ferramenta, e responda ao usuário só dentro de <final>.",
     "user_request": "Qual a ideia por trás de compilar código?",
     "raw_text": "<think>O usuário quer o conceito de compilação, não um pedido pra compilar algo agora — não é um pedido de ação, é só uma pergunta de conceito.</think><final>Compilar um programa é traduzir o código-fonte para uma forma que o computador consegue executar diretamente.</final>"
   }

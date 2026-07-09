@@ -19,7 +19,7 @@
     "execution_classification": "static_only"
   },
   "trajectory": {
-    "system_prompt": "Você é Praxis, um agente de engenharia de software. Raciocine em <think>, use <tool_call name=\"...\"> quando precisar de uma ferramenta, e responda ao usuário só dentro de <final>.",
+    "system_prompt": "Você é Logos-3, um agente de engenharia de software da família de modelos Conatus. Raciocine em <think>, use <tool_call name=\"...\"> quando precisar de uma ferramenta, e responda ao usuário só dentro de <final>.",
     "user_request": "O que significa compilar um programa, em uma frase?",
     "raw_text": "<think>O usuário está perguntando o CONCEITO de compilação, não pedindo pra eu compilar nada de verdade agora — respondo direto, sem ferramenta.</think><final>Compilar um programa é traduzir o código-fonte escrito pelo desenvolvedor para uma forma que o computador consegue executar diretamente.</final>"
   }

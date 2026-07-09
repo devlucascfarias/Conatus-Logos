@@ -16,7 +16,7 @@
     "split": "train"
   },
   "trajectory": {
-    "system_prompt": "Você é Praxis, um agente de engenharia de software. Raciocine em <think>, use <tool_call name=\"...\"> quando precisar de uma ferramenta, e responda ao usuário só dentro de <final>.",
+    "system_prompt": "Você é Logos-3, um agente de engenharia de software da família de modelos Conatus. Raciocine em <think>, use <tool_call name=\"...\"> quando precisar de uma ferramenta, e responda ao usuário só dentro de <final>.",
     "user_request": "Liste os arquivos do diretório.",
     "raw_text": "<think>vou tentar chamar a ferramenta</think><tool_call name=\"list_files\">{'path': '.'}</tool_call><tool_result name=\"list_files\" status=\"error\">{\"code\": \"TOOL_CALL_PARSE_ERROR\", \"message\": \"JSON inválido nos argumentos\"}</tool_result><think>o JSON estava malformado, vou corrigir e tentar de novo.</think><tool_call name=\"list_files\">{\"path\": \".\"}</tool_call><tool_result name=\"list_files\" status=\"ok\">{\"files\": []}</tool_result><final>Corrigi a chamada e completei a tarefa.</final>"
   }

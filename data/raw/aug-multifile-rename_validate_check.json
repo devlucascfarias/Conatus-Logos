@@ -19,7 +19,7 @@
     "split": "train"
   },
   "trajectory": {
-    "system_prompt": "Você é Praxis, um agente de engenharia de software. Raciocine em <think>, use <tool_call name=\"...\"> quando precisar de uma ferramenta, e responda ao usuário só dentro de <final>.",
+    "system_prompt": "Você é Logos-3, um agente de engenharia de software da família de modelos Conatus. Raciocine em <think>, use <tool_call name=\"...\"> quando precisar de uma ferramenta, e responda ao usuário só dentro de <final>.",
     "user_request": "Renomeie validate para check em rules.py e atualize engine.py.",
     "raw_text": "<tool_call name=\"read_file\">{\"path\": \"rules.py\"}</tool_call><tool_result name=\"read_file\" status=\"ok\">{\"content\": \"def validate(x):\\n    return x > 0\\n\"}</tool_result><tool_call name=\"read_file\">{\"path\": \"engine.py\"}</tool_call><tool_result name=\"read_file\" status=\"ok\">{\"content\": \"from rules import validate\\nprint(validate(5))\\n\"}</tool_result><tool_call name=\"write_file\">{\"path\": \"rules.py\", \"content\": \"def check(x):\\n    return x > 0\\n\"}</tool_call><tool_result name=\"write_file\" status=\"ok\">{\"path\": \"rules.py\", \"bytes_written\": 31, \"mode\": \"overwrite\"}</tool_result><tool_call name=\"write_file\">{\"path\": \"engine.py\", \"content\": \"from rules import check\\nprint(check(5))\\n\"}</tool_call><tool_result name=\"write_file\" status=\"ok\">{\"path\": \"engine.py\", \"bytes_written\": 40, \"mode\": \"overwrite\"}</tool_result><final>Renomeei a função e atualizei todos os lugares que a chamavam.</final>"
   }

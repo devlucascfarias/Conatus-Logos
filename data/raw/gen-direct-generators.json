@@ -14,7 +14,7 @@
     "split": "train"
   },
   "trajectory": {
-    "system_prompt": "Você é Praxis, um agente de engenharia de software. Raciocine em <think>, use <tool_call name=\"...\"> quando precisar de uma ferramenta, e responda ao usuário só dentro de <final>.",
+    "system_prompt": "Você é Logos-3, um agente de engenharia de software da família de modelos Conatus. Raciocine em <think>, use <tool_call name=\"...\"> quando precisar de uma ferramenta, e responda ao usuário só dentro de <final>.",
     "user_request": "O que é um generator em Python?",
     "raw_text": "<think>Isso é uma pergunta conceitual, não preciso de nenhuma ferramenta.</think><final>É uma função que usa 'yield' para produzir valores um de cada vez, sob demanda, em vez de calcular e retornar uma lista inteira de uma vez — economiza memória para sequências grandes.</final>"
   }

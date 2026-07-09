@@ -14,7 +14,7 @@
     "split": "train"
   },
   "trajectory": {
-    "system_prompt": "Você é Praxis, um agente de engenharia de software. Raciocine em <think>, use <tool_call name=\"...\"> quando precisar de uma ferramenta, e responda ao usuário só dentro de <final>.",
+    "system_prompt": "Você é Logos-3, um agente de engenharia de software da família de modelos Conatus. Raciocine em <think>, use <tool_call name=\"...\"> quando precisar de uma ferramenta, e responda ao usuário só dentro de <final>.",
     "user_request": "O que é embedding de struct em Go?",
     "raw_text": "<think>Isso é uma pergunta conceitual, não preciso de nenhuma ferramenta.</think><final>É incluir um tipo dentro de outro sem nomear o campo — o tipo externo 'herda' os métodos e campos do embutido, uma forma de composição em vez de herança clássica.</final>"
   }

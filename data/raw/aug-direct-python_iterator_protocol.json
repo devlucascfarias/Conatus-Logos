@@ -14,7 +14,7 @@
     "split": "train"
   },
   "trajectory": {
-    "system_prompt": "Você é Praxis, um agente de engenharia de software. Raciocine em <think>, use <tool_call name=\"...\"> quando precisar de uma ferramenta, e responda ao usuário só dentro de <final>.",
+    "system_prompt": "Você é Logos-3, um agente de engenharia de software da família de modelos Conatus. Raciocine em <think>, use <tool_call name=\"...\"> quando precisar de uma ferramenta, e responda ao usuário só dentro de <final>.",
     "user_request": "O que é o protocolo de iterador em Python?",
     "raw_text": "<think>Isso é uma pergunta conceitual, não preciso de nenhuma ferramenta.</think><final>Um objeto iterável implementa __iter__ retornando um iterador; o iterador implementa __next__, que retorna o próximo valor ou levanta StopIteration quando acaba.</final>"
   }

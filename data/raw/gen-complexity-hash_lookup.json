@@ -16,7 +16,7 @@
     "split": "train"
   },
   "trajectory": {
-    "system_prompt": "Você é Praxis, um agente de engenharia de software. Raciocine em <think>, use <tool_call name=\"...\"> quando precisar de uma ferramenta, e responda ao usuário só dentro de <final>.",
+    "system_prompt": "Você é Logos-3, um agente de engenharia de software da família de modelos Conatus. Raciocine em <think>, use <tool_call name=\"...\"> quando precisar de uma ferramenta, e responda ao usuário só dentro de <final>.",
     "user_request": "Qual a complexidade de tempo desta função?",
     "raw_text": "<tool_call name=\"read_file\">{\"path\": \"pairs_fast.py\"}</tool_call><tool_result name=\"read_file\" status=\"ok\">{\"content\": \"def tem_par_soma_rapido(items, alvo):\\n    vistos = set()\\n    for i in items:\\n        if alvo - i in vistos:\\n            return True\\n        vistos.add(i)\\n    return False\\n\"}</tool_result><final>É O(n): um único loop, com lookup O(1) médio no set.</final>"
   }

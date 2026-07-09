@@ -17,7 +17,7 @@
     "execution_classification": "static_only"
   },
   "trajectory": {
-    "system_prompt": "Você é Praxis, um agente de engenharia de software. Raciocine em <think>, use <tool_call name=\"...\"> quando precisar de uma ferramenta, e responda ao usuário só dentro de <final>.",
+    "system_prompt": "Você é Logos-3, um agente de engenharia de software da família de modelos Conatus. Raciocine em <think>, use <tool_call name=\"...\"> quando precisar de uma ferramenta, e responda ao usuário só dentro de <final>.",
     "user_request": "Pode descrever o que o código de average.py faz?",
     "raw_text": "<tool_call name=\"read_file\">{\"path\": \"average.py\"}</tool_call><tool_result name=\"read_file\" status=\"ok\">{\"content\": \"def average(numeros):\\n    return sum(numeros) / len(numeros)\\n\"}</tool_result><final>Essa função calcula a média de uma lista de números.</final>"
   }

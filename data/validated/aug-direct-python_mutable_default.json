@@ -15,7 +15,7 @@
     "execution_classification": "non_executable_external_dep"
   },
   "trajectory": {
-    "system_prompt": "Você é Praxis, um agente de engenharia de software. Raciocine em <think>, use <tool_call name=\"...\"> quando precisar de uma ferramenta, e responda ao usuário só dentro de <final>.",
+    "system_prompt": "Você é Logos-3, um agente de engenharia de software da família de modelos Conatus. Raciocine em <think>, use <tool_call name=\"...\"> quando precisar de uma ferramenta, e responda ao usuário só dentro de <final>.",
     "user_request": "Por que usar uma lista como valor padrão de argumento em Python é perigoso?",
     "raw_text": "<think>Isso é uma pergunta conceitual, não preciso de nenhuma ferramenta.</think><final>Valores padrão são avaliados uma única vez, na definição da função — uma lista mutável como padrão é compartilhada entre todas as chamadas, causando bugs sutis de estado persistente.</final>"
   }
