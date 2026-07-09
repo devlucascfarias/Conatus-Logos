@@ -45,6 +45,17 @@ _DIRECT_TRAJECTORY = {
     "user_request": "quanto é 2 + 2?",
     "raw_text": "<think>não preciso de ferramenta</think><final>2 + 2 = 4</final>",
 }
+_MULTI_TURN_TRAJECTORY = {
+    "system_prompt": "Você é Logos-3, um agente de engenharia de software.",
+    "user_request": "e quanto é 10 vezes 10?",
+    "raw_text": "<think>multiplicação simples</think><final>10 vezes 10 é 100</final>",
+    "history": [
+        {
+            "user_request": "qual é o seu nome?",
+            "raw_text": "<think>pergunta de identidade</think><final>Sou o Logos-3.</final>",
+        }
+    ],
+}
 
 
 def test_build_pretokenized_dataset_has_input_ids_and_labels(tokenizer):
@@ -78,6 +89,42 @@ def test_pretokenized_dataset_masks_system_prompt_and_user_request(tokenizer):
     assert _DIRECT_TRAJECTORY["user_request"] not in trained_text
     assert _DIRECT_TRAJECTORY["system_prompt"] not in trained_text
     assert "final" in trained_text
+
+
+def test_pretokenized_dataset_masks_entire_history(tokenizer):
+    """D-dataset-history-loss-mask (item 2 da extensão de schema multi-turno): turnos de
+    `history` entram no prefixo mascarado, igual system_prompt/user_request do turno atual —
+    nenhum token do histórico (nem o pedido, nem a resposta completa do turno passado,
+    incluindo o próprio `<final>` dele) deveria sobrar no texto que efetivamente treina."""
+    dataset = build_pretokenized_dataset([_MULTI_TURN_TRAJECTORY], tokenizer, max_length=256)
+    input_ids = dataset[0]["input_ids"]
+    labels = dataset[0]["labels"]
+
+    trained_ids = [tok for tok, label in zip(input_ids, labels) if label != IGNORE_INDEX]
+    trained_text = tokenizer.decode(trained_ids, skip_special_tokens=True)
+
+    history_turn = _MULTI_TURN_TRAJECTORY["history"][0]
+    assert history_turn["user_request"] not in trained_text
+    assert "Sou o Logos-3" not in trained_text  # <final> do turno passado, não deveria treinar
+    assert "pergunta de identidade" not in trained_text  # <think> do turno passado
+
+    # O turno ATUAL continua treinando normalmente.
+    assert "multiplicação simples" in trained_text
+    assert "100" in trained_text
+
+
+def test_pretokenized_dataset_without_history_key_matches_no_history(tokenizer):
+    """`history` é opcional (`traj.get("history")` devolve `None` quando ausente) — um
+    exemplo sem essa chave precisa continuar se comportando exatamente como antes desta
+    extensão (regressão de compatibilidade)."""
+    with_key = dict(_DIRECT_TRAJECTORY, history=[])
+    without_key = _DIRECT_TRAJECTORY
+
+    dataset_with = build_pretokenized_dataset([with_key], tokenizer, max_length=128)
+    dataset_without = build_pretokenized_dataset([without_key], tokenizer, max_length=128)
+
+    assert dataset_with[0]["input_ids"] == dataset_without[0]["input_ids"]
+    assert dataset_with[0]["labels"] == dataset_without[0]["labels"]
 
 
 def test_collator_pads_batch_to_same_length(tokenizer):

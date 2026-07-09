@@ -22,6 +22,19 @@ prefixo — confirmado no Colab: o modelo treinado ignorava o pedido do usuário
 inteiro (tudo antes de `raw_text`) fica com loss mascarado (`prefix_len` em
 `compute_loss_mask`) — só o texto gerado pelo assistente (menos `<tool_result>`, D7) treina.
 
+D-dataset-history-loss-mask (item 2 de docs/plan_dataset_expansion_wave2_identity_multiturn.md
+seção 4, depois de D-dataset-history-schema ter adicionado o campo `trajectory.history` ao
+schema): turnos de `history` (se houver) entram no PREFIXO, nunca no texto mascarável. Isso é
+uma consequência direta de como `compute_loss_mask` já funcionava: ele só calcula spans
+elegíveis dentro de `raw_text` do turno ATUAL (nunca do histórico) e trata qualquer coisa antes
+de `prefix_len` como não-elegível — bastou fazer `_render_prefix` também incluir os turnos de
+`history` (via `Trajectory.render_for_model()`, que já sabe concatenar `history` no formato
+`[USER]/[ASSISTANT]`, ver D-dataset-history-schema) para que TODO o conteúdo de `history`
+(inclusive `<think>`/`<tool_call>`/`<final>` de turnos passados, que teriam parecido
+"elegíveis" se fossem reparseados) fique automaticamente com loss mascarado, sem precisar
+tocar em `compute_loss_mask`/`loss_masking.py` — só o turno atual entra na loss, exatamente
+como antes desta mudança para exemplos de turno único.
+
 Import deste módulo nunca falha por falta de `transformers`/`datasets` — só a construção do
 collator ou a chamada de `build_pretokenized_dataset`."""
 
@@ -32,29 +45,37 @@ from typing import Any
 from .loss_masking import IGNORE_INDEX, apply_loss_mask, compute_loss_mask
 
 
-def _render_prefix(system_prompt: str, user_request: str) -> str:
+def _render_prefix(system_prompt: str, user_request: str, history: list[dict[str, str]] | None = None) -> str:
     """Mesmo template de `Trajectory.render_for_model()` (harness/trajectory.py), até o ponto
-    onde `raw_text` começaria — reaproveitado aqui via uma trajetória com `raw_text=""` para
-    garantir que treino e inferência NUNCA divirjam nesse formato (D-train-prompt-mask)."""
-    from src.harness.trajectory import Trajectory
+    onde `raw_text` do turno ATUAL começaria — reaproveitado aqui via uma trajetória com
+    `raw_text=""` para garantir que treino e inferência NUNCA divirjam nesse formato
+    (D-train-prompt-mask). `history` (se houver) entra ANTES do turno atual, no prefixo — ver
+    D-dataset-history-loss-mask acima para por que isso é suficiente pra mascarar o histórico
+    inteiro sem lógica extra de máscara."""
+    from src.harness.trajectory import HistoryTurn, Trajectory
 
-    return Trajectory(system_prompt=system_prompt, user_request=user_request).render_for_model()
+    history_turns = [HistoryTurn(user_request=h["user_request"], raw_text=h["raw_text"]) for h in (history or [])]
+    return Trajectory(
+        system_prompt=system_prompt, user_request=user_request, history=history_turns
+    ).render_for_model()
 
 
 def build_pretokenized_dataset(trajectories: list[dict[str, Any]], tokenizer: Any, max_length: int) -> Any:
-    """Tokeniza cada trajetória completa (prompt + `raw_text`) e aplica a máscara de loss por
-    segmento (D7) só sobre `raw_text`, retornando um `datasets.Dataset` com colunas
-    `input_ids`/`labels` — a presença de `input_ids` é o que faz o `SFTTrainer` pular sua
-    própria tokenização (ver D-sfttrainer-v2 acima).
+    """Tokeniza cada trajetória completa (prefixo, incluindo `history` quando presente, +
+    `raw_text` do turno atual) e aplica a máscara de loss por segmento (D7) só sobre `raw_text`
+    do turno atual, retornando um `datasets.Dataset` com colunas `input_ids`/`labels` — a
+    presença de `input_ids` é o que faz o `SFTTrainer` pular sua própria tokenização (ver
+    D-sfttrainer-v2 acima).
 
     `trajectories` é uma lista de dicts com chaves `system_prompt`, `user_request`, `raw_text`
-    (o mesmo shape de `ex["trajectory"]` no dataset gerado — ver D-train-prompt-mask)."""
+    e opcionalmente `history` (lista de `{user_request, raw_text}` — mesmo shape de
+    `ex["trajectory"]` no dataset gerado, ver D-train-prompt-mask/D-dataset-history-schema)."""
     from datasets import Dataset
 
     records = []
     for traj in trajectories:
         raw_text = traj["raw_text"]
-        prefix = _render_prefix(traj["system_prompt"], traj["user_request"])
+        prefix = _render_prefix(traj["system_prompt"], traj["user_request"], traj.get("history"))
         full_text = prefix + raw_text
 
         encoded = tokenizer(full_text, truncation=True, max_length=max_length, return_offsets_mapping=True)

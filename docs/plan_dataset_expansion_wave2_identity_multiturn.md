@@ -1,11 +1,12 @@
 # Plano: wave 2 do dataset — identidade Logos-3/Conatus + generalização multi-turno
 
-Status: **identidade, upgrade de estilo (taxonomia completa, 22/22 task_types) e item 1 da
-extensão de schema multi-turno executados em 2026-07-09** (ver `D-conatus-logos3-identity`,
-`D-style-upgrade-wave2-pilot`, `D-style-upgrade-wave2-round2`, `D-style-upgrade-wave2-round3` e
-`D-dataset-history-schema` em `docs/PLAN.md`). Categorias multi-turno em si (geração dos
-exemplos) ainda **pendentes** — o schema já suporta `history`, mas falta o item 2 (máscara de
-loss no pipeline de treino) antes de gerar essas categorias de verdade.
+Status: **identidade, upgrade de estilo (taxonomia completa, 22/22 task_types) e a extensão de
+schema multi-turno completa (itens 1 E 2) executados em 2026-07-09** (ver
+`D-conatus-logos3-identity`, `D-style-upgrade-wave2-pilot`, `D-style-upgrade-wave2-round2`,
+`D-style-upgrade-wave2-round3`, `D-dataset-history-schema` e `D-dataset-history-loss-mask` em
+`docs/PLAN.md`). O bloqueio técnico está removido — dá pra gerar as categorias multi-turno em
+si agora (mudança abrupta de direção, pedido de ferramenta tardio); isso é o próximo passo,
+ainda não feito.
 
 ## 1. Motivação
 
@@ -54,9 +55,10 @@ alavancagem por esforço.
 
 ## 4. Extensão de schema necessária para as categorias multi-turno
 
-Status: **item 1 (schema + suporte real em `Trajectory`) IMPLEMENTADO em 2026-07-09** — ver
-`D-dataset-history-schema` em `docs/PLAN.md`. **Item 2 (máscara de loss no pipeline de treino)
-continua PENDENTE** — não foi tocado, não foi nem investigado ainda.
+Status: **item 1 (schema + suporte real em `Trajectory`) E item 2 (máscara de loss no
+pipeline de treino) IMPLEMENTADOS em 2026-07-09** — ver `D-dataset-history-schema` e
+`D-dataset-history-loss-mask` em `docs/PLAN.md`. Bloqueio técnico removido; falta só gerar as
+categorias multi-turno em si.
 
 O formato canônico atual (`src/dataset/schema.py`, PLAN.md seção 3) só representava um turno:
 `trajectory: {system_prompt, user_request, raw_text}`. A CLI já resolve isso em produção
@@ -101,11 +103,37 @@ turno2.append_raw("<final>4.</final>")
 example = {"metadata": {...}, "trajectory": turno2.to_example_dict()}
 ```
 
-**Trabalho ainda pendente antes de gerar as categorias multi-turno (item 2)**: a máscara de
-loss (o notebook/pipeline de treino) precisa saber ignorar TODO o conteúdo de `history` (é
-contexto, não algo que o modelo deveria aprender a reproduzir fresco) e mascarar dentro do
-turno atual exatamente como já faz hoje (só `think`/`tool_call`/`final` gerados pelo modelo,
-nunca `tool_result`). Isso ainda não foi tocado nem investigado — é o próximo passo.
+### 4.1 Item 2 — máscara de loss (implementado em 2026-07-09)
+
+Investigação: `compute_loss_mask`/`apply_loss_mask` (`src/training/loss_masking.py`) já
+calculavam spans elegíveis (`think`/`tool_call`/`final`) só dentro de `raw_text` do turno
+ATUAL, e tratavam qualquer coisa antes de `prefix_len` (o prefixo — system_prompt + pedido do
+usuário + marcadores de template) como não elegível. Ou seja, a lógica de máscara em si NÃO
+precisou de nenhuma mudança — bastou uma peça: fazer o PREFIXO usado por
+`build_pretokenized_dataset` (`src/training/data_collator.py`) também incluir os turnos de
+`history`, usando o mesmo `Trajectory.render_for_model()` que já sabe concatenar `history` no
+formato `[USER]/[ASSISTANT]` (implementado no item 1). Como `raw_text` passado pra
+`compute_loss_mask` continua sendo só o do turno atual (nunca o de `history`), todo o conteúdo
+do histórico — inclusive `<think>`/`<tool_call>`/`<final>` de turnos passados, que pareceriam
+"elegíveis" se fossem reparseados isoladamente — cai automaticamente dentro do prefixo mascarado.
+
+Mudanças reais:
+- `_render_prefix` (`src/training/data_collator.py`) ganhou um parâmetro opcional `history`,
+  repassado pra `Trajectory(..., history=...)` antes de chamar `render_for_model()`.
+- `build_pretokenized_dataset` agora lê `traj.get("history")` de cada trajetória e passa
+  adiante — `history` ausente ou `None` mantém o comportamento de sempre.
+- `compute_loss_mask`/`apply_loss_mask` (`loss_masking.py`): **nenhuma mudança**.
+
+Testado (`tests/unit/test_data_collator.py`, roda sem precisar de `trl`, só
+`transformers`/`datasets`): `test_pretokenized_dataset_masks_entire_history` constrói um
+exemplo de 2 turnos e confirma, decodificando só os tokens com loss ativo, que NADA do
+histórico sobra no texto treinado (nem o pedido, nem o `<think>`, nem o `<final>` do turno
+passado) — só o turno atual. `test_pretokenized_dataset_without_history_key_matches_no_history`
+confirma que um exemplo sem a chave `history` produz `input_ids`/`labels` byte a byte idênticos
+a um com `history: []` explícito, e por extensão idênticos ao comportamento de antes desta
+mudança (regressão de compatibilidade). 6/6 testes do arquivo passam (o 7º, ponta a ponta com
+`SFTTrainer` real, já falhava antes desta mudança por um problema de ambiente Windows/cp1252
+não relacionado — ver seção 8).
 
 ## 5. Regras de conteúdo (herdadas do spec amadurecido em conversa, reafirmadas aqui)
 
@@ -265,8 +293,15 @@ padrão não foram tocados aqui (fora de escopo desta wave, registrado para limp
       não amostral)
 - [x] Rodar suite de testes Python de novo após a extensão de schema (155/155, ignorando o
       teste pré-existente do `trl`)
-- [ ] **Item 2 da extensão de schema multi-turno**: máscara de loss no pipeline/notebook de
-      treino pra ignorar `history` — **PENDENTE, não investigado ainda, é o próximo passo**
-- [ ] Categorias multi-turno em si (mudança abrupta, pedido tardio) — pendente, depende do
-      item 2 acima
+- [x] **Item 2 da extensão de schema multi-turno**: `_render_prefix`/`build_pretokenized_dataset`
+      (`src/training/data_collator.py`) agora incluem `history` no prefixo mascarado — `compute_loss_mask`/
+      `loss_masking.py` não precisaram mudar nada, o design já era compatível — seção 4.1
+- [x] Testar a máscara de loss com histórico (2 testes novos em `tests/unit/test_data_collator.py`,
+      rodam sem `trl`): confirma que NADA do histórico entra na loss e que a ausência de
+      `history` é idêntica a `history: []` (regressão de compatibilidade)
+- [x] Rodar suite de testes Python de novo após a máscara de loss (161/161, ignorando o único
+      teste pré-existente que já falhava antes desta sessão inteira por um problema de
+      ambiente Windows/cp1252 no `trl`, não relacionado a nada disto)
+- [ ] Categorias multi-turno em si (mudança abrupta, pedido tardio) — **bloqueio técnico
+      removido, pendente só a geração dos exemplos** — próximo passo real
 - [x] Atualizar `docs/PLAN.md`, commit
