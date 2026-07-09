@@ -346,7 +346,7 @@ func renderLiveTrajectory(rawText string, glowing bool, spinnerView string) stri
 
 	label, bodyText := labelAndBodyFor(kind, toolName, status, body)
 	if glowing && kind == segments.KindThink && label != "" {
-		label = label + " " + spinnerView
+		label = spinnerView + " " + label
 	}
 	if glowing {
 		glowed := renderGlowTail(bodyText, rgbGlowSettle)
