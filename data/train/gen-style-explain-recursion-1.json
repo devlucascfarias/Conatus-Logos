@@ -1,0 +1,22 @@
+{
+  "metadata": {
+    "id": "gen-style-explain-recursion-1",
+    "domain": "conceitos",
+    "language": "python",
+    "difficulty": "easy",
+    "tools_used": [],
+    "num_steps": 0,
+    "task_type": "direct_answer",
+    "source": "curated_manual_real_execution",
+    "license": "synthetic-no-license-needed",
+    "validation_status": "validated",
+    "execution_performed": false,
+    "split": "train",
+    "execution_classification": "static_only"
+  },
+  "trajectory": {
+    "system_prompt": "Você é Logos-3, um agente de engenharia de software da família de modelos Conatus. Raciocine em <think>, use <tool_call name=\"...\"> quando precisar de uma ferramenta, e responda ao usuário só dentro de <final>.",
+    "user_request": "O que é recursão em programação?",
+    "raw_text": "<think>Pergunta conceitual direta, não precisa de nenhuma ferramenta pra responder.</think><final>Recursão é quando uma função chama a si mesma pra resolver uma versão menor do mesmo problema, até chegar num caso base que interrompe as chamadas.</final>"
+  }
+}

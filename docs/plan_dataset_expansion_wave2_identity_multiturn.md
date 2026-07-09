@@ -1,9 +1,11 @@
 # Plano: wave 2 do dataset — identidade Logos-3/Conatus + generalização multi-turno
 
-Status: **identidade e upgrade de estilo executados em 2026-07-09** (ver
-`D-conatus-logos3-identity` e `D-style-upgrade-wave2-pilot` em `docs/PLAN.md`). Categorias
+Status: **identidade e upgrade de estilo (taxonomia completa, 22/22 task_types) executados em
+2026-07-09** (ver `D-conatus-logos3-identity`, `D-style-upgrade-wave2-pilot`,
+`D-style-upgrade-wave2-round2` e `D-style-upgrade-wave2-round3` em `docs/PLAN.md`). Categorias
 multi-turno ainda **pendentes** — dependem de uma extensão de schema que este documento desenha
-mas não implementa ainda.
+mas não implementa ainda. **Próximo passo combinado com o usuário: atacar essa extensão de
+schema multi-turno.**
 
 ## 1. Motivação
 
@@ -33,10 +35,15 @@ Duas origens distintas, ambas de uso real da CLI (`conatus`), não hipotéticas:
 | Identidade (perguntas diretas + confusão com concorrentes) | ~50-60 | **28 executados** nesta sessão (`scripts/gen_identity_wave2_pilot.py`) — primeira leva real, hand-authored, sem duplicação mecânica |
 | Mudança abrupta de direção (multi-turno) | ~200-250 | Pendente — requer extensão de schema (seção 4) |
 | Pedido de ferramenta avulso/tardio numa sessão poluída (multi-turno) | ~150-200 | Pendente — mesma dependência |
-| Upgrade de estilo (think técnico proporcional + final caloroso) sobre task_types existentes | ~300-400 | **35 executados** nesta sessão (`scripts/gen_style_upgrade_wave2_pilot.py`) — 18 dos 22 task_types da taxonomia cobertos, incluindo quatro que exigiam FALHA real controlada (checker_rejects_code, test_fails, forbidden_operation, tool_unavailable). Faltam: `direct_answer`, `invalid_call_then_correction`, `model_fixes_after_error`, `test_passes` |
+| Upgrade de estilo (think técnico proporcional + final caloroso) sobre task_types existentes | ~300-400 | **27 executados** nesta sessão (`scripts/gen_style_upgrade_wave2_pilot.py`) — **todos os 22 task_types da taxonomia cobertos**, incluindo os seis que exigiam FALHA/recusa real controlada (checker_rejects_code, test_fails, forbidden_operation, tool_unavailable, invalid_call_then_correction, model_fixes_after_error) |
 
-Total desta sessão: **63 exemplos novos (28 identidade + 35 upgrade de estilo) + ~3679
+Total desta sessão: **55 exemplos novos (28 identidade + 27 upgrade de estilo) + ~3679
 exemplos existentes com identidade corrigida**.
+
+**Nota de correção**: uma versão anterior deste documento (e do commit correspondente)
+afirmou incorretamente "35 exemplos" depois da segunda rodada — a contagem real era 23 (12 da
+primeira rodada + 11 novos), confirmada por `ls data/train/gen-style-*.json | wc -l` antes de
+escrever este parágrafo. Os números abaixo (seção 6.1.1 e 6.1.2) já estão corrigidos.
 
 ## 3. Por que a identidade foi priorizada e executada primeiro
 
@@ -125,9 +132,9 @@ exemplos:
   `gen-shell-*` antigos. Corrigido no exemplo novo usando `language: "python"` (nominal, mesma
   convenção usada no lote de identidade).
 
-### 6.1.1 Segunda rodada (23 exemplos adicionais, mesma sessão)
+### 6.1.1 Segunda rodada (11 exemplos adicionais, mesma sessão)
 
-Expandiu de 12 para 35 exemplos, cobrindo 11 task_types novos: `language_migration` (tradução
+Expandiu de 12 para 23 exemplos, cobrindo 11 task_types novos: `language_migration` (tradução
 Python para Go, execução real via backend Go do checker), `compiles_successfully` (Go),
 `project_configuration` (arquivo estático, sem `checker`), `documentation_usage` e
 `insufficient_information`/`ambiguous_request` (sem ferramenta, pedindo esclarecimento em vez
@@ -154,6 +161,30 @@ Dois achados adicionais desta rodada:
   nunca ser fabricado, o próprio harness já produz a resposta certa quando exercitado de
   verdade.
 
+### 6.1.2 Terceira rodada (4 exemplos adicionais, mesma sessão) — taxonomia completa
+
+Expandiu de 23 para 27 exemplos, fechando os 4 task_types que faltavam:
+
+- **`direct_answer`**: pergunta conceitual pura ("o que é recursão"), sem ferramenta.
+- **`invalid_call_then_correction`**: uma chamada real com argumento obrigatório faltando
+  (`write_file` sem `content`) recebe um `TOOL_ARGUMENT_SCHEMA_ERROR` genuíno, calculado pelo
+  MESMO validador de JSON Schema que o harness real usa antes de executar qualquer ferramenta
+  (`ToolExecutorRegistry.validate_args`, espelhando `src/harness/loop.py`) — nunca fabricado.
+  Corrigido na retentativa com os argumentos completos.
+- **`model_fixes_after_error`**: `write_file` com `mode="create"` numa segunda escrita colide
+  de propósito com um arquivo que a PRÓPRIA trajetória acabou de criar, recebendo o erro real
+  `INCOMPLETE_SOLUTION` do executor (`write_file_tool.py`). A correção não é reenviar a mesma
+  chamada, é uma abordagem genuinamente diferente (salvar num caminho novo em vez de tentar
+  sobrescrever), evitando o mesmo padrão de "retentativa idêntica sem progresso real" já
+  identificado como falha em `D-own-bug-diagnosis-expansion` (Gap 6).
+- **`test_passes`**: sucesso direto sem nenhum ciclo de depuração, contraste deliberado com os
+  exemplos de `debugging`/`test_fails` que já cobrem o caminho de falha.
+
+Com isso, **os 22 task_types da taxonomia (`src/dataset/taxonomy.py`, `TASK_TYPES`) têm
+cobertura no novo estilo de `<think>`/`<final>`** — não significa que cada um tem volume
+suficiente pra generalizar bem (a maioria tem só 1 exemplo), mas fecha o objetivo desta
+fatia: demonstrar o padrão em toda a superfície da taxonomia antes de decidir onde aprofundar.
+
 ## 7. Achado colateral (não é retrabalho, é higiene de schema pré-existente)
 
 Ao validar o novo lote de identidade contra `structural_validate`
@@ -179,17 +210,18 @@ padrão não foram tocados aqui (fora de escopo desta wave, registrado para limp
       Windows, nada a ver com o dataset) e suite Go da CLI (55/55)
 - [x] Gerar lote de upgrade de estilo, primeira rodada (12 exemplos, 8 task_types) —
       `scripts/gen_style_upgrade_wave2_pilot.py`
-- [x] Expandir o lote de upgrade de estilo, segunda rodada (+23 exemplos, 11 task_types
-      novos, incluindo os quatro que exigiam falha real controlada) — seção 6.1.1
-- [x] Validar estrutura/schema do lote de estilo completo, 35 exemplos (0 problemas), checar
+- [x] Expandir o lote de upgrade de estilo, segunda rodada (+11 exemplos, 11 task_types
+      novos) — seção 6.1.1
+- [x] Expandir o lote de upgrade de estilo, terceira rodada (+4 exemplos: `direct_answer`,
+      `invalid_call_then_correction`, `model_fixes_after_error`, `test_passes`) — seção
+      6.1.2, fecha os 22 task_types da taxonomia
+- [x] Validar estrutura/schema do lote de estilo completo, 27 exemplos (0 problemas), checar
       vazamento de detalhe interno (0 leaks, depois de corrigir o vazamento real encontrado —
       seção 6.1) e pontuação (0 hífens/travessões fora das exceções de nome próprio/sintaxe
       técnica)
 - [x] Rodar suite de testes Python de novo após cada rodada do lote de estilo (138/138,
       ignorando o teste pré-existente e não relacionado do `trl`)
-- [ ] Categorias multi-turno (mudança abrupta, pedido tardio) — pendente, depende da extensão
-      de schema da seção 4 e do trabalho de máscara de loss no pipeline de treino
-- [ ] Completar os 4 task_types restantes do upgrade de estilo (`direct_answer`,
-      `invalid_call_then_correction`, `model_fixes_after_error`, `test_passes`) — próxima
-      fatia mais barata, mesmo mecanismo já validado
+- [ ] Categorias multi-turno (mudança abrupta, pedido tardio) — **próximo passo, pendente**,
+      depende da extensão de schema da seção 4 e do trabalho de máscara de loss no pipeline de
+      treino, nenhum dos dois implementado ainda
 - [x] Atualizar `docs/PLAN.md`, commit

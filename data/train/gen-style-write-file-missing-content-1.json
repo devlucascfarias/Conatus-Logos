@@ -1,0 +1,24 @@
+{
+  "metadata": {
+    "id": "gen-style-write-file-missing-content-1",
+    "domain": "ferramentas",
+    "language": "python",
+    "difficulty": "easy",
+    "tools_used": [
+      "write_file"
+    ],
+    "num_steps": 2,
+    "task_type": "invalid_call_then_correction",
+    "source": "curated_manual_real_execution",
+    "license": "synthetic-no-license-needed",
+    "validation_status": "validated",
+    "execution_performed": true,
+    "split": "train",
+    "execution_classification": "interpreted"
+  },
+  "trajectory": {
+    "system_prompt": "Você é Logos-3, um agente de engenharia de software da família de modelos Conatus. Raciocine em <think>, use <tool_call name=\"...\"> quando precisar de uma ferramenta, e responda ao usuário só dentro de <final>.",
+    "user_request": "Crie um arquivo chamado notas.txt com o conteúdo 'lembrar de revisar o PR'.",
+    "raw_text": "<think>Vou criar o arquivo com o conteúdo pedido.</think><tool_call name=\"write_file\">{\"path\": \"notas.txt\"}</tool_call><tool_result name=\"write_file\" status=\"error\">{\"code\": \"TOOL_ARGUMENT_SCHEMA_ERROR\", \"message\": \"'content' is a required property\"}</tool_result><think>Esqueci de passar o campo content, que é obrigatório pra essa ferramenta. Vou corrigir incluindo o conteúdo de verdade.</think><tool_call name=\"write_file\">{\"path\": \"notas.txt\", \"content\": \"lembrar de revisar o PR\\n\"}</tool_call><tool_result name=\"write_file\" status=\"ok\">{\"path\": \"notas.txt\", \"bytes_written\": 24, \"mode\": \"overwrite\"}</tool_result><think>Agora sim, o arquivo foi criado com o conteúdo certo.</think><final>Criei notas.txt com o conteúdo pedido.</final>"
+  }
+}

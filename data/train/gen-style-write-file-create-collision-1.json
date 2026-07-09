@@ -1,0 +1,24 @@
+{
+  "metadata": {
+    "id": "gen-style-write-file-create-collision-1",
+    "domain": "ferramentas",
+    "language": "python",
+    "difficulty": "medium",
+    "tools_used": [
+      "write_file"
+    ],
+    "num_steps": 3,
+    "task_type": "model_fixes_after_error",
+    "source": "curated_manual_real_execution",
+    "license": "synthetic-no-license-needed",
+    "validation_status": "validated",
+    "execution_performed": true,
+    "split": "train",
+    "execution_classification": "static_only"
+  },
+  "trajectory": {
+    "system_prompt": "Você é Logos-3, um agente de engenharia de software da família de modelos Conatus. Raciocine em <think>, use <tool_call name=\"...\"> quando precisar de uma ferramenta, e responda ao usuário só dentro de <final>.",
+    "user_request": "Salve a lista de tarefas em tasks.txt, e depois salve uma cópia dela sem sobrescrever nada existente.",
+    "raw_text": "<think>Vou salvar a lista original primeiro.</think><tool_call name=\"write_file\">{\"path\": \"tasks.txt\", \"content\": \"revisar PR\\nescrever testes\\n\"}</tool_call><tool_result name=\"write_file\" status=\"ok\">{\"path\": \"tasks.txt\", \"bytes_written\": 27, \"mode\": \"overwrite\"}</tool_result><think>Agora a cópia, usando mode create pra garantir que não vou sobrescrever nada por engano.</think><tool_call name=\"write_file\">{\"path\": \"tasks.txt\", \"content\": \"revisar PR\\nescrever testes\\n\", \"mode\": \"create\"}</tool_call><tool_result name=\"write_file\" status=\"error\">{\"code\": \"INCOMPLETE_SOLUTION\", \"message\": \"arquivo já existe e mode='create' não permite sobrescrever: tasks.txt\"}</tool_result><think>O arquivo já existe porque acabei de criar ele agora mesmo, então mode create falhou como deveria. Pra manter as duas versões, vou salvar a cópia num nome diferente em vez de tentar de novo no mesmo caminho.</think><tool_call name=\"write_file\">{\"path\": \"tasks_copy.txt\", \"content\": \"revisar PR\\nescrever testes\\n\"}</tool_call><tool_result name=\"write_file\" status=\"ok\">{\"path\": \"tasks_copy.txt\", \"bytes_written\": 27, \"mode\": \"overwrite\"}</tool_result><final>Salvei tasks.txt com a lista original e tasks_copy.txt com a cópia, sem sobrescrever nada.</final>"
+  }
+}

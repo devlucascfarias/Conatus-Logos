@@ -263,6 +263,79 @@ def build_read_then_write_then_checker(
     }
 
 
+def build_invalid_call_then_correction(
+    id_, domain, difficulty, user_request,
+    think1, tool_name, invalid_args,
+    think2, valid_args, think3, final_text,
+) -> dict:
+    # Usa a MESMA checagem real que o harness (`src/harness/loop.py`) faz antes de executar
+    # qualquer ferramenta — nunca fabrica o TOOL_ARGUMENT_SCHEMA_ERROR, chama o validador de
+    # JSON Schema de verdade contra os args inválidos.
+    sandbox = SandboxContext(policy=_POLICY)
+    traj = Trajectory(system_prompt=PRAXIS_SYSTEM_PROMPT, user_request=user_request)
+    traj.append_raw(f"<think>{think1}</think>")
+    traj.append_raw(f'<tool_call name="{tool_name}">{json.dumps(invalid_args, ensure_ascii=False)}</tool_call>')
+    schema_errors = _REGISTRY.validate_args(tool_name, invalid_args)
+    assert schema_errors, f"esperava erro real de schema em {id_}, mas os args passaram na validação"
+    traj.append_tool_result(
+        tool_name, "error", {"code": "TOOL_ARGUMENT_SCHEMA_ERROR", "message": "; ".join(schema_errors)}
+    )
+    traj.append_raw(f"<think>{think2}</think>")
+    result = _tool_call(traj, sandbox, tool_name, valid_args)
+    assert result.passed, f"esperava sucesso real na retentativa em {id_}: {result.to_json()}"
+    traj.append_raw(f"<think>{think3}</think>")
+    traj.append_raw(f"<final>{final_text}</final>")
+    return {
+        "metadata": _base_metadata(
+            id_, domain, "python", difficulty, [tool_name], "invalid_call_then_correction", 2, True,
+            "interpreted",
+        ),
+        "trajectory": {
+            "system_prompt": PRAXIS_SYSTEM_PROMPT,
+            "user_request": user_request,
+            "raw_text": traj.raw_text,
+        },
+    }
+
+
+def build_write_error_then_fix(
+    id_, domain, difficulty, user_request,
+    think1, first_path, first_content,
+    think2, collide_path,
+    think3, fix_path, fix_content,
+    final_text,
+) -> dict:
+    sandbox = SandboxContext(policy=_POLICY)
+    traj = Trajectory(system_prompt=PRAXIS_SYSTEM_PROMPT, user_request=user_request)
+
+    traj.append_raw(f"<think>{think1}</think>")
+    first_result = _tool_call(traj, sandbox, "write_file", {"path": first_path, "content": first_content})
+    assert first_result.passed, f"esperava sucesso real na primeira escrita em {id_}: {first_result.to_json()}"
+
+    traj.append_raw(f"<think>{think2}</think>")
+    collide_result = _tool_call(
+        traj, sandbox, "write_file", {"path": collide_path, "content": first_content, "mode": "create"}
+    )
+    assert not collide_result.passed, f"esperava erro real de colisão em {id_}: {collide_result.to_json()}"
+
+    traj.append_raw(f"<think>{think3}</think>")
+    fix_result = _tool_call(traj, sandbox, "write_file", {"path": fix_path, "content": fix_content})
+    assert fix_result.passed, f"correção falhou de verdade em {id_}: {fix_result.to_json()}"
+
+    traj.append_raw(f"<final>{final_text}</final>")
+    return {
+        "metadata": _base_metadata(
+            id_, domain, "python", difficulty, ["write_file"], "model_fixes_after_error", 3, True,
+            "static_only",
+        ),
+        "trajectory": {
+            "system_prompt": PRAXIS_SYSTEM_PROMPT,
+            "user_request": user_request,
+            "raw_text": traj.raw_text,
+        },
+    }
+
+
 def build_debug_cycle(
     id_, domain, difficulty, user_request,
     think1, file_path, buggy_content, test_path, test_content,
@@ -1024,6 +1097,91 @@ EXAMPLES.append((
     ),
 ))
 
+# --- direct_answer: pergunta conceitual pura, sem ferramenta ---------------------------------
+EXAMPLES.append((
+    "no_tool", dict(
+        id_="gen-style-explain-recursion-1",
+        domain="conceitos",
+        difficulty="easy",
+        task_type="direct_answer",
+        user_request="O que é recursão em programação?",
+        think_text="Pergunta conceitual direta, não precisa de nenhuma ferramenta pra responder.",
+        final_text="Recursão é quando uma função chama a si mesma pra resolver uma versão menor do mesmo problema, até chegar num caso base que interrompe as chamadas.",
+    ),
+))
+
+# --- invalid_call_then_correction: erro real de schema, corrigido de verdade ----------------
+EXAMPLES.append((
+    "invalid_correction", dict(
+        id_="gen-style-write-file-missing-content-1",
+        domain="ferramentas",
+        difficulty="easy",
+        user_request="Crie um arquivo chamado notas.txt com o conteúdo 'lembrar de revisar o PR'.",
+        think1="Vou criar o arquivo com o conteúdo pedido.",
+        tool_name="write_file",
+        invalid_args={"path": "notas.txt"},
+        think2="Esqueci de passar o campo content, que é obrigatório pra essa ferramenta. Vou corrigir incluindo o conteúdo de verdade.",
+        valid_args={"path": "notas.txt", "content": "lembrar de revisar o PR\n"},
+        think3="Agora sim, o arquivo foi criado com o conteúdo certo.",
+        final_text="Criei notas.txt com o conteúdo pedido.",
+    ),
+))
+
+# --- model_fixes_after_error: erro real de execução, corrigido com abordagem diferente ------
+EXAMPLES.append((
+    "write_error_fix", dict(
+        id_="gen-style-write-file-create-collision-1",
+        domain="ferramentas",
+        difficulty="medium",
+        user_request="Salve a lista de tarefas em tasks.txt, e depois salve uma cópia dela sem sobrescrever nada existente.",
+        think1="Vou salvar a lista original primeiro.",
+        first_path="tasks.txt",
+        first_content="revisar PR\nescrever testes\n",
+        think2="Agora a cópia, usando mode create pra garantir que não vou sobrescrever nada por engano.",
+        collide_path="tasks.txt",
+        think3="O arquivo já existe porque acabei de criar ele agora mesmo, então mode create falhou como deveria. Pra manter as duas versões, vou salvar a cópia num nome diferente em vez de tentar de novo no mesmo caminho.",
+        fix_path="tasks_copy.txt",
+        fix_content="revisar PR\nescrever testes\n",
+        final_text="Salvei tasks.txt com a lista original e tasks_copy.txt com a cópia, sem sobrescrever nada.",
+    ),
+))
+
+# --- test_passes: sucesso direto, sem ciclo de depuração -------------------------------------
+EXAMPLES.append((
+    "write_checker", dict(
+        id_="gen-style-palindrome-test-passes-1",
+        domain="algoritmos",
+        difficulty="easy",
+        task_type="test_passes",
+        user_request="Escreva uma função is_palindrome e um teste pra confirmar que funciona.",
+        think1="Vou comparar a string com sua versão invertida, é a forma mais direta de checar palíndromo.",
+        file_path="palindrome.py",
+        content=(
+            "def is_palindrome(s):\n"
+            "    return s == s[::-1]\n"
+        ),
+        think2="Vou testar com um palíndromo e um caso que não é, pra confirmar os dois lados.",
+        checker_args={
+            "language": "python",
+            "operation": "compile_and_test",
+            "files": [
+                {"path": "palindrome.py", "content": "def is_palindrome(s):\n    return s == s[::-1]\n"},
+                {
+                    "path": "test_palindrome.py",
+                    "content": (
+                        "from palindrome import is_palindrome\n\n"
+                        "def test_arara_is_palindrome():\n"
+                        "    assert is_palindrome('arara') is True\n\n"
+                        "def test_banana_is_not_palindrome():\n"
+                        "    assert is_palindrome('banana') is False\n"
+                    ),
+                },
+            ],
+        },
+        final_text="Implementei is_palindrome comparando a string com sua versão invertida. Testei com um palíndromo e um caso que não é, os dois passaram de primeira.",
+    ),
+))
+
 
 def _dispatch(kind, spec):
     if kind == "single_tool":
@@ -1040,6 +1198,10 @@ def _dispatch(kind, spec):
         return build_tool_unavailable_fallback(**spec)
     if kind == "read_write_checker":
         return build_read_then_write_then_checker(**spec)
+    if kind == "invalid_correction":
+        return build_invalid_call_then_correction(**spec)
+    if kind == "write_error_fix":
+        return build_write_error_then_fix(**spec)
     raise ValueError(f"tipo de construtor desconhecido: {kind}")
 
 
