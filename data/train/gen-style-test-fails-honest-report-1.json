@@ -1,0 +1,25 @@
+{
+  "metadata": {
+    "id": "gen-style-test-fails-honest-report-1",
+    "domain": "testes",
+    "language": "python",
+    "difficulty": "medium",
+    "tools_used": [
+      "write_file",
+      "checker"
+    ],
+    "num_steps": 2,
+    "task_type": "test_fails",
+    "source": "curated_manual_real_execution",
+    "license": "synthetic-no-license-needed",
+    "validation_status": "validated",
+    "execution_performed": true,
+    "split": "train",
+    "execution_classification": "interpreted"
+  },
+  "trajectory": {
+    "system_prompt": "Você é Logos-3, um agente de engenharia de software da família de modelos Conatus. Raciocine em <think>, use <tool_call name=\"...\"> quando precisar de uma ferramenta, e responda ao usuário só dentro de <final>.",
+    "user_request": "Escrevi essa função is_even, os testes estão passando? def is_even(n): return n % 2 == 1",
+    "raw_text": "<think>Vou escrever exatamente como foi descrita e testar com casos conhecidos antes de responder.</think><tool_call name=\"write_file\">{\"path\": \"evencheck.py\", \"content\": \"def is_even(n):\\n    return n % 2 == 1\\n\"}</tool_call><tool_result name=\"write_file\" status=\"ok\">{\"path\": \"evencheck.py\", \"bytes_written\": 38, \"mode\": \"overwrite\"}</tool_result><think>Vou rodar com um número par e um ímpar pra confirmar se o comportamento bate com o nome da função.</think><tool_call name=\"checker\">{\"language\": \"python\", \"operation\": \"compile_and_test\", \"files\": [{\"path\": \"evencheck.py\", \"content\": \"def is_even(n):\\n    return n % 2 == 1\\n\"}, {\"path\": \"test_evencheck.py\", \"content\": \"from evencheck import is_even\\n\\ndef test_four_is_even():\\n    assert is_even(4) is True\\n\"}]}</tool_call><tool_result name=\"checker\" status=\"error\">{\"passed\": false, \"errors\": [{\"code\": \"TEST_FAILURE\", \"message\": \"F                                                                        [100%]\\n================================== FAILURES ===================================\\n______________________________ test_four_is_even ______________________________\\n\\n    def test_four_is_even():\\n>       assert is_even(4) is True\\nE       assert False is True\\nE        +  where False = is_even(4)\\n\\ntest_evencheck.py:4: AssertionError\\n=========================== short test summary info ===========================\\nFAILED test_evencheck.py::test_four_is_even - assert False is True\\n1 failed in 0.53s\\n\"}], \"stdout\": \"F                                                                        [100%]\\n================================== FAILURES ===================================\\n______________________________ test_four_is_even ______________________________\\n\\n    def test_four_is_even():\\n>       assert is_even(4) is True\\nE       assert False is True\\nE        +  where False = is_even(4)\\n\\ntest_evencheck.py:4: AssertionError\\n=========================== short test summary info ===========================\\nFAILED test_evencheck.py::test_four_is_even - assert False is True\\n1 failed in 0.53s\\n\", \"stderr\": \"\\n\", \"metadata\": {\"language\": \"python\", \"duration_ms\": 3030}, \"code\": \"TEST_FAILURE\", \"message\": \"F                                                                        [100%]\\n================================== FAILURES ===================================\\n______________________________ test_four_is_even ______________________________\\n\\n    def test_four_is_even():\\n>       assert is_even(4) is True\\nE       assert False is True\\nE        +  where False = is_even(4)\\n\\ntest_evencheck.py:4: AssertionError\\n=========================== short test summary info ===========================\\nFAILED test_evencheck.py::test_four_is_even - assert False is True\\n1 failed in 0.53s\\n\"}</tool_result><final>Não, o teste falhou de verdade. A condição está invertida: n % 2 == 1 é verdade quando n é ÍMPAR, não par. Pra fazer o que o nome promete, a condição deveria ser n % 2 == 0.</final>"
+  }
+}

@@ -33,9 +33,9 @@ Duas origens distintas, ambas de uso real da CLI (`conatus`), não hipotéticas:
 | Identidade (perguntas diretas + confusão com concorrentes) | ~50-60 | **28 executados** nesta sessão (`scripts/gen_identity_wave2_pilot.py`) — primeira leva real, hand-authored, sem duplicação mecânica |
 | Mudança abrupta de direção (multi-turno) | ~200-250 | Pendente — requer extensão de schema (seção 4) |
 | Pedido de ferramenta avulso/tardio numa sessão poluída (multi-turno) | ~150-200 | Pendente — mesma dependência |
-| Upgrade de estilo (think técnico proporcional + final caloroso) sobre task_types existentes | ~300-400 | **12 executados** nesta sessão (`scripts/gen_style_upgrade_wave2_pilot.py`) — amostra representativa de 8 task_types, primeira fatia real |
+| Upgrade de estilo (think técnico proporcional + final caloroso) sobre task_types existentes | ~300-400 | **35 executados** nesta sessão (`scripts/gen_style_upgrade_wave2_pilot.py`) — 18 dos 22 task_types da taxonomia cobertos, incluindo quatro que exigiam FALHA real controlada (checker_rejects_code, test_fails, forbidden_operation, tool_unavailable). Faltam: `direct_answer`, `invalid_call_then_correction`, `model_fixes_after_error`, `test_passes` |
 
-Total desta sessão: **40 exemplos novos (28 identidade + 12 upgrade de estilo) + ~3679
+Total desta sessão: **63 exemplos novos (28 identidade + 35 upgrade de estilo) + ~3679
 exemplos existentes com identidade corrigida**.
 
 ## 3. Por que a identidade foi priorizada e executada primeiro
@@ -125,6 +125,35 @@ exemplos:
   `gen-shell-*` antigos. Corrigido no exemplo novo usando `language: "python"` (nominal, mesma
   convenção usada no lote de identidade).
 
+### 6.1.1 Segunda rodada (23 exemplos adicionais, mesma sessão)
+
+Expandiu de 12 para 35 exemplos, cobrindo 11 task_types novos: `language_migration` (tradução
+Python para Go, execução real via backend Go do checker), `compiles_successfully` (Go),
+`project_configuration` (arquivo estático, sem `checker`), `documentation_usage` e
+`insufficient_information`/`ambiguous_request` (sem ferramenta, pedindo esclarecimento em vez
+de adivinhar), `checker_rejects_code` e `test_fails` (falha real REPORTADA honestamente, sem
+ciclo de correção — task_type específico é sobre reconhecer/relatar a falha, não corrigi-la),
+`multi_file_read_and_edit` (lê `config.py` de verdade antes de editar `main.py` com base no
+valor lido), `tool_unavailable` (tenta `apply_patch`, que está `enabled: false` em
+`configs/tools_registry.yaml` — recebe um `UNSUPPORTED_TOOL` genuíno do próprio
+`ToolExecutorRegistry`, não fabricado, e recupera usando `write_file`), e `forbidden_operation`
+(tenta `rm -rf` via `shell`, recebe recusa real da sandbox por estar no `denylist_patterns` de
+`configs/sandbox_policy.yaml`).
+
+Dois achados adicionais desta rodada:
+
+- **Exceção de pontuação precisou crescer**: a regra "nenhum hífen fora de nomes próprios como
+  Logos-3/GPT-4" não previa flags de linha de comando reais dentro do texto (`rm -rf` no
+  exemplo de `forbidden_operation`) — são sintaxe técnica literal, não pontuação de frase, e
+  entram na mesma categoria de exceção.
+- **Alguns `<tool_result>` de erro real são genuínos, não simulados**: os exemplos de
+  `tool_unavailable` e `forbidden_operation` passam pelo MESMO caminho real que a CLI/harness
+  usariam (`ToolExecutorRegistry.execute` devolvendo `UNSUPPORTED_TOOL` de verdade pra uma
+  ferramenta desabilitada; `sandbox.run_shell` recusando de verdade um comando do denylist) —
+  reforça que "ferramenta ainda não disponível"/"operação proibida" no dataset não precisa
+  nunca ser fabricado, o próprio harness já produz a resposta certa quando exercitado de
+  verdade.
+
 ## 7. Achado colateral (não é retrabalho, é higiene de schema pré-existente)
 
 Ao validar o novo lote de identidade contra `structural_validate`
@@ -148,13 +177,19 @@ padrão não foram tocados aqui (fora de escopo desta wave, registrado para limp
 - [x] Rodar suite de testes Python (142 passaram, 1 falha pré-existente e não relacionada —
       `trl` falhando ao ler um arquivo `.jinja` próprio por causa do codec padrão cp1252 do
       Windows, nada a ver com o dataset) e suite Go da CLI (55/55)
-- [x] Gerar lote de upgrade de estilo (12 exemplos reais, 8 task_types, execução real de
-      ferramenta em 10 dos 12) — `scripts/gen_style_upgrade_wave2_pilot.py`
-- [x] Validar estrutura/schema do lote de estilo (0 problemas), checar vazamento de detalhe
-      interno (0 leaks, depois de corrigir o vazamento real encontrado — seção 6.1) e
-      pontuação (0 hífens/travessões fora das exceções de nome próprio)
-- [x] Rodar suite de testes Python de novo após o lote de estilo (138/138, ignorando o teste
-      pré-existente e não relacionado do `trl`)
+- [x] Gerar lote de upgrade de estilo, primeira rodada (12 exemplos, 8 task_types) —
+      `scripts/gen_style_upgrade_wave2_pilot.py`
+- [x] Expandir o lote de upgrade de estilo, segunda rodada (+23 exemplos, 11 task_types
+      novos, incluindo os quatro que exigiam falha real controlada) — seção 6.1.1
+- [x] Validar estrutura/schema do lote de estilo completo, 35 exemplos (0 problemas), checar
+      vazamento de detalhe interno (0 leaks, depois de corrigir o vazamento real encontrado —
+      seção 6.1) e pontuação (0 hífens/travessões fora das exceções de nome próprio/sintaxe
+      técnica)
+- [x] Rodar suite de testes Python de novo após cada rodada do lote de estilo (138/138,
+      ignorando o teste pré-existente e não relacionado do `trl`)
 - [ ] Categorias multi-turno (mudança abrupta, pedido tardio) — pendente, depende da extensão
       de schema da seção 4 e do trabalho de máscara de loss no pipeline de treino
+- [ ] Completar os 4 task_types restantes do upgrade de estilo (`direct_answer`,
+      `invalid_call_then_correction`, `model_fixes_after_error`, `test_passes`) — próxima
+      fatia mais barata, mesmo mecanismo já validado
 - [x] Atualizar `docs/PLAN.md`, commit

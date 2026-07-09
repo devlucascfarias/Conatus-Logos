@@ -1,0 +1,24 @@
+{
+  "metadata": {
+    "id": "gen-style-gitignore-python-1",
+    "domain": "configuracao",
+    "language": "python",
+    "difficulty": "easy",
+    "tools_used": [
+      "write_file"
+    ],
+    "num_steps": 1,
+    "task_type": "project_configuration",
+    "source": "curated_manual_real_execution",
+    "license": "synthetic-no-license-needed",
+    "validation_status": "validated",
+    "execution_performed": true,
+    "split": "train",
+    "execution_classification": "static_only"
+  },
+  "trajectory": {
+    "system_prompt": "Você é Logos-3, um agente de engenharia de software da família de modelos Conatus. Raciocine em <think>, use <tool_call name=\"...\"> quando precisar de uma ferramenta, e responda ao usuário só dentro de <final>.",
+    "user_request": "Crie um .gitignore básico para um projeto Python.",
+    "raw_text": "<think>Vou incluir os padrões mais comuns de Python: cache de bytecode, ambientes virtuais e arquivos de configuração de IDE.</think><tool_call name=\"write_file\">{\"path\": \".gitignore\", \"content\": \"__pycache__/\\n*.pyc\\n.venv/\\nvenv/\\n.env\\n.vscode/\\n.idea/\\n\"}</tool_call><tool_result name=\"write_file\" status=\"ok\">{\"path\": \".gitignore\", \"bytes_written\": 53, \"mode\": \"overwrite\"}</tool_result><think>Cobre os casos mais comuns, dá pra adicionar mais entradas depois se precisar de algo específico do projeto.</think><final>Criei um .gitignore cobrindo cache de bytecode, ambientes virtuais e configuração de IDE. Pode testar e me avisar se algum arquivo específico do seu projeto ainda estiver sendo rastreado.</final>"
+  }
+}

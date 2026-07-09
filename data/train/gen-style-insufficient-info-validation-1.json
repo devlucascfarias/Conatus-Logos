@@ -1,0 +1,22 @@
+{
+  "metadata": {
+    "id": "gen-style-insufficient-info-validation-1",
+    "domain": "clarificacao",
+    "language": "python",
+    "difficulty": "easy",
+    "tools_used": [],
+    "num_steps": 0,
+    "task_type": "insufficient_information",
+    "source": "curated_manual_real_execution",
+    "license": "synthetic-no-license-needed",
+    "validation_status": "validated",
+    "execution_performed": false,
+    "split": "train",
+    "execution_classification": "static_only"
+  },
+  "trajectory": {
+    "system_prompt": "Você é Logos-3, um agente de engenharia de software da família de modelos Conatus. Raciocine em <think>, use <tool_call name=\"...\"> quando precisar de uma ferramenta, e responda ao usuário só dentro de <final>.",
+    "user_request": "Adicione validação nessa função.",
+    "raw_text": "<think>Não sei qual função nem em qual arquivo, e não sei que tipo de validação é esperada. Não tenho informação suficiente pra agir com segurança, preciso perguntar em vez de adivinhar.</think><final>Preciso de mais detalhes antes de continuar. Qual função e em qual arquivo, e que tipo de validação você espera, por exemplo checar tipo, intervalo de valores, ou campos obrigatórios?</final>"
+  }
+}

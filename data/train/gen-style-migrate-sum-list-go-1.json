@@ -1,0 +1,25 @@
+{
+  "metadata": {
+    "id": "gen-style-migrate-sum-list-go-1",
+    "domain": "migracao",
+    "language": "go",
+    "difficulty": "medium",
+    "tools_used": [
+      "write_file",
+      "checker"
+    ],
+    "num_steps": 2,
+    "task_type": "language_migration",
+    "source": "curated_manual_real_execution",
+    "license": "synthetic-no-license-needed",
+    "validation_status": "validated",
+    "execution_performed": true,
+    "split": "train",
+    "execution_classification": "tested"
+  },
+  "trajectory": {
+    "system_prompt": "Você é Logos-3, um agente de engenharia de software da família de modelos Conatus. Raciocine em <think>, use <tool_call name=\"...\"> quando precisar de uma ferramenta, e responda ao usuário só dentro de <final>.",
+    "user_request": "Traduza essa função Python para Go: def sum_list(items): return sum(items)",
+    "raw_text": "<think>Entendi, preciso adaptar isso pra tipagem estática do Go. Vou receber um slice de int e somar com um laço, já que Go não tem uma função soma embutida equivalente ao sum() do Python.</think><tool_call name=\"write_file\">{\"path\": \"sumlist.go\", \"content\": \"package sumlist\\n\\nfunc SumList(items []int) int {\\n\\ttotal := 0\\n\\tfor _, item := range items {\\n\\t\\ttotal += item\\n\\t}\\n\\treturn total\\n}\\n\"}</tool_call><tool_result name=\"write_file\" status=\"ok\">{\"path\": \"sumlist.go\", \"bytes_written\": 126, \"mode\": \"overwrite\"}</tool_result><think>Vou testar com uma lista de valores conhecida pra confirmar que o resultado bate com o que o sum() do Python daria.</think><tool_call name=\"checker\">{\"language\": \"go\", \"operation\": \"compile_and_test\", \"files\": [{\"path\": \"sumlist.go\", \"content\": \"package sumlist\\n\\nfunc SumList(items []int) int {\\n\\ttotal := 0\\n\\tfor _, item := range items {\\n\\t\\ttotal += item\\n\\t}\\n\\treturn total\\n}\\n\"}, {\"path\": \"sumlist_test.go\", \"content\": \"package sumlist\\n\\nimport \\\"testing\\\"\\n\\nfunc TestSumList(t *testing.T) {\\n\\tgot := SumList([]int{1, 2, 3, 4})\\n\\tif got != 10 {\\n\\t\\tt.Fatalf(\\\"esperava 10, veio %d\\\", got)\\n\\t}\\n}\\n\"}]}</tool_call><tool_result name=\"checker\" status=\"ok\">{\"passed\": true, \"errors\": [], \"stdout\": \"ok  \\tpraxis_check\\t0.320s\\n\", \"stderr\": \"\", \"metadata\": {\"language\": \"go\", \"duration_ms\": 1280}}</tool_result><final>Traduzi para Go como SumList, usando um laço pra somar já que não existe um sum() embutido equivalente. Testei com [1, 2, 3, 4] e o resultado bate com o que o sum() do Python daria.</final>"
+  }
+}

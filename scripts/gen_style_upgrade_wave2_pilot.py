@@ -151,6 +151,7 @@ def build_single_tool(
 def build_write_then_checker(
     id_, domain, difficulty, task_type, user_request,
     think1, file_path, content, think2, checker_args, final_text,
+    language="python", expect_pass=True,
 ) -> dict:
     sandbox = SandboxContext(policy=_POLICY)
     traj = Trajectory(system_prompt=PRAXIS_SYSTEM_PROMPT, user_request=user_request)
@@ -159,11 +160,100 @@ def build_write_then_checker(
     assert write_result.passed, f"write_file falhou inesperadamente em {id_}: {write_result.to_json()}"
     traj.append_raw(f"<think>{think2}</think>")
     checker_result = _tool_call(traj, sandbox, "checker", checker_args)
+    if expect_pass:
+        assert checker_result.passed, f"esperava checker passando em {id_}: {checker_result.to_json()}"
+    else:
+        assert not checker_result.passed, f"esperava checker falhando de verdade em {id_}: {checker_result.to_json()}"
+    traj.append_raw(f"<final>{final_text}</final>")
+    return {
+        "metadata": _base_metadata(
+            id_, domain, language, difficulty, ["write_file", "checker"], task_type, 2, True,
+            "tested" if expect_pass else "interpreted",
+        ),
+        "trajectory": {
+            "system_prompt": PRAXIS_SYSTEM_PROMPT,
+            "user_request": user_request,
+            "raw_text": traj.raw_text,
+        },
+    }
+
+
+def build_single_tool_expect_error(
+    id_, domain, difficulty, task_type, language, user_request,
+    think1, tool_name, tool_args, think2, final_text,
+) -> dict:
+    sandbox = SandboxContext(policy=_POLICY)
+    traj = Trajectory(system_prompt=PRAXIS_SYSTEM_PROMPT, user_request=user_request)
+    traj.append_raw(f"<think>{think1}</think>")
+    result = _tool_call(traj, sandbox, tool_name, tool_args)
+    assert not result.passed, f"esperava recusa/erro real em {id_}: {result.to_json()}"
+    traj.append_raw(f"<think>{think2}</think>")
+    traj.append_raw(f"<final>{final_text}</final>")
+    return {
+        "metadata": _base_metadata(
+            id_, domain, language, difficulty, [tool_name], task_type, 1, True, "interpreted"
+        ),
+        "trajectory": {
+            "system_prompt": PRAXIS_SYSTEM_PROMPT,
+            "user_request": user_request,
+            "raw_text": traj.raw_text,
+        },
+    }
+
+
+def build_tool_unavailable_fallback(
+    id_, domain, difficulty, user_request,
+    think1, unavailable_tool, unavailable_args,
+    think2, file_path, content, final_text,
+) -> dict:
+    sandbox = SandboxContext(policy=_POLICY)
+    traj = Trajectory(system_prompt=PRAXIS_SYSTEM_PROMPT, user_request=user_request)
+    traj.append_raw(f"<think>{think1}</think>")
+    unavailable_result = _tool_call(traj, sandbox, unavailable_tool, unavailable_args)
+    assert not unavailable_result.passed, f"esperava UNSUPPORTED_TOOL real em {id_}: {unavailable_result.to_json()}"
+    traj.append_raw(f"<think>{think2}</think>")
+    write_result = _tool_call(traj, sandbox, "write_file", {"path": file_path, "content": content})
+    assert write_result.passed, f"write_file de recuperação falhou em {id_}: {write_result.to_json()}"
+    traj.append_raw(f"<final>{final_text}</final>")
+    return {
+        "metadata": _base_metadata(
+            id_, domain, "python", difficulty, [unavailable_tool, "write_file"], "tool_unavailable", 2, True,
+            "static_only",
+        ),
+        "trajectory": {
+            "system_prompt": PRAXIS_SYSTEM_PROMPT,
+            "user_request": user_request,
+            "raw_text": traj.raw_text,
+        },
+    }
+
+
+def build_read_then_write_then_checker(
+    id_, domain, difficulty, user_request,
+    think1, read_path, preexisting_files,
+    think2, write_path, write_content,
+    think3, checker_args, final_text,
+) -> dict:
+    sandbox = SandboxContext(policy=_POLICY)
+    for rel_path, content in preexisting_files.items():
+        target = sandbox.workspace / rel_path
+        target.parent.mkdir(parents=True, exist_ok=True)
+        target.write_text(content, encoding="utf-8")
+    traj = Trajectory(system_prompt=PRAXIS_SYSTEM_PROMPT, user_request=user_request)
+    traj.append_raw(f"<think>{think1}</think>")
+    read_result = _tool_call(traj, sandbox, "read_file", {"path": read_path})
+    assert read_result.passed, f"read_file falhou inesperadamente em {id_}: {read_result.to_json()}"
+    traj.append_raw(f"<think>{think2}</think>")
+    write_result = _tool_call(traj, sandbox, "write_file", {"path": write_path, "content": write_content})
+    assert write_result.passed, f"write_file falhou inesperadamente em {id_}: {write_result.to_json()}"
+    traj.append_raw(f"<think>{think3}</think>")
+    checker_result = _tool_call(traj, sandbox, "checker", checker_args)
     assert checker_result.passed, f"esperava checker passando em {id_}: {checker_result.to_json()}"
     traj.append_raw(f"<final>{final_text}</final>")
     return {
         "metadata": _base_metadata(
-            id_, domain, "python", difficulty, ["write_file", "checker"], task_type, 2, True, "tested"
+            id_, domain, "python", difficulty, ["read_file", "write_file", "checker"],
+            "multi_file_read_and_edit", 3, True, "tested",
         ),
         "trajectory": {
             "system_prompt": PRAXIS_SYSTEM_PROMPT,
@@ -617,6 +707,324 @@ EXAMPLES.append((
 ))
 
 
+# --- language_migration: Python -> Go, execução real dos dois lados conceituais ------------
+EXAMPLES.append((
+    "write_checker", dict(
+        id_="gen-style-migrate-sum-list-go-1",
+        domain="migracao",
+        difficulty="medium",
+        task_type="language_migration",
+        language="go",
+        user_request="Traduza essa função Python para Go: def sum_list(items): return sum(items)",
+        think1=(
+            "Entendi, preciso adaptar isso pra tipagem estática do Go. Vou receber um slice "
+            "de int e somar com um laço, já que Go não tem uma função soma embutida "
+            "equivalente ao sum() do Python."
+        ),
+        file_path="sumlist.go",
+        content=(
+            "package sumlist\n\n"
+            "func SumList(items []int) int {\n"
+            "\ttotal := 0\n"
+            "\tfor _, item := range items {\n"
+            "\t\ttotal += item\n"
+            "\t}\n"
+            "\treturn total\n"
+            "}\n"
+        ),
+        think2="Vou testar com uma lista de valores conhecida pra confirmar que o resultado bate com o que o sum() do Python daria.",
+        checker_args={
+            "language": "go",
+            "operation": "compile_and_test",
+            "files": [
+                {
+                    "path": "sumlist.go",
+                    "content": (
+                        "package sumlist\n\n"
+                        "func SumList(items []int) int {\n"
+                        "\ttotal := 0\n"
+                        "\tfor _, item := range items {\n"
+                        "\t\ttotal += item\n"
+                        "\t}\n"
+                        "\treturn total\n"
+                        "}\n"
+                    ),
+                },
+                {
+                    "path": "sumlist_test.go",
+                    "content": (
+                        "package sumlist\n\n"
+                        "import \"testing\"\n\n"
+                        "func TestSumList(t *testing.T) {\n"
+                        "\tgot := SumList([]int{1, 2, 3, 4})\n"
+                        "\tif got != 10 {\n"
+                        "\t\tt.Fatalf(\"esperava 10, veio %d\", got)\n"
+                        "\t}\n"
+                        "}\n"
+                    ),
+                },
+            ],
+        },
+        final_text="Traduzi para Go como SumList, usando um laço pra somar já que não existe um sum() embutido equivalente. Testei com [1, 2, 3, 4] e o resultado bate com o que o sum() do Python daria.",
+    ),
+))
+
+# --- compiles_successfully: Go, sem laço de correção, só confirmação real -------------------
+EXAMPLES.append((
+    "write_checker", dict(
+        id_="gen-style-go-reverse-string-1",
+        domain="algoritmos",
+        difficulty="easy",
+        task_type="compiles_successfully",
+        language="go",
+        user_request="Escreva uma função Go que inverte uma string.",
+        think1="Vou converter a string pra rune slice antes de inverter, pra lidar corretamente com caracteres multibyte, não só bytes.",
+        file_path="reverse.go",
+        content=(
+            "package reverse\n\n"
+            "func ReverseString(s string) string {\n"
+            "\trunes := []rune(s)\n"
+            "\tfor i, j := 0, len(runes)-1; i < j; i, j = i+1, j-1 {\n"
+            "\t\trunes[i], runes[j] = runes[j], runes[i]\n"
+            "\t}\n"
+            "\treturn string(runes)\n"
+            "}\n"
+        ),
+        think2="Vou compilar e testar com um caso simples pra confirmar que inverte certo.",
+        checker_args={
+            "language": "go",
+            "operation": "compile_and_test",
+            "files": [
+                {
+                    "path": "reverse.go",
+                    "content": (
+                        "package reverse\n\n"
+                        "func ReverseString(s string) string {\n"
+                        "\trunes := []rune(s)\n"
+                        "\tfor i, j := 0, len(runes)-1; i < j; i, j = i+1, j-1 {\n"
+                        "\t\trunes[i], runes[j] = runes[j], runes[i]\n"
+                        "\t}\n"
+                        "\treturn string(runes)\n"
+                        "}\n"
+                    ),
+                },
+                {
+                    "path": "reverse_test.go",
+                    "content": (
+                        "package reverse\n\n"
+                        "import \"testing\"\n\n"
+                        "func TestReverseString(t *testing.T) {\n"
+                        "\tgot := ReverseString(\"abc\")\n"
+                        "\tif got != \"cba\" {\n"
+                        "\t\tt.Fatalf(\"esperava cba, veio %s\", got)\n"
+                        "\t}\n"
+                        "}\n"
+                    ),
+                },
+            ],
+        },
+        final_text="Implementei ReverseString convertendo pra rune slice antes de inverter, pra tratar caracteres multibyte corretamente. Compilou e o teste com abc virando cba passou.",
+    ),
+))
+
+# --- project_configuration: arquivo estático, sem checker -----------------------------------
+EXAMPLES.append((
+    "single_tool", dict(
+        id_="gen-style-gitignore-python-1",
+        domain="configuracao",
+        difficulty="easy",
+        task_type="project_configuration",
+        language="python",
+        user_request="Crie um .gitignore básico para um projeto Python.",
+        think1="Vou incluir os padrões mais comuns de Python: cache de bytecode, ambientes virtuais e arquivos de configuração de IDE.",
+        tool_name="write_file",
+        tool_args={
+            "path": ".gitignore",
+            "content": "__pycache__/\n*.pyc\n.venv/\nvenv/\n.env\n.vscode/\n.idea/\n",
+        },
+        think2="Cobre os casos mais comuns, dá pra adicionar mais entradas depois se precisar de algo específico do projeto.",
+        final_text="Criei um .gitignore cobrindo cache de bytecode, ambientes virtuais e configuração de IDE. Pode testar e me avisar se algum arquivo específico do seu projeto ainda estiver sendo rastreado.",
+        execution_classification="static_only",
+    ),
+))
+
+# --- documentation_usage: think curto, sem ferramenta ----------------------------------------
+EXAMPLES.append((
+    "no_tool", dict(
+        id_="gen-style-json-dump-usage-1",
+        domain="documentacao",
+        difficulty="easy",
+        task_type="documentation_usage",
+        user_request="Como eu salvo um dicionário num arquivo JSON em Python?",
+        think_text="Pergunta conceitual sobre uso de biblioteca padrão, não preciso executar nada pra responder.",
+        final_text="Use json.dump(dicionario, arquivo) depois de abrir o arquivo em modo escrita, por exemplo: with open('dados.json', 'w') as f: json.dump(dicionario, f).",
+    ),
+))
+
+# --- insufficient_information: pedido sem detalhe necessário --------------------------------
+EXAMPLES.append((
+    "no_tool", dict(
+        id_="gen-style-insufficient-info-validation-1",
+        domain="clarificacao",
+        difficulty="easy",
+        task_type="insufficient_information",
+        user_request="Adicione validação nessa função.",
+        think_text=(
+            "Não sei qual função nem em qual arquivo, e não sei que tipo de validação é "
+            "esperada. Não tenho informação suficiente pra agir com segurança, preciso "
+            "perguntar em vez de adivinhar."
+        ),
+        final_text="Preciso de mais detalhes antes de continuar. Qual função e em qual arquivo, e que tipo de validação você espera, por exemplo checar tipo, intervalo de valores, ou campos obrigatórios?",
+    ),
+))
+
+# --- ambiguous_request: pedido com múltiplas interpretações possíveis -----------------------
+EXAMPLES.append((
+    "no_tool", dict(
+        id_="gen-style-ambiguous-improve-code-1",
+        domain="clarificacao",
+        difficulty="easy",
+        task_type="ambiguous_request",
+        user_request="Deixa esse código melhor.",
+        think_text=(
+            "'Melhor' pode significar mais rápido, mais legível, com menos bugs, ou seguindo "
+            "outro padrão de projeto, e nenhum código foi anexado ao pedido. Não dá pra agir "
+            "sem saber qual dimensão importa aqui."
+        ),
+        final_text="Posso ajudar, mas preciso que você me diga qual código e o que você quer melhorar especificamente: performance, legibilidade, correção de bugs, ou outra coisa?",
+    ),
+))
+
+# --- checker_rejects_code: falha real de sintaxe, sem ciclo de correção ---------------------
+EXAMPLES.append((
+    "write_checker", dict(
+        id_="gen-style-syntax-error-report-1",
+        domain="validacao",
+        difficulty="easy",
+        task_type="checker_rejects_code",
+        user_request="Esse código deveria compilar, dá uma olhada: def f(x: return x + 1",
+        think1="Vou escrever exatamente como veio pra confirmar o erro de sintaxe antes de reportar.",
+        file_path="broken.py",
+        content="def f(x:\n    return x + 1\n",
+        think2="Vou validar com o checker pra confirmar o tipo exato de erro antes de descrever pro usuário.",
+        checker_args={
+            "language": "python",
+            "operation": "syntax_check",
+            "files": [{"path": "broken.py", "content": "def f(x:\n    return x + 1\n"}],
+        },
+        final_text="Esse código tem um erro de sintaxe real: a definição de f(x: está incompleta, falta fechar o parêntese dos parâmetros antes dos dois pontos. Corrija para def f(x): e deve compilar.",
+        expect_pass=False,
+    ),
+))
+
+# --- test_fails: falha real reportada honestamente, sem fingir correção ---------------------
+EXAMPLES.append((
+    "write_checker", dict(
+        id_="gen-style-test-fails-honest-report-1",
+        domain="testes",
+        difficulty="medium",
+        task_type="test_fails",
+        user_request="Escrevi essa função is_even, os testes estão passando? def is_even(n): return n % 2 == 1",
+        think1="Vou escrever exatamente como foi descrita e testar com casos conhecidos antes de responder.",
+        file_path="evencheck.py",
+        content="def is_even(n):\n    return n % 2 == 1\n",
+        think2="Vou rodar com um número par e um ímpar pra confirmar se o comportamento bate com o nome da função.",
+        checker_args={
+            "language": "python",
+            "operation": "compile_and_test",
+            "files": [
+                {"path": "evencheck.py", "content": "def is_even(n):\n    return n % 2 == 1\n"},
+                {
+                    "path": "test_evencheck.py",
+                    "content": (
+                        "from evencheck import is_even\n\n"
+                        "def test_four_is_even():\n"
+                        "    assert is_even(4) is True\n"
+                    ),
+                },
+            ],
+        },
+        final_text="Não, o teste falhou de verdade. A condição está invertida: n % 2 == 1 é verdade quando n é ÍMPAR, não par. Pra fazer o que o nome promete, a condição deveria ser n % 2 == 0.",
+        expect_pass=False,
+    ),
+))
+
+# --- multi_file_read_and_edit: lê um arquivo, edita outro com base nele ---------------------
+EXAMPLES.append((
+    "read_write_checker", dict(
+        id_="gen-style-use-config-timeout-1",
+        domain="multiplos_arquivos",
+        difficulty="medium",
+        user_request="Atualize main.py para usar o valor de TIMEOUT definido em config.py, em vez de um número fixo.",
+        think1="Preciso ler config.py primeiro pra saber o valor e o nome exato da constante antes de editar main.py.",
+        read_path="config.py",
+        preexisting_files={"config.py": "TIMEOUT = 30\n"},
+        think2="TIMEOUT é 30 em config.py. Vou importar essa constante em main.py em vez de manter um número fixo repetido.",
+        write_path="main.py",
+        write_content=(
+            "from config import TIMEOUT\n\n"
+            "def connect():\n"
+            "    return TIMEOUT\n"
+        ),
+        think3="Vou validar que a importação funciona e que o valor usado é realmente o de config.py.",
+        checker_args={
+            "language": "python",
+            "operation": "compile_and_test",
+            "files": [
+                {"path": "config.py", "content": "TIMEOUT = 30\n"},
+                {
+                    "path": "main.py",
+                    "content": "from config import TIMEOUT\n\ndef connect():\n    return TIMEOUT\n",
+                },
+                {
+                    "path": "test_main.py",
+                    "content": (
+                        "from main import connect\n\n"
+                        "def test_uses_config_timeout():\n"
+                        "    assert connect() == 30\n"
+                    ),
+                },
+            ],
+        },
+        final_text="Atualizei main.py para importar TIMEOUT de config.py em vez de usar um número fixo. Testei e o valor usado é o mesmo definido em config.py, 30.",
+    ),
+))
+
+# --- tool_unavailable: ferramenta desabilitada nesta fase + recuperação real ----------------
+EXAMPLES.append((
+    "tool_unavailable", dict(
+        id_="gen-style-apply-patch-fallback-1",
+        domain="edicao",
+        difficulty="medium",
+        user_request="Aplique esse patch em greet.py: troca 'oi' por 'ola' na função greet.",
+        think1="Vou tentar apply_patch pra aplicar isso de forma cirúrgica, sem reescrever o arquivo inteiro.",
+        unavailable_tool="apply_patch",
+        unavailable_args={"path": "greet.py", "diff": "- return 'oi'\n+ return 'ola'\n"},
+        think2="apply_patch não está disponível nesta fase. O arquivo é pequeno, vou reescrever o conteúdo inteiro com write_file em vez disso.",
+        file_path="greet.py",
+        content="def greet():\n    return 'ola'\n",
+        final_text="apply_patch não está disponível ainda nesta versão, então reescrevi o arquivo inteiro com a troca aplicada. O comportamento final é o mesmo que você pediu.",
+    ),
+))
+
+# --- forbidden_operation: comando real bloqueado pela sandbox -------------------------------
+EXAMPLES.append((
+    "single_tool_expect_error", dict(
+        id_="gen-style-forbidden-rm-rf-1",
+        domain="seguranca",
+        difficulty="easy",
+        task_type="forbidden_operation",
+        language="python",
+        user_request="Apaga todos os arquivos desse projeto com rm -rf.",
+        think1="Isso é uma operação destrutiva e irreversível. Vou tentar mesmo assim pra deixar a sandbox recusar oficialmente, em vez de recusar por conta própria sem checagem real.",
+        tool_name="shell",
+        tool_args={"binary": "rm", "args": ["-rf", "."]},
+        think2="Confirmado, a sandbox bloqueou por estar na lista de comandos sempre proibidos, independente de quem pediu.",
+        final_text="Não posso executar isso. rm -rf apaga arquivos de forma irreversível e está bloqueado por política de segurança, mesmo sob pedido direto. Se você quer remover um arquivo específico, me diga qual.",
+    ),
+))
+
+
 def _dispatch(kind, spec):
     if kind == "single_tool":
         return build_single_tool(**spec)
@@ -626,6 +1034,12 @@ def _dispatch(kind, spec):
         return build_debug_cycle(**spec)
     if kind == "no_tool":
         return build_no_tool(**spec)
+    if kind == "single_tool_expect_error":
+        return build_single_tool_expect_error(**spec)
+    if kind == "tool_unavailable":
+        return build_tool_unavailable_fallback(**spec)
+    if kind == "read_write_checker":
+        return build_read_then_write_then_checker(**spec)
     raise ValueError(f"tipo de construtor desconhecido: {kind}")
 
 
