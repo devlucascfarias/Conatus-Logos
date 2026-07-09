@@ -22,7 +22,7 @@ from src.parsers import parse_segments
 from src.parsers.segments import MalformedSegment, ToolCallSegment, ToolResultSegment
 from src.schemas import ToolRegistry
 
-from .schema import validate_metadata
+from .schema import validate_metadata, validate_trajectory
 from .taxonomy import EXECUTION_CLASSIFICATIONS  # noqa: F401  (reexport de conveniência)
 
 REPO_ROOT = Path(__file__).resolve().parent.parent.parent
@@ -84,6 +84,13 @@ def structural_validate(example: dict[str, Any]) -> list[str]:
     problems = []
     metadata_problems = validate_metadata(example.get("metadata", {}))
     problems.extend(f"metadata: {p}" for p in metadata_problems)
+
+    trajectory_problems = validate_trajectory(example.get("trajectory", {}))
+    problems.extend(f"trajectory: {p}" for p in trajectory_problems)
+    if trajectory_problems:
+        # Sem system_prompt/user_request/raw_text bem formados não dá pra parsear segmentos
+        # com segurança (ex.: raw_text pode nem existir) — devolve só os problemas de schema.
+        return problems
 
     segments = parse_segments(example["trajectory"]["raw_text"])
     if not segments:

@@ -1,11 +1,11 @@
 # Plano: wave 2 do dataset — identidade Logos-3/Conatus + generalização multi-turno
 
-Status: **identidade e upgrade de estilo (taxonomia completa, 22/22 task_types) executados em
-2026-07-09** (ver `D-conatus-logos3-identity`, `D-style-upgrade-wave2-pilot`,
-`D-style-upgrade-wave2-round2` e `D-style-upgrade-wave2-round3` em `docs/PLAN.md`). Categorias
-multi-turno ainda **pendentes** — dependem de uma extensão de schema que este documento desenha
-mas não implementa ainda. **Próximo passo combinado com o usuário: atacar essa extensão de
-schema multi-turno.**
+Status: **identidade, upgrade de estilo (taxonomia completa, 22/22 task_types) e item 1 da
+extensão de schema multi-turno executados em 2026-07-09** (ver `D-conatus-logos3-identity`,
+`D-style-upgrade-wave2-pilot`, `D-style-upgrade-wave2-round2`, `D-style-upgrade-wave2-round3` e
+`D-dataset-history-schema` em `docs/PLAN.md`). Categorias multi-turno em si (geração dos
+exemplos) ainda **pendentes** — o schema já suporta `history`, mas falta o item 2 (máscara de
+loss no pipeline de treino) antes de gerar essas categorias de verdade.
 
 ## 1. Motivação
 
@@ -52,25 +52,60 @@ já suportado) e tem efeito imediato sobre TODO o dataset existente (o `system_p
 texto repetido literalmente em cada exemplo, não uma referência), então era o item de maior
 alavancagem por esforço.
 
-## 4. Extensão de schema necessária para as categorias multi-turno (desenhada, não implementada)
+## 4. Extensão de schema necessária para as categorias multi-turno
 
-O formato canônico atual (`src/dataset/schema.py`, PLAN.md seção 3) só representa um turno:
+Status: **item 1 (schema + suporte real em `Trajectory`) IMPLEMENTADO em 2026-07-09** — ver
+`D-dataset-history-schema` em `docs/PLAN.md`. **Item 2 (máscara de loss no pipeline de treino)
+continua PENDENTE** — não foi tocado, não foi nem investigado ainda.
+
+O formato canônico atual (`src/dataset/schema.py`, PLAN.md seção 3) só representava um turno:
 `trajectory: {system_prompt, user_request, raw_text}`. A CLI já resolve isso em produção
 concatenando turnos anteriores no mesmo formato `[USER]/[ASSISTANT]` usado pelo modelo
-(`cli/internal/agent/agent.go`, `Run(..., history []Turn, ...)`), mas o dataset de treino não
-tem como representar isso ainda.
+(`cli/internal/agent/agent.go`, `Run(..., history []Turn, ...)`).
 
-Proposta: campo opcional `trajectory.history`, lista de `{user_request, raw_text}` (mesmo
-formato de `agent.Turn` no lado Go), mantendo `user_request`/`raw_text` de topo como o turno
-ATUAL (o que efetivamente entra na loss). Ausente ou vazio = comportamento de hoje (sem
-histórico). Isso espelha exatamente `Trajectory.render_for_model`/`agent.Run`: o prompt
-completo vira `system_prompt + history_concatenada + "[USER]\n{user_request}\n[ASSISTANT]\n{raw_text}"`.
+**Implementado**: campo opcional `trajectory.history`, lista de `{user_request, raw_text}`
+(mesmo formato de `agent.Turn` no lado Go), mantendo `user_request`/`raw_text` de topo como o
+turno ATUAL (o que efetivamente entraria na loss, quando o item 2 existir). Ausente ou vazio =
+comportamento de hoje (sem histórico) — verificado contra os ~3706 exemplos já existentes no
+dataset, 0 regressões.
 
-**Trabalho pendente antes de gerar essas categorias**: a máscara de loss (o notebook/pipeline
-de treino) precisa saber ignorar TODO o conteúdo de `history` (é contexto, não algo que o
-modelo deveria aprender a reproduzir fresco) e mascarar dentro do turno atual exatamente como
-já faz hoje (só `think`/`tool_call`/`final` gerados pelo modelo, nunca `tool_result`). Isso não
-foi tocado nesta sessão — é um pré-requisito real antes da próxima leva.
+- `TRAJECTORY_SCHEMA`/`validate_trajectory` (`src/dataset/schema.py`) — só exige `raw_text`
+  (o único campo que `structural_validate` sempre leu direto do dict; exigir os outros
+  quebraria testes/exemplos parciais já existentes que só têm `raw_text`), valida tipo de
+  `system_prompt`/`user_request` quando presentes, e valida a forma de cada item de `history`
+  (`user_request`/`raw_text` obrigatórios e não vazios).
+- `structural_validate` (`src/dataset/pipeline.py`) agora chama `validate_trajectory` antes de
+  parsear segmentos — um `raw_text` ausente vira erro de validação claro (`"trajectory: ..."`)
+  em vez de `KeyError`.
+- `Trajectory`/`HistoryTurn` (`src/harness/trajectory.py`): `Trajectory.history: list[HistoryTurn]`
+  (default vazio). `render_for_model()` agora prepende os turnos de `history` no MESMO formato
+  `[USER]/[ASSISTANT]` que `agent.Run` já usa em produção — testado byte a byte contra o
+  formato exato da CLI Go. `to_example_dict()` novo, serializa pro formato canônico do dataset,
+  omitindo `history` quando vazio (mantém exemplos de turno único idênticos a antes).
+
+Exemplo de uso num gerador futuro (mesmo padrão dos `scripts/gen_*_pilot.py` já existentes):
+
+```python
+from src.harness import HistoryTurn, Trajectory
+
+turno1 = Trajectory(system_prompt=PRAXIS_SYSTEM_PROMPT, user_request="qual seu nome?")
+turno1.append_raw("<final>Sou o Logos-3.</final>")
+
+turno2 = Trajectory(
+    system_prompt=PRAXIS_SYSTEM_PROMPT,
+    user_request="e quanto é 2+2?",
+    history=[HistoryTurn(user_request=turno1.user_request, raw_text=turno1.raw_text)],
+)
+turno2.append_raw("<final>4.</final>")
+
+example = {"metadata": {...}, "trajectory": turno2.to_example_dict()}
+```
+
+**Trabalho ainda pendente antes de gerar as categorias multi-turno (item 2)**: a máscara de
+loss (o notebook/pipeline de treino) precisa saber ignorar TODO o conteúdo de `history` (é
+contexto, não algo que o modelo deveria aprender a reproduzir fresco) e mascarar dentro do
+turno atual exatamente como já faz hoje (só `think`/`tool_call`/`final` gerados pelo modelo,
+nunca `tool_result`). Isso ainda não foi tocado nem investigado — é o próximo passo.
 
 ## 5. Regras de conteúdo (herdadas do spec amadurecido em conversa, reafirmadas aqui)
 
@@ -221,7 +256,17 @@ padrão não foram tocados aqui (fora de escopo desta wave, registrado para limp
       técnica)
 - [x] Rodar suite de testes Python de novo após cada rodada do lote de estilo (138/138,
       ignorando o teste pré-existente e não relacionado do `trl`)
-- [ ] Categorias multi-turno (mudança abrupta, pedido tardio) — **próximo passo, pendente**,
-      depende da extensão de schema da seção 4 e do trabalho de máscara de loss no pipeline de
-      treino, nenhum dos dois implementado ainda
+- [x] **Item 1 da extensão de schema multi-turno**: `TRAJECTORY_SCHEMA`/`validate_trajectory`
+      (`src/dataset/schema.py`), integração em `structural_validate`
+      (`src/dataset/pipeline.py`), `HistoryTurn`/`Trajectory.history`/`render_for_model` com
+      histórico/`to_example_dict` (`src/harness/trajectory.py`) — seção 4
+- [x] Testar a extensão de schema (17 testes novos, `tests/unit/test_dataset_history_schema.py`)
+      e confirmar 0 regressões nos ~3706 exemplos já existentes no dataset (varredura completa,
+      não amostral)
+- [x] Rodar suite de testes Python de novo após a extensão de schema (155/155, ignorando o
+      teste pré-existente do `trl`)
+- [ ] **Item 2 da extensão de schema multi-turno**: máscara de loss no pipeline/notebook de
+      treino pra ignorar `history` — **PENDENTE, não investigado ainda, é o próximo passo**
+- [ ] Categorias multi-turno em si (mudança abrupta, pedido tardio) — pendente, depende do
+      item 2 acima
 - [x] Atualizar `docs/PLAN.md`, commit

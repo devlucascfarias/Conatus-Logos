@@ -2,7 +2,16 @@
 
 Só o harness escreve `<tool_result>` na trajetória (via `append_tool_result`); o modelo nunca
 deveria produzir essa tag (seção 3.2) — é isso que torna `contains_fabricated_tool_result`
-(src.parsers) uma checagem válida sobre o texto cru gerado antes de ele ser anexado aqui."""
+(src.parsers) uma checagem válida sobre o texto cru gerado antes de ele ser anexado aqui.
+
+D-dataset-history-schema (docs/plan_dataset_expansion_wave2_identity_multiturn.md seção 4):
+`history` representa turnos JÁ CONCLUÍDOS da mesma sessão — mesmo papel que `agent.Turn`/
+`Run(..., history []Turn, ...)` do lado da CLI Go (`cli/internal/agent/agent.go`).
+`render_for_model` concatena esses turnos no prompt no MESMO formato `[USER]/[ASSISTANT]` que
+a CLI já usa em produção — divergir esse formato entre os dois lados recriaria o tipo de
+mismatch treino/inferência que `D-train-prompt-mask` corrigiu uma vez. `history` é só contexto
+de entrada: nunca deveria entrar na loss de treino (isso é responsabilidade do pipeline de
+treino/collator, ainda não implementada — ver seção 4 do plano)."""
 
 from __future__ import annotations
 
@@ -14,18 +23,34 @@ from src.parsers import Segment, parse_segments
 
 
 @dataclass
+class HistoryTurn:
+    """Um turno já concluído — `user_request` é o pedido, `raw_text` é a trajetória COMPLETA
+    gerada pro turno (com `<think>`/`<tool_call>`/`<tool_result>`/`<final>`, não só a resposta
+    final), porque é esse o formato que o `[ASSISTANT]` sempre teve durante o treino."""
+
+    user_request: str
+    raw_text: str
+
+
+@dataclass
 class Trajectory:
     system_prompt: str
     user_request: str
     raw_text: str = ""
     forced_final_reason: Optional[str] = None
+    history: list[HistoryTurn] = field(default_factory=list)
 
     def render_for_model(self) -> str:
         """Texto completo que vira o prompt de continuação para o Model Runner (seção 3.6/6).
 
         Modela a decisão D2: tool calling multi-etapa é UMA mensagem assistant contínua — o
-        harness nunca monta múltiplos turnos de chat com role 'tool', só concatena texto."""
-        return f"{self.system_prompt}\n\n[USER]\n{self.user_request}\n\n[ASSISTANT]\n{self.raw_text}"
+        harness nunca monta múltiplos turnos de chat com role 'tool', só concatena texto.
+        Turnos de `history` (se houver) entram ANTES do turno atual, no mesmo formato
+        `[USER]/[ASSISTANT]` — espelha `agent.Run`'s `historyPrefix` byte a byte."""
+        history_prefix = "".join(
+            f"\n\n[USER]\n{turn.user_request}\n\n[ASSISTANT]\n{turn.raw_text}" for turn in self.history
+        )
+        return f"{self.system_prompt}{history_prefix}\n\n[USER]\n{self.user_request}\n\n[ASSISTANT]\n{self.raw_text}"
 
     def append_raw(self, text: str) -> None:
         self.raw_text += text
@@ -41,3 +66,17 @@ class Trajectory:
 
     def segments(self) -> list[Segment]:
         return parse_segments(self.raw_text)
+
+    def to_example_dict(self) -> dict[str, Any]:
+        """Corpo de `trajectory` no formato canônico do dataset (`src/dataset/schema.py`,
+        `TRAJECTORY_SCHEMA`) — `history` só entra no dict quando não está vazio, pra manter o
+        formato de exemplos de turno único idêntico ao que já existia (D-dataset-history-schema:
+        "Ausente ou vazio = comportamento de hoje")."""
+        body: dict[str, Any] = {
+            "system_prompt": self.system_prompt,
+            "user_request": self.user_request,
+            "raw_text": self.raw_text,
+        }
+        if self.history:
+            body["history"] = [{"user_request": t.user_request, "raw_text": t.raw_text} for t in self.history]
+        return body
