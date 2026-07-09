@@ -609,7 +609,7 @@ func detectOpenSegment(tail string) (kind segments.Kind, toolName, status, body 
 func renderSegment(seg segments.Segment) string {
 	switch seg.Kind {
 	case segments.KindFinal:
-		return styleFinalBody.Render(strings.TrimSpace(seg.Body))
+		return renderFinalBody(strings.TrimSpace(seg.Body))
 	default:
 		return strings.TrimSpace(seg.Body)
 	}

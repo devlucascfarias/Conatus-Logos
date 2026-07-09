@@ -28,6 +28,12 @@ var (
 	styleFinalLabel = lipgloss.NewStyle().Foreground(colorWoodLabel).Bold(true)
 	styleFinalBody  = lipgloss.NewStyle().Foreground(colorAgentText).PaddingLeft(2)
 
+	// styleCodeGutter é só a coluna de número de linha dos blocos de código markdown
+	// (```lang ... ```) — o código em si é colorido pelo destaque de sintaxe real do chroma,
+	// não por essa paleta.
+	styleCodeGutter  = lipgloss.NewStyle().Foreground(colorStatus).PaddingLeft(2)
+	styleCodeLangTag = lipgloss.NewStyle().Foreground(colorWoodLabel).Italic(true).PaddingLeft(2)
+
 	styleUserBody = lipgloss.NewStyle().Foreground(colorWoodBase).Bold(true)
 
 	styleViewport = lipgloss.NewStyle().
