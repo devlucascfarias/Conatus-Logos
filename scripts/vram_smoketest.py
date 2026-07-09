@@ -17,6 +17,16 @@ Uso:
 
 from __future__ import annotations
 
+import os
+
+# D-cuda-fragmentation (mesmo achado do notebook, cél. 4, notebooks/train_granite_l4.ipynb):
+# precisa ser definida ANTES de qualquer import de torch/CUDA — sem isso, o caching allocator
+# do PyTorch acumula memória "reservada mas não alocada" e pode bater OutOfMemoryError mesmo
+# com VRAM livre suficiente em teoria (confirmado de novo aqui na A2000: erro real reportou
+# 9.35 GiB em uso mas só 7.80 GiB de fato alocado pelo PyTorch, 1.43 GiB reservados e
+# desperdiçados por fragmentação). expandable_segments evita esse desperdício.
+os.environ.setdefault("PYTORCH_CUDA_ALLOC_CONF", "expandable_segments:True")
+
 import argparse
 import glob
 import json
