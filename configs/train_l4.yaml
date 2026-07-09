@@ -52,11 +52,15 @@ training:
   seed: 42
 
 evaluation:
-  # Recalculado para bater com ~90 passos totais (3 épocas x ~30 passos/época num dataset de
-  # ~465 exemplos de treino, seção 15). Se o dataset mudar de tamanho, ajuste proporcionalmente
-  # (ideal: checkpoint a cada meia época, aprox.).
-  eval_steps: 15
-  save_steps: 15
+  # Recalibrado em 2026-07-09: data/train cresceu de ~465 para 2455 exemplos (wave 2 — ver
+  # docs/plan_dataset_expansion_wave2_identity_multiturn.md) e o valor antigo (eval_steps=15,
+  # calibrado pra ~90 passos totais) ficou obsoleto. Com lote efetivo 16
+  # (batch_size_per_device x gradient_accumulation_steps) e 2455 exemplos, são ~153
+  # passos/época, ~460 passos totais em 3 épocas — checkpoint a cada meia época (~76 passos,
+  # mesma regra "ideal" já documentada aqui antes). Se o dataset mudar de tamanho de novo,
+  # ajuste proporcionalmente.
+  eval_steps: 76
+  save_steps: 76
   save_total_limit: 3
 
 paths:

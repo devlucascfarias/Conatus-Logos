@@ -52,8 +52,10 @@ training:
   seed: 42
 
 evaluation:
-  eval_steps: 15
-  save_steps: 15
+  # Mesma recalibração de train_l4.yaml — data/train tem 2455 exemplos hoje, não os ~465
+  # assumidos no valor antigo (eval_steps=15). ~76 passos = meia época com lote efetivo 16.
+  eval_steps: 76
+  save_steps: 76
   save_total_limit: 3
 
 paths:
