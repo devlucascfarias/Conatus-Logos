@@ -43,6 +43,14 @@ def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--config", default=str(REPO_ROOT / "configs" / "train_a2000_smoketest.yaml"))
     parser.add_argument("--num-examples", type=int, default=3, help="quantos exemplos reais de data/train usar no lote de teste")
+    parser.add_argument(
+        "--longest", action="store_true",
+        help=(
+            "usa os N maiores exemplos de data/train (por tamanho de raw_text bruto, proxy pra "
+            "contagem de tokens) em vez dos primeiros por ordem alfabética — mede o PIOR caso "
+            "real (lote com sequências batendo no teto de truncamento), não um caso médio."
+        ),
+    )
     args = parser.parse_args()
 
     import torch
@@ -104,11 +112,19 @@ def main() -> None:
 
     # Carrega alguns exemplos REAIS de data/train (não dado sintético) pra montar um lote de
     # teste com o mesmo formato/tamanho de trajetória que o treino de verdade usaria.
-    example_paths = sorted(glob.glob(str(REPO_ROOT / config.train_path / "*.json")))[: args.num_examples]
-    if not example_paths:
+    all_paths = glob.glob(str(REPO_ROOT / config.train_path / "*.json"))
+    if not all_paths:
         raise SystemExit(f"Nenhum exemplo encontrado em {config.train_path}")
+    if args.longest:
+        all_paths.sort(key=lambda p: Path(p).stat().st_size, reverse=True)
+        print(f"Modo --longest: usando os {args.num_examples} maiores exemplos (pior caso de padding/truncamento).")
+    else:
+        all_paths.sort()
+    example_paths = all_paths[: args.num_examples]
     trajectories = [json.loads(Path(p).read_text(encoding="utf-8"))["trajectory"] for p in example_paths]
     print(f"Usando {len(trajectories)} exemplos reais de {config.train_path} pro passo de teste.")
+    for p in example_paths:
+        print(f"  - {Path(p).name}")
 
     dataset = build_pretokenized_dataset(trajectories, tokenizer, max_length=config.sequence_length)
     collator = TrajectoryDataCollator(tokenizer)
