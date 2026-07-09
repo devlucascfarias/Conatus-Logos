@@ -24,3 +24,11 @@ datasets>=2.19
 # time (confirmed: "Found version 0.10.0, but only versions above 0.16.0 are supported").
 # Pinning >=0.16.0 here keeps a fresh `pip install -r requirements-train.txt` clean.
 torchao>=0.16.0
+
+# D-notebook-local-exec: só necessários fora do Colab (que já traz um Jupyter completo
+# pré-instalado). Rodar o notebook via `jupyter nbconvert --execute` numa máquina local/remota
+# (ex.: RTX A2000, ver configs/train_a2000.yaml) precisa dos dois pacotes abaixo — sem
+# `ipykernel`, o `ExecutePreprocessor` não acha um kernel "python3" registrado pra rodar as
+# células. Não pinados (não fazem parte do treino em si, versão recente é sempre segura aqui).
+nbconvert
+ipykernel
