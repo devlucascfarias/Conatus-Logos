@@ -11,8 +11,8 @@ da seção 11.3 do PLAN.md (~4-8 GB, "depende de profiling real"), e é exatamen
 script mede de fato, em vez de estimar.
 
 Uso:
-    python scripts/vram_smoketest.py --config configs/train_a2000_smoketest.yaml
-    python scripts/vram_smoketest.py --config configs/train_a2000_smoketest.yaml --num-examples 5
+    python scripts/vram_smoketest.py --config configs/train_a2000.yaml
+    python scripts/vram_smoketest.py --config configs/train_a2000.yaml --num-examples 5
 """
 
 from __future__ import annotations

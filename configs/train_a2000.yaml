@@ -1,0 +1,73 @@
+# Config de treino real pra RTX A2000 12GB — promovida de train_a2000_smoketest.yaml depois de
+# validação real com scripts/vram_smoketest.py --longest --num-examples 1 (pico medido: 9.49 GB
+# alocado / 10.79 GB reservado, sequence_length=1536, cabe com margem apertada considerando que
+# essa GPU também roda o desktop gráfico da máquina, ~1.37 GB usados por Xorg/GNOME Shell/apps —
+# feche VS Code/navegador antes de rodar o treino completo pra ter mais folga).
+#
+# Use com o notebook via a variável de ambiente TRAIN_CONFIG_PATH (ver notebooks/
+# train_granite_l4.ipynb, célula 4):
+#
+#   TRAIN_CONFIG_PATH=configs/train_a2000.yaml jupyter nbconvert --to notebook --execute \
+#       --inplace notebooks/train_granite_l4.ipynb
+#
+# sequence_length reduzido de 4096 (baseline L4, seção 11.3 do PLAN.md) pra 1536 — afeta só os
+# ~10 exemplos desproporcionalmente grandes (gen-hyprevision-*, 13-15KB) de ~2455 em
+# data/train, perda de sinal de treino desprezível.
+
+version: 1
+
+model:
+  base_model: "ibm-granite/granite-4.1-8b"
+  load_in_4bit: true
+  bnb_4bit_quant_type: "nf4"
+  bnb_4bit_compute_dtype: "bfloat16"
+  bnb_4bit_use_double_quant: true
+
+lora:
+  r: 16
+  alpha: 32
+  dropout: 0.05
+  target_modules:
+    - "q_proj"
+    - "k_proj"
+    - "v_proj"
+    - "o_proj"
+    - "gate_proj"
+    - "up_proj"
+    - "down_proj"
+
+data:
+  train_path: "data/train"
+  validation_path: "data/validation"
+  sequence_length: 1536
+  group_by_length: true
+
+training:
+  batch_size_per_device: 1
+  gradient_accumulation_steps: 16
+  learning_rate: 2.0e-4
+  lr_scheduler_type: "cosine"
+  warmup_ratio: 0.03
+  num_train_epochs: 3
+  max_steps: -1
+  optim: "paged_adamw_8bit"
+  gradient_checkpointing: true
+  seed: 42
+
+evaluation:
+  # data/train tem 2455 exemplos hoje — ~76 passos = meia época com lote efetivo 16
+  # (batch_size_per_device x gradient_accumulation_steps). Ver mesma nota em train_l4.yaml.
+  eval_steps: 76
+  save_steps: 76
+  save_total_limit: 3
+
+paths:
+  output_dir: "outputs/checkpoints"
+  logs_dir: "outputs/logs"
+  adapter_dir: "outputs/adapter"
+  drive_mount_point: "/content/drive"   # não usado (run_on_colab: false)
+
+runtime:
+  run_on_colab: false
+  require_gpu_name_contains: "A2000"
+  mixed_precision: "bf16"
