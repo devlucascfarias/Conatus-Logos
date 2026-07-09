@@ -11,11 +11,14 @@ type rgb [3]int
 
 var (
 	rgbGlowWhite = rgb{255, 255, 255}
-	rgbWoodBase  = rgb{216, 195, 154} // #D8C39A — bege/madeira claro, cor "assentada"
+	// rgbGlowSettle é só o tom pro RASTRO ainda em digitação (dá o efeito de "esfriar") —
+	// o texto do agente já assentado (segmento fechado, renderClosedTrajectory) é branco
+	// puro de verdade, não esse cinza; ele só aparece no meio da animação de digitação.
+	rgbGlowSettle = rgb{195, 195, 195}
 )
 
 // glowTrailLen é quantos runes finais do texto ainda em digitação recebem o gradiente —
-// o resto (mais antigo) já renderiza na cor bege assentada, sem gradiente.
+// o resto (mais antigo, mas ainda não fechado) já renderiza na cor de rastro assentada.
 const glowTrailLen = 10
 
 func hexOf(c rgb) string {

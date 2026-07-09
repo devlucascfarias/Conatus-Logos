@@ -58,7 +58,7 @@ func New(client *ollamaclient.Client) Model {
 	// sobrescrever isso explicitamente, ela vaza por cima da paleta bege/madeira.
 	ti.PromptStyle = lipgloss.NewStyle().Foreground(colorWoodLabel)
 	ti.TextStyle = lipgloss.NewStyle().Foreground(colorWoodBase)
-	ti.PlaceholderStyle = lipgloss.NewStyle().Foreground(colorWoodMuted)
+	ti.PlaceholderStyle = lipgloss.NewStyle().Foreground(colorStatus)
 	ti.Cursor.Style = lipgloss.NewStyle().Foreground(colorWoodLabel)
 	ti.Cursor.TextStyle = lipgloss.NewStyle().Foreground(colorWoodBase)
 
@@ -310,7 +310,7 @@ func renderLiveTrajectory(rawText string, glowing bool) string {
 		// Ainda digitando a própria tag de abertura (ex.: "<thi") — não dá pra saber o
 		// tipo ainda, mostra só o rastro cru por um instante muito breve.
 		if glowing {
-			blocks = append(blocks, renderGlowTail(tail, rgbWoodBase))
+			blocks = append(blocks, renderGlowTail(tail, rgbGlowSettle))
 		} else {
 			blocks = append(blocks, styleThinkBody.Render(tail))
 		}
@@ -319,7 +319,7 @@ func renderLiveTrajectory(rawText string, glowing bool) string {
 
 	label, bodyText := labelAndBodyFor(kind, toolName, status, body)
 	if glowing {
-		glowed := renderGlowTail(bodyText, rgbWoodBase)
+		glowed := renderGlowTail(bodyText, rgbGlowSettle)
 		if label != "" {
 			glowed = label + "\n" + glowed
 		}
