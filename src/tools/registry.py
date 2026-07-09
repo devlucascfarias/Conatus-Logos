@@ -14,6 +14,7 @@ from .executors import (
     checker_tool,
     list_files_tool,
     read_file_tool,
+    search_code_tool,
     shell_tool,
     web_search_tool,
     write_file_tool,
@@ -27,6 +28,7 @@ _DEFAULT_EXECUTORS: dict[str, ExecutorFn] = {
     "write_file": write_file_tool.execute,
     "list_files": list_files_tool.execute,
     "shell": shell_tool.execute,
+    "search_code": search_code_tool.execute,
     "web_search": web_search_tool.execute,
 }
 

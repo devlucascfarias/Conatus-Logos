@@ -15,9 +15,15 @@ def test_all_mvp_tools_enabled(registry: ToolRegistry):
     assert {"checker", "read_file", "write_file", "list_files", "shell"} <= enabled_names
 
 
-def test_phase2_tools_disabled_per_D5(registry: ToolRegistry):
+def test_search_code_reenabled_per_frontend_pivot(registry: ToolRegistry):
+    # D-frontend-pivot-model-swap: search_code saiu do escopo "fase 2 / D5 adiada" — reativada
+    # para a dimensão "reuse-before-create" do think técnico de frontend (docs/
+    # plan_frontend_specialization_wave3.md seção 4).
+    assert registry.get("search_code") is not None
+
+
+def test_remaining_phase2_tools_still_disabled_per_D5(registry: ToolRegistry):
     assert registry.get("apply_patch") is None
-    assert registry.get("search_code") is None
     assert registry.get("git_diff") is None
 
 
@@ -108,3 +114,13 @@ def test_shell_requires_binary_and_args(registry: ToolRegistry):
 def test_shell_timeout_bounds(registry: ToolRegistry):
     assert registry.validate_args("shell", {"binary": "ls", "args": [], "timeout_ms": 50}) != []
     assert registry.validate_args("shell", {"binary": "ls", "args": [], "timeout_ms": 5000}) == []
+
+
+def test_search_code_requires_pattern(registry: ToolRegistry):
+    assert registry.validate_args("search_code", {}) != []
+    assert registry.validate_args("search_code", {"pattern": "Button"}) == []
+
+
+def test_search_code_optional_path_and_regex(registry: ToolRegistry):
+    args = {"pattern": "className=\"btn", "path": "src", "regex": True}
+    assert registry.validate_args("search_code", args) == []

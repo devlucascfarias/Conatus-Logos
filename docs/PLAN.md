@@ -84,7 +84,8 @@ por probes automatizados (não por inspeção manual de exemplos soltos).
 | D2 | Tool calling multi-etapa = uma única mensagem assistant contínua, não múltiplos turnos de role "tool" | Desacopla o harness do template de chat de qualquer backend específico | Decisão fundamentada |
 | D3 | Checker é uma biblioteca única compartilhada por runtime, validação de dataset e avaliação | Evita divergência entre "o que valida o dataset" e "o que valida em produção" | Decisão fundamentada |
 | D4 | MVP = Python + Go (não Python+JS+Go+Rust) | Reduz superfície de toolchains no dia 1 sem perder o teste "linguagem dinâmica vs compilada" | **[HIPÓTESE]**, revisar após M2 |
-| D5 | MVP tools = `checker`, `read_file`, `write_file`, `list_files`, `shell` | `search_code`/`git_diff` são compostos triviais via `shell`; `apply_patch` adia risco de aplicação incorreta de diff | **[HIPÓTESE]** |
+| D5 | MVP tools = `checker`, `read_file`, `write_file`, `list_files`, `shell` | `search_code`/`git_diff` são compostos triviais via `shell`; `apply_patch` adia risco de aplicação incorreta de diff | **[HIPÓTESE]**, revisada por D-search-code-reenable |
+| D-search-code-reenable | `search_code` reativada (`configs/tools_registry.yaml`, `enabled: true`), executor real em `src/tools/executors/search_code_tool.py` (busca texto/regex em Python puro, sem depender de `grep`/`rg` no PATH) | Pivô de frontend (docs/plan_frontend_specialization_wave3.md seção 4): o think técnico ganhou a dimensão "reuse-before-create" — checar se já existe um componente/token antes de criar um novo, evitando duplicação e código morto. Compor via `shell`+`grep` (razão original de D5) não é portável nem confiável fora de Linux/Colab | Decisão fundamentada |
 | D6 | Sandbox de execução = subprocess isolado com rlimits + diretório de trabalho descartável, não Docker | Colab não garante Docker-in-Docker confiável; subprocess+rlimit+chroot-lite é suficiente para o MVP | **[HIPÓTESE]**, revisitar se ameaça de escape for relevante em produção |
 | D7 | Loss é mascarado (label = -100) em todo texto que não foi gerado pelo assistente: prompts de usuário, system prompt e blocos `<tool_result>` | Sem isso o modelo aprende a "prever" resultados de ferramenta, o oposto do requisito anti-fabricação | Decisão fundamentada |
 | D8 | Sem sequence packing na v1; usar `group_by_length` | Packing multi-exemplo exige máscara de atenção por segmento para não vazar contexto entre exemplos; complexidade adiada | **[HIPÓTESE]** — `group_by_length` teve que ser removido de `TrainingArguments` no notebook (transformers 5.x não aceita mais esse kwarg, `TypeError` confirmado rodando no Colab); treino segue sem agrupamento por tamanho por enquanto, sem afetar correção |
@@ -412,16 +413,43 @@ de motor no futuro é mudar a config, não o código chamador. Falha de rede/con
 `SANDBOX_ERROR` (não é tratada como comportamento incorreto do modelo — a ferramenta estava
 disponível e o modelo a usou corretamente, o problema é externo).
 
-### 4.7 Fase 2+: `apply_patch`, `search_code`, `git_diff` (esboço de contrato, desabilitadas — D5)
+### 4.7 `search_code` (habilitada — D-search-code-reenable)
+
+```json
+{
+  "name": "search_code",
+  "version": "1.0",
+  "input_schema": {
+    "type": "object",
+    "required": ["pattern"],
+    "properties": {
+      "pattern": {"type": "string", "minLength": 1},
+      "path": {"type": "string", "default": "."},
+      "regex": {"type": "boolean", "default": false}
+    }
+  },
+  "requires_confirmation": false,
+  "side_effects": "read"
+}
+```
+
+Executor real (`src/tools/executors/search_code_tool.py`) percorre o workspace em Python puro
+(sem depender de `grep`/`rg` no PATH), casando texto literal ou regex por linha. Saída:
+
+```json
+{"matches": [{"path": "src/Button.tsx", "line": 2, "text": "..."}], "truncated": false}
+```
+
+`truncated: true` sinaliza que o limite de 200 ocorrências foi atingido (evita despejar um
+repositório inteiro numa única chamada); o modelo deve refinar `pattern`/`path` em vez de
+assumir que viu tudo.
+
+### 4.8 Fase 2+: `apply_patch`, `git_diff` (esboço de contrato, ainda desabilitadas — D5)
 
 ```json
 // apply_patch — fase 2
 {"input_schema": {"type": "object", "required": ["path", "diff"],
   "properties": {"path": {"type": "string"}, "diff": {"type": "string", "description": "unified diff"}}}}
-
-// search_code — fase 2
-{"input_schema": {"type": "object", "required": ["pattern"],
-  "properties": {"pattern": {"type": "string"}, "path": {"type": "string", "default": "."}, "regex": {"type": "boolean", "default": false}}}}
 
 // git_diff — fase 2
 {"input_schema": {"type": "object", "properties": {"path": {"type": "string", "default": "."}, "staged": {"type": "boolean", "default": false}}}}
@@ -1244,6 +1272,9 @@ múltiplas toolchains simultâneas. JS/TS entra na fase 2; SQL, Shell/Bash e HTM
 allowlist; `apply_patch` carrega risco de aplicação incorreta de diff que não vale a pena
 resolver antes de o loop básico (chamar → validar → corrigir) estar provado. `git_diff` também
 vira um uso de `git status`/`git diff` via `shell`. `web_search` usa `MockSearchBackend`.
+
+*(Registro histórico da decisão original — `search_code` foi reativada depois, ver
+D-search-code-reenable na seção 2 e seção 4.7. `apply_patch`/`git_diff` continuam adiadas.)*
 
 ### 15.3 O que o MVP precisa provar (herda diretamente a lista do usuário)
 

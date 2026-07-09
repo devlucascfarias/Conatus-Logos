@@ -48,8 +48,11 @@ tools:
     side_effects: "write"
     requires_confirmation: false
 
+  # D-frontend-pivot-model-swap: reativada — dimensão "reuse-before-create" do think técnico de
+  # frontend precisa checar componentes/tokens já existentes antes de criar novos (docs/
+  # plan_frontend_specialization_wave3.md seção 4). Executor: src/tools/executors/search_code_tool.py.
   search_code:
-    enabled: false
+    enabled: true
     version: "1.0"
     schema_path: "search_code.json"
     side_effects: "read"
