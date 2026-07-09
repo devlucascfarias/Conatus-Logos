@@ -13,6 +13,11 @@ outputs/logs/
 outputs/adapter/
 outputs/*.json
 
+# Modelos exportados/mergeados para inferência local (GGUF, zips de adapter) — grandes,
+# baixados manualmente do Drive pra raiz do repo durante o trabalho de export/quantização
+*.gguf
+*.zip
+
 # Notebooks — checkpoints do Jupyter
 .ipynb_checkpoints/
 
