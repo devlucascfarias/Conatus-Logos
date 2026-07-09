@@ -5,6 +5,8 @@ import (
 	"encoding/json"
 	"net/http"
 	"net/http/httptest"
+	"os"
+	"path/filepath"
 	"strings"
 	"testing"
 
@@ -41,7 +43,7 @@ func TestRunSendsNoHistoryPrefixOnFirstTurn(t *testing.T) {
 
 	client := ollamaclient.New("logos-v2", srv.URL)
 	events := make(chan Event)
-	go Run(context.Background(), client, "olá", nil, events)
+	go Run(context.Background(), client, "olá", nil, t.TempDir(), events)
 	drain(events)
 
 	wantPrefix := SystemPrompt + "\n\n[USER]\nolá\n\n[ASSISTANT]\n"
@@ -60,7 +62,7 @@ func TestRunIncludesFullRawTextOfPastTurnsInPrompt(t *testing.T) {
 		{UserRequest: "primeiro pedido", RawText: "<think>pensei</think><final>primeira resposta</final>"},
 	}
 	events := make(chan Event)
-	go Run(context.Background(), client, "segundo pedido", history, events)
+	go Run(context.Background(), client, "segundo pedido", history, t.TempDir(), events)
 	drain(events)
 
 	if !strings.Contains(capturedPrompt, "primeiro pedido") {
@@ -80,7 +82,7 @@ func TestRunEmitsContextTokensFromRealPromptEvalCount(t *testing.T) {
 
 	client := ollamaclient.New("logos-v2", srv.URL)
 	events := make(chan Event)
-	go Run(context.Background(), client, "olá", nil, events)
+	go Run(context.Background(), client, "olá", nil, t.TempDir(), events)
 	got := drain(events)
 
 	found := false
@@ -95,13 +97,16 @@ func TestRunEmitsContextTokensFromRealPromptEvalCount(t *testing.T) {
 }
 
 func TestRunUnsupportedToolInjectsRealHarnessErrorFormat(t *testing.T) {
+	// "checker" ainda não está registrado em tools.Registry — path certo pra exercitar o
+	// fallback UNSUPPORTED_TOOL (diferente de write_file/read_file/list_files, que agora
+	// executam de verdade).
 	calls := 0
 	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		calls++
 		enc := json.NewEncoder(w)
 		if calls == 1 {
 			_ = enc.Encode(map[string]any{
-				"response": `<tool_call name="write_file">{}</tool_call>`, "done": true, "done_reason": "stop",
+				"response": `<tool_call name="checker">{}</tool_call>`, "done": true, "done_reason": "stop",
 			})
 			return
 		}
@@ -111,19 +116,116 @@ func TestRunUnsupportedToolInjectsRealHarnessErrorFormat(t *testing.T) {
 
 	client := ollamaclient.New("logos-v2", srv.URL)
 	events := make(chan Event)
-	go Run(context.Background(), client, "crie um arquivo", nil, events)
+	go Run(context.Background(), client, "rode os testes", nil, t.TempDir(), events)
 	got := drain(events)
 
 	var sawUnsupported bool
 	for _, ev := range got {
-		if strings.Contains(ev.Delta, "UNSUPPORTED_TOOL") && strings.Contains(ev.Delta, "write_file") {
+		if strings.Contains(ev.Delta, "UNSUPPORTED_TOOL") && strings.Contains(ev.Delta, "checker") {
 			sawUnsupported = true
 		}
 	}
 	if !sawUnsupported {
-		t.Errorf("esperava um tool_result UNSUPPORTED_TOOL pra write_file, eventos: %+v", got)
+		t.Errorf("esperava um tool_result UNSUPPORTED_TOOL pra checker, eventos: %+v", got)
 	}
 	if calls != 2 {
 		t.Errorf("esperava 2 chamadas ao servidor (tool_call + retomada), veio %d", calls)
+	}
+}
+
+func TestRunWriteFileActuallyCreatesFileInWorkDir(t *testing.T) {
+	workDir := t.TempDir()
+	calls := 0
+	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		calls++
+		enc := json.NewEncoder(w)
+		if calls == 1 {
+			_ = enc.Encode(map[string]any{
+				"response": `<tool_call name="write_file">{"path": "hello.py", "content": "print('oi')\n"}</tool_call>`,
+				"done":     true, "done_reason": "stop",
+			})
+			return
+		}
+		_ = enc.Encode(map[string]any{"response": "<final>criado</final>", "done": true, "done_reason": "stop"})
+	}))
+	defer srv.Close()
+
+	client := ollamaclient.New("logos-v2", srv.URL)
+	events := make(chan Event)
+	go Run(context.Background(), client, "crie hello.py", nil, workDir, events)
+	got := drain(events)
+
+	raw, err := os.ReadFile(filepath.Join(workDir, "hello.py"))
+	if err != nil {
+		t.Fatalf("arquivo não foi criado de verdade no workDir: %v", err)
+	}
+	if string(raw) != "print('oi')\n" {
+		t.Errorf("conteúdo do arquivo incorreto: %q", string(raw))
+	}
+
+	var sawOK bool
+	for _, ev := range got {
+		if strings.Contains(ev.Delta, `status="ok"`) && strings.Contains(ev.Delta, "bytes_written") {
+			sawOK = true
+		}
+	}
+	if !sawOK {
+		t.Errorf("esperava um tool_result de sucesso pra write_file, eventos: %+v", got)
+	}
+}
+
+func TestRunWriteFileRejectsPathEscapingWorkDir(t *testing.T) {
+	workDir := t.TempDir()
+	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		enc := json.NewEncoder(w)
+		_ = enc.Encode(map[string]any{
+			"response": `<tool_call name="write_file">{"path": "../fora.txt", "content": "x"}</tool_call>`,
+			"done":     true, "done_reason": "stop",
+		})
+	}))
+	defer srv.Close()
+
+	client := ollamaclient.New("logos-v2", srv.URL)
+	events := make(chan Event)
+	go Run(context.Background(), client, "crie um arquivo fora", nil, workDir, events)
+	got := drain(events)
+
+	var sawEscape bool
+	for _, ev := range got {
+		if strings.Contains(ev.Delta, "FILE_NOT_FOUND") && strings.Contains(ev.Delta, "escapa do workspace") {
+			sawEscape = true
+		}
+	}
+	if !sawEscape {
+		t.Errorf("esperava rejeição por caminho escapando do workDir, eventos: %+v", got)
+	}
+	if _, err := os.Stat(filepath.Join(filepath.Dir(workDir), "fora.txt")); err == nil {
+		t.Error("arquivo foi criado fora do workDir — travessia de caminho não foi bloqueada")
+	}
+}
+
+func TestRunMalformedToolCallJSONReturnsRealParseError(t *testing.T) {
+	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		enc := json.NewEncoder(w)
+		_ = enc.Encode(map[string]any{
+			"response": `<tool_call name="write_file">{"path": "x.py", "content": "sem fechar as aspas</tool_call>`,
+			"done":     true, "done_reason": "stop",
+		})
+	}))
+	defer srv.Close()
+
+	client := ollamaclient.New("logos-v2", srv.URL)
+	events := make(chan Event)
+	go Run(context.Background(), client, "crie x.py", nil, t.TempDir(), events)
+	got := drain(events)
+
+	var sawParseError bool
+	for _, ev := range got {
+		if strings.Contains(ev.Delta, "TOOL_CALL_PARSE_ERROR") {
+			sawParseError = true
+		}
+	}
+	if !sawParseError {
+		t.Errorf("esperava TOOL_CALL_PARSE_ERROR pra JSON malformado (quebra de linha crua), eventos: %+v", got)
 	}
 }

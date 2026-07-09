@@ -1,8 +1,10 @@
-// Comando logos-cli — UI do CLI harness (D13, seção M8 do PLAN.md): shell interativo em
+// Comando conatus — UI do CLI harness (D13, seção M8 do PLAN.md): shell interativo em
 // bubbletea conectado de verdade na API HTTP local da Ollama (modo raw, sem chat template).
-// Execução de ferramentas (write_file/checker/shell) ainda não está portada para Go — só a
-// geração é real; chamadas de ferramenta recebem um erro UNSUPPORTED_TOOL do próprio loop
-// (ver internal/agent), igual ao harness real faria para uma ferramenta desconhecida.
+// write_file/read_file/list_files executam de verdade, relativos ao diretório onde o binário
+// foi chamado (os.Getwd() — não um workspace de sandbox separado). checker/shell/
+// web_search ainda não estão portados para Go; chamadas pra eles recebem um erro
+// UNSUPPORTED_TOOL do próprio loop (ver internal/agent), igual ao harness real faria para
+// uma ferramenta desconhecida.
 package main
 
 import (
@@ -21,9 +23,15 @@ func main() {
 	host := flag.String("host", "http://localhost:11434", "endereço do servidor Ollama")
 	flag.Parse()
 
+	workDir, err := os.Getwd()
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "erro obtendo diretório atual: %v\n", err)
+		os.Exit(1)
+	}
+
 	client := ollamaclient.New(*model, *host)
 
-	p := tea.NewProgram(ui.New(client), tea.WithAltScreen())
+	p := tea.NewProgram(ui.New(client, workDir), tea.WithAltScreen())
 	if _, err := p.Run(); err != nil {
 		fmt.Fprintf(os.Stderr, "erro: %v\n", err)
 		os.Exit(1)

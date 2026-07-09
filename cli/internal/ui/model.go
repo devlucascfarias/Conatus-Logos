@@ -40,6 +40,7 @@ type Model struct {
 	textinput  textinput.Model
 	spinner    spinner.Model
 	client     *ollamaclient.Client
+	workDir    string
 	ctx        context.Context
 	streamCh   chan agent.Event
 	generating bool
@@ -60,7 +61,7 @@ type Model struct {
 	ready  bool
 }
 
-func New(client *ollamaclient.Client) Model {
+func New(client *ollamaclient.Client, workDir string) Model {
 	ti := textinput.New()
 	ti.Placeholder = "Digite um pedido e pressione Enter..."
 	ti.Focus()
@@ -82,6 +83,7 @@ func New(client *ollamaclient.Client) Model {
 		textinput: ti,
 		spinner:   sp,
 		client:    client,
+		workDir:   workDir,
 		ctx:       context.Background(),
 	}
 }
@@ -108,7 +110,7 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 
 		if !m.ready {
 			m.viewport = viewport.New(msg.Width-2, vpHeight)
-			m.viewport.SetContent(welcomeText())
+			m.viewport.SetContent(welcomeText(m.workDir))
 			m.ready = true
 		} else {
 			m.viewport.Width = msg.Width - 2
@@ -148,7 +150,7 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 
 			ch := make(chan agent.Event)
 			m.streamCh = ch
-			go agent.Run(m.ctx, m.client, text, m.history, ch)
+			go agent.Run(m.ctx, m.client, text, m.history, m.workDir, ch)
 
 			cmds = append(cmds, m.spinner.Tick, waitForEvent(ch), revealTick())
 		}
@@ -210,7 +212,7 @@ func (m Model) View() string {
 		return "iniciando..."
 	}
 
-	header := styleTitle.Render(appTitle(m.client))
+	header := styleTitle.Render(appTitle(m.client, m.workDir))
 
 	left := m.statusLine()
 	right := m.contextLine()
@@ -267,8 +269,8 @@ func (m Model) contextLine() string {
 	return fmt.Sprintf("contexto: %d/%d tokens (%.0f%%) · %s · Ctrl+R reinicia", m.contextTokens, m.client.NumCtx, pct, turns)
 }
 
-func appTitle(client *ollamaclient.Client) string {
-	return fmt.Sprintf("Conatus-Logos — %s (%s)", client.Model, client.Host)
+func appTitle(client *ollamaclient.Client, workDir string) string {
+	return fmt.Sprintf("Conatus — %s (%s) — %s", client.Model, client.Host, workDir)
 }
 
 func (m *Model) appendUserMessage(text string) {
@@ -329,10 +331,11 @@ func revealTick() tea.Cmd {
 	return tea.Tick(revealInterval, func(time.Time) tea.Msg { return revealTickMsg{} })
 }
 
-func welcomeText() string {
+func welcomeText(workDir string) string {
 	return styleThinkBody.Render(
 		"Sessão iniciada — conectado no Ollama local em modo raw (sem chat template).\n" +
-			"Ferramentas ainda não executam de verdade nesta build (só a geração é real).\n" +
+			"write_file/read_file/list_files executam de verdade em " + workDir + ".\n" +
+			"checker/shell/web_search ainda não estão portados (respondem UNSUPPORTED_TOOL).\n" +
 			"Os últimos turnos ficam no contexto dos próximos pedidos (histórico não é um formato " +
 			"treinado — pode não funcionar tão bem quanto um pedido isolado).\n" +
 			"Digite um pedido abaixo. Ctrl+R reinicia a sessão (limpa o histórico). Ctrl+C ou Esc para sair.",
