@@ -32,11 +32,13 @@ quê** cada peça existe.
 ```bash
 pip install -r requirements.txt          # harness, checker, dataset, avaliação, testes
 pip install -r requirements-train.txt    # só dentro do notebook de treino (Colab)
+python -m playwright install chromium    # backend "html" do checker (renderização real)
 ```
 
 O backend `go` do checker (`src/checker/backends/go_backend.py`) precisa do binário `go` no
 `PATH`; sem ele, os testes correspondentes são pulados e chamadas de checker em Go retornam
-`MISSING_DEPENDENCY` de forma estruturada (não uma exceção).
+`MISSING_DEPENDENCY` de forma estruturada (não uma exceção). O mesmo vale para o backend `html`
+(`src/checker/backends/frontend_backend.py`) sem o Chromium do Playwright instalado.
 
 ## Rodar os testes
 

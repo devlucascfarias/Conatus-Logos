@@ -7,3 +7,8 @@ jsonschema>=4.20
 PyYAML>=6.0
 requests>=2.31
 pytest>=8.0
+
+# Backend "html" do checker (docs/plan_frontend_specialization_wave3.md seção 3) — renderização
+# real em Chromium headless para verificar erro de console/exceção JS. Depois de instalar,
+# rode uma vez: python -m playwright install chromium
+playwright>=1.49

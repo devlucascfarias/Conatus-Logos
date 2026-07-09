@@ -253,13 +253,21 @@ afirmar "ficou elegante" sobre algo que não foi renderizado de verdade.
 
 ## 10. Ordem de execução proposta (não fazer tudo de uma vez)
 
-1. **Trocar o modelo base pra Qwen3-4B e revalidar VRAM** — item mais barato, alívio imediato
-   de hardware, destrava tudo o mais. Confirmar que o QLoRA cabe com folga na A2000 (deve
-   caber com MUITA folga vs o 8B).
-2. **Reativar `search_code`** — pequeno, isolado, testável, útil independente do resto.
+1. ✅ **Trocar o modelo base pra Qwen3-4B e revalidar VRAM** — feito (`D-frontend-pivot-model-swap`,
+   `docs/PLAN.md`). VRAM real ainda não medida (precisa de GPU) — configs carregam certo, mas
+   `scripts/vram_smoketest.py` precisa rodar de novo antes de um treino completo de verdade.
+2. ✅ **Reativar `search_code`** — feito (`D-search-code-reenable`, `docs/PLAN.md`).
 3. **Construir o backend de frontend do checker** — a peça central e mais difícil; sem ela,
    nada de dataset de frontend confiável. Começar pela fase 1 (HTML estático: render +
    screenshot + console + axe-core).
+   - ✅ Render + console + screenshot (camada 1): feito (`D-checker-html-backend`,
+     `docs/PLAN.md`) — `src/checker/backends/frontend_backend.py` + `scripts/
+     render_frontend_preview.py`.
+   - ⬜ axe-core (camada 3, acessibilidade): não implementado — precisa do pacote
+     `axe-core-python`, `operation=lint` do backend `html` já retorna `MISSING_DEPENDENCY`
+     estruturado até lá.
+   - ⬜ Design tokens (camada 4) e build real React/Vue (camada 2): adiados pra quando a
+     fase 2 começar.
 4. **Gerar um lote-piloto pequeno de frontend** (landing pages estáticas), validar qualidade
    com o checker novo + julgamento manual, antes de escalar.
 5. **Retreinar e avaliar** com o checker de frontend como métrica de progresso.
