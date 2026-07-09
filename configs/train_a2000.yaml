@@ -1,18 +1,21 @@
-# Config de treino real pra RTX A2000 12GB — promovida de train_a2000_smoketest.yaml depois de
-# validação real com scripts/vram_smoketest.py --longest --num-examples 1 (pico medido: 9.49 GB
-# alocado / 10.79 GB reservado, sequence_length=1536, cabe com margem apertada considerando que
-# essa GPU também roda o desktop gráfico da máquina, ~1.37 GB usados por Xorg/GNOME Shell/apps —
-# feche VS Code/navegador antes de rodar o treino completo pra ter mais folga).
+# Config de treino real pra RTX A2000 12GB.
+#
+# Histórico de validação real (2026-07-09):
+# - sequence_length=1536 passou no smoketest isolado (scripts/vram_smoketest.py --longest
+#   --num-examples 1: 9.49 GB alocado / 10.79 GB reservado), mas OOM real de verdade dentro do
+#   SFTTrainer (trainer.train(), primeiro passo, cross_entropy_loss) quando rodado via VS Code
+#   — o VS Code em si fica aberto o treino inteiro nesse fluxo (diferente de rodar via
+#   `nohup`, onde dava pra fechar tudo), consumindo VRAM que o smoketest isolado não contava.
+#   Erro real: "Tried to allocate 1.15 GiB... only 288.56 MiB is free... process has 10.38 GiB
+#   memory in use".
+# - Reduzido pra 1024: afeta 82 de 2455 exemplos em data/train (3.3%, ante 2.3% em 1536) —
+#   perda de sinal de treino ainda pequena, ganho real de margem de VRAM.
 #
 # Use com o notebook via a variável de ambiente TRAIN_CONFIG_PATH (ver notebooks/
 # train_granite_l4.ipynb, célula 4):
 #
 #   TRAIN_CONFIG_PATH=configs/train_a2000.yaml jupyter nbconvert --to notebook --execute \
 #       --inplace notebooks/train_granite_l4.ipynb
-#
-# sequence_length reduzido de 4096 (baseline L4, seção 11.3 do PLAN.md) pra 1536 — afeta só os
-# ~10 exemplos desproporcionalmente grandes (gen-hyprevision-*, 13-15KB) de ~2455 em
-# data/train, perda de sinal de treino desprezível.
 
 version: 1
 
@@ -39,7 +42,7 @@ lora:
 data:
   train_path: "data/train"
   validation_path: "data/validation"
-  sequence_length: 1536
+  sequence_length: 1024
   group_by_length: true
 
 training:
