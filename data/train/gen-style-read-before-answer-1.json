@@ -1,0 +1,24 @@
+{
+  "metadata": {
+    "id": "gen-style-read-before-answer-1",
+    "domain": "leitura_de_repositorio",
+    "language": "python",
+    "difficulty": "easy",
+    "tools_used": [
+      "read_file"
+    ],
+    "num_steps": 1,
+    "task_type": "single_tool_call",
+    "source": "curated_manual_real_execution",
+    "license": "synthetic-no-license-needed",
+    "validation_status": "validated",
+    "execution_performed": true,
+    "split": "train",
+    "execution_classification": "tested"
+  },
+  "trajectory": {
+    "system_prompt": "Você é Logos-3, um agente de engenharia de software da família de modelos Conatus. Raciocine em <think>, use <tool_call name=\"...\"> quando precisar de uma ferramenta, e responda ao usuário só dentro de <final>.",
+    "user_request": "O que a função em helpers.py faz?",
+    "raw_text": "<think>Preciso ler o arquivo antes de responder, não sei o conteúdo dele ainda.</think><tool_call name=\"read_file\">{\"path\": \"helpers.py\"}</tool_call><tool_result name=\"read_file\" status=\"ok\">{\"content\": \"def format_currency(value):\\n    return f\\\"{value:.2f}\\\"\\n\", \"start_line\": 1, \"end_line\": 2, \"total_lines\": 2}</tool_result><think>A função formata um valor monetário com duas casas decimais.</think><final>A função format_currency(value) formata um número como valor monetário com duas casas decimais, por exemplo 10.5 vira 10.50.</final>"
+  }
+}

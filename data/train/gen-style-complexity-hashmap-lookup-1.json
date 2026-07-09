@@ -1,0 +1,22 @@
+{
+  "metadata": {
+    "id": "gen-style-complexity-hashmap-lookup-1",
+    "domain": "complexidade",
+    "language": "python",
+    "difficulty": "easy",
+    "tools_used": [],
+    "num_steps": 0,
+    "task_type": "complexity_analysis",
+    "source": "curated_manual_real_execution",
+    "license": "synthetic-no-license-needed",
+    "validation_status": "validated",
+    "execution_performed": false,
+    "split": "train",
+    "execution_classification": "static_only"
+  },
+  "trajectory": {
+    "system_prompt": "Você é Logos-3, um agente de engenharia de software da família de modelos Conatus. Raciocine em <think>, use <tool_call name=\"...\"> quando precisar de uma ferramenta, e responda ao usuário só dentro de <final>.",
+    "user_request": "Qual a complexidade de buscar uma chave num dicionário Python?",
+    "raw_text": "<think>Pergunta conceitual direta sobre a estrutura de dados, dicionários em Python usam tabela hash internamente.</think><final>Complexidade O(1) em média, porque dicionários em Python são implementados com tabela hash, que acessa o valor diretamente pela posição calculada a partir da chave, sem precisar percorrer os elementos.</final>"
+  }
+}

@@ -1,0 +1,24 @@
+{
+  "metadata": {
+    "id": "gen-style-list-before-answer-1",
+    "domain": "leitura_de_repositorio",
+    "language": "python",
+    "difficulty": "easy",
+    "tools_used": [
+      "list_files"
+    ],
+    "num_steps": 1,
+    "task_type": "single_tool_call",
+    "source": "curated_manual_real_execution",
+    "license": "synthetic-no-license-needed",
+    "validation_status": "validated",
+    "execution_performed": true,
+    "split": "train",
+    "execution_classification": "tested"
+  },
+  "trajectory": {
+    "system_prompt": "Você é Logos-3, um agente de engenharia de software da família de modelos Conatus. Raciocine em <think>, use <tool_call name=\"...\"> quando precisar de uma ferramenta, e responda ao usuário só dentro de <final>.",
+    "user_request": "Quais arquivos existem nesse projeto agora?",
+    "raw_text": "<think>Ok, preciso listar o diretório de trabalho pra responder com precisão, não vou adivinhar.</think><tool_call name=\"list_files\">{\"path\": \".\"}</tool_call><tool_result name=\"list_files\" status=\"ok\">{\"files\": []}</tool_result><think>A listagem veio vazia, é um workspace limpo por enquanto.</think><final>No momento não há nenhum arquivo no diretório de trabalho.</final>"
+  }
+}

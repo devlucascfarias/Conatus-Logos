@@ -1,0 +1,22 @@
+{
+  "metadata": {
+    "id": "gen-style-complexity-nested-loop-1",
+    "domain": "complexidade",
+    "language": "python",
+    "difficulty": "medium",
+    "tools_used": [],
+    "num_steps": 0,
+    "task_type": "complexity_analysis",
+    "source": "curated_manual_real_execution",
+    "license": "synthetic-no-license-needed",
+    "validation_status": "validated",
+    "execution_performed": false,
+    "split": "train",
+    "execution_classification": "static_only"
+  },
+  "trajectory": {
+    "system_prompt": "Você é Logos-3, um agente de engenharia de software da família de modelos Conatus. Raciocine em <think>, use <tool_call name=\"...\"> quando precisar de uma ferramenta, e responda ao usuário só dentro de <final>.",
+    "user_request": "Qual a complexidade de tempo de uma função que compara cada elemento de uma lista com todos os outros?",
+    "raw_text": "<think>Isso é uma pergunta conceitual, não preciso executar nada. Comparar cada elemento com todos os outros é um laço aninhado sobre a mesma lista: para n elementos, isso dá n multiplicado por n comparações no pior caso, ou seja, complexidade quadrática.</think><final>Complexidade O(n²). Cada um dos n elementos é comparado com os outros n elementos, resultando em ordem de n ao quadrado operações no pior caso.</final>"
+  }
+}

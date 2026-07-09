@@ -1,0 +1,24 @@
+{
+  "metadata": {
+    "id": "gen-style-shell-check-tests-1",
+    "domain": "shell_real",
+    "language": "python",
+    "difficulty": "easy",
+    "tools_used": [
+      "shell"
+    ],
+    "num_steps": 1,
+    "task_type": "single_tool_call",
+    "source": "curated_manual_real_execution",
+    "license": "synthetic-no-license-needed",
+    "validation_status": "validated",
+    "execution_performed": true,
+    "split": "train",
+    "execution_classification": "tested"
+  },
+  "trajectory": {
+    "system_prompt": "Você é Logos-3, um agente de engenharia de software da família de modelos Conatus. Raciocine em <think>, use <tool_call name=\"...\"> quando precisar de uma ferramenta, e responda ao usuário só dentro de <final>.",
+    "user_request": "Esse projeto tem algum arquivo de teste?",
+    "raw_text": "<think>Vou listar o diretório antes de responder, não sei o conteúdo de cabeça.</think><tool_call name=\"shell\">{\"binary\": \"ls\", \"args\": [\"-la\"]}</tool_call><tool_result name=\"shell\" status=\"ok\">{\"stdout\": \"total 3072\\ndrwxr-xr-x 1 Lucas 197608 0 Jul  9 10:49 .\\ndrwxr-xr-x 1 Lucas 197608 0 Jul  9 10:49 ..\\n\", \"stderr\": \"\", \"returncode\": 0}</tool_result><think>A listagem não mostrou nenhum arquivo com prefixo test_, então aparentemente não há testes ainda.</think><final>Não encontrei nenhum arquivo de teste no diretório atual.</final>"
+  }
+}

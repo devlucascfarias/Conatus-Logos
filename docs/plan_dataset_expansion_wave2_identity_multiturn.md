@@ -1,8 +1,9 @@
 # Plano: wave 2 do dataset — identidade Logos-3/Conatus + generalização multi-turno
 
-Status: **identidade executada em 2026-07-09** (ver `D-conatus-logos3-identity` em
-`docs/PLAN.md`). Categorias multi-turno ainda **pendentes** — dependem de uma extensão de
-schema que este documento desenha mas não implementa ainda.
+Status: **identidade e upgrade de estilo executados em 2026-07-09** (ver
+`D-conatus-logos3-identity` e `D-style-upgrade-wave2-pilot` em `docs/PLAN.md`). Categorias
+multi-turno ainda **pendentes** — dependem de uma extensão de schema que este documento desenha
+mas não implementa ainda.
 
 ## 1. Motivação
 
@@ -32,9 +33,10 @@ Duas origens distintas, ambas de uso real da CLI (`conatus`), não hipotéticas:
 | Identidade (perguntas diretas + confusão com concorrentes) | ~50-60 | **28 executados** nesta sessão (`scripts/gen_identity_wave2_pilot.py`) — primeira leva real, hand-authored, sem duplicação mecânica |
 | Mudança abrupta de direção (multi-turno) | ~200-250 | Pendente — requer extensão de schema (seção 4) |
 | Pedido de ferramenta avulso/tardio numa sessão poluída (multi-turno) | ~150-200 | Pendente — mesma dependência |
-| Upgrade de estilo (think técnico proporcional + final caloroso) sobre task_types existentes | ~300-400 | Pendente — não depende de schema novo, pode ser a próxima leva mais barata |
+| Upgrade de estilo (think técnico proporcional + final caloroso) sobre task_types existentes | ~300-400 | **12 executados** nesta sessão (`scripts/gen_style_upgrade_wave2_pilot.py`) — amostra representativa de 8 task_types, primeira fatia real |
 
-Total desta sessão: **28 exemplos novos + ~3679 exemplos existentes com identidade corrigida**.
+Total desta sessão: **40 exemplos novos (28 identidade + 12 upgrade de estilo) + ~3679
+exemplos existentes com identidade corrigida**.
 
 ## 3. Por que a identidade foi priorizada e executada primeiro
 
@@ -94,6 +96,35 @@ agora). Motor de geração automatizada (self-play) permanece uma ideia registra
 projeto, não descartada, só fora de escopo enquanto o custo por rodada de teste for uma
 restrição real.
 
+## 6.1 Upgrade de estilo — o que foi coberto e achados da execução real
+
+`scripts/gen_style_upgrade_wave2_pilot.py` gerou 12 exemplos cobrindo 8 task_types
+(`single_tool_call`, `multi_tool_call`, `complexity_analysis`, `refactor`, `debugging`,
+`test_authoring`, `code_explanation`), todos com execução real de ferramenta quando aplicável
+(`write_file`/`read_file`/`list_files`/`shell`/`checker`), demonstrando os quatro elementos do
+estilo: profundidade proporcional (fácil = 1 think curto; difícil = ciclo de diagnóstico com
+hipótese antes da evidência), verbalização de intenção de ferramenta em primeira pessoa, trade
+off técnico explícito (ex.: `dict.fromkeys` vs `set()` pra preservar ordem, busca binária vs
+linear em lista ordenada, `set()` vs `list` pra checagem de membership dentro de um laço), e
+`<final>` caloroso só nos casos que cabem (não em respostas triviais de conceito).
+
+Dois achados reais durante a execução, ambos corrigidos no gerador antes de aceitar os
+exemplos:
+
+- **Vazamento de caminho absoluto da máquina local via `pytest`**: quando o `checker` roda
+  testes reais, o `pytest_asyncio` emite um warning de depreciação que inclui o caminho de
+  instalação do Python local (`C:\Users\<usuário>\AppData\...`) — tanto no `stdout` de uma
+  chamada bem sucedida quanto, mais sutilmente, dentro de `error_message` (que `to_json()`
+  copia pro campo `"message"` do corpo do `<tool_result>` de erro, um campo separado de
+  `data` que a sanitização original não cobria). Corrigido com um sanitizador que limpa
+  recursivamente todo o payload E `error_message` via `dataclasses.replace` (o resultado é um
+  dataclass frozen). Sem essa correção, dois dos quatro exemplos de debugging vazariam o nome
+  de usuário real da máquina que gerou o dataset.
+- **`language: "shell"` não é um valor válido da taxonomia** (`MVP_LANGUAGES` só aceita
+  `python`/`go`) — mesmo problema pré-existente já documentado na seção 7 pros exemplos
+  `gen-shell-*` antigos. Corrigido no exemplo novo usando `language: "python"` (nominal, mesma
+  convenção usada no lote de identidade).
+
 ## 7. Achado colateral (não é retrabalho, é higiene de schema pré-existente)
 
 Ao validar o novo lote de identidade contra `structural_validate`
@@ -117,8 +148,13 @@ padrão não foram tocados aqui (fora de escopo desta wave, registrado para limp
 - [x] Rodar suite de testes Python (142 passaram, 1 falha pré-existente e não relacionada —
       `trl` falhando ao ler um arquivo `.jinja` próprio por causa do codec padrão cp1252 do
       Windows, nada a ver com o dataset) e suite Go da CLI (55/55)
+- [x] Gerar lote de upgrade de estilo (12 exemplos reais, 8 task_types, execução real de
+      ferramenta em 10 dos 12) — `scripts/gen_style_upgrade_wave2_pilot.py`
+- [x] Validar estrutura/schema do lote de estilo (0 problemas), checar vazamento de detalhe
+      interno (0 leaks, depois de corrigir o vazamento real encontrado — seção 6.1) e
+      pontuação (0 hífens/travessões fora das exceções de nome próprio)
+- [x] Rodar suite de testes Python de novo após o lote de estilo (138/138, ignorando o teste
+      pré-existente e não relacionado do `trl`)
 - [ ] Categorias multi-turno (mudança abrupta, pedido tardio) — pendente, depende da extensão
       de schema da seção 4 e do trabalho de máscara de loss no pipeline de treino
-- [ ] Upgrade de estilo (think técnico + final caloroso) sobre amostra de task_types
-      existentes — pendente, próxima leva mais barata (não depende de schema novo)
 - [x] Atualizar `docs/PLAN.md`, commit

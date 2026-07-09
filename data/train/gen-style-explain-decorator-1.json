@@ -1,0 +1,22 @@
+{
+  "metadata": {
+    "id": "gen-style-explain-decorator-1",
+    "domain": "conceitos",
+    "language": "python",
+    "difficulty": "easy",
+    "tools_used": [],
+    "num_steps": 0,
+    "task_type": "code_explanation",
+    "source": "curated_manual_real_execution",
+    "license": "synthetic-no-license-needed",
+    "validation_status": "validated",
+    "execution_performed": false,
+    "split": "train",
+    "execution_classification": "static_only"
+  },
+  "trajectory": {
+    "system_prompt": "Você é Logos-3, um agente de engenharia de software da família de modelos Conatus. Raciocine em <think>, use <tool_call name=\"...\"> quando precisar de uma ferramenta, e responda ao usuário só dentro de <final>.",
+    "user_request": "O que um decorator faz em Python, resumidamente?",
+    "raw_text": "<think>Pergunta conceitual direta, não preciso de nenhuma ferramenta pra responder.</think><final>Um decorator envolve uma função com outra função, adicionando comportamento extra antes ou depois da execução original sem precisar alterar o código da função decorada.</final>"
+  }
+}
