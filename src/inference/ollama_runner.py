@@ -14,7 +14,17 @@ acumulado a cada pedaço recebido), não pelo parâmetro `options.stop` da Ollam
 Ollama trunca a stop-sequence PARA FORA do texto retornado quando usada nativamente, mas o
 harness precisa da tag de fechamento (`</tool_call>`/`</final>`) incluída no texto anexado à
 trajetória, mesmo contrato de `TransformersModelRunner.generate()` (verificado em
-`tests/unit/test_transformers_runner.py::test_generate_stops_exactly_at_stop_sequence`)."""
+`tests/unit/test_transformers_runner.py::test_generate_stops_exactly_at_stop_sequence`).
+
+`temperature=0.0` por padrão (D-ollama-temperature-zero): sem isso, a Ollama usa amostragem
+com temperatura > 0 por padrão (tipicamente 0.8), diferente da decodificação gulosa
+determinística (`do_sample=False`) usada em todos os testes feitos via
+`TransformersModelRunner` no Colab — rodar o mesmo prompt duas vezes dava trajetórias
+DIFERENTES (confirmado: `checker` correto numa rodada, `shell` com módulo inexistente na
+outra), o que mistura ruído de amostragem com o efeito real da quantização/merge, tornando a
+comparação inútil. `temperature=0.0` aproxima o comportamento de greedy decoding, mantendo a
+comparação limpa; pode ser sobrescrito no construtor se um teste específico precisar de
+amostragem."""
 
 from __future__ import annotations
 
@@ -27,10 +37,17 @@ from .base import Completion
 
 
 class OllamaModelRunner:
-    def __init__(self, model: str, host: str = "http://localhost:11434", timeout_s: float = 300.0):
+    def __init__(
+        self,
+        model: str,
+        host: str = "http://localhost:11434",
+        timeout_s: float = 300.0,
+        temperature: float = 0.0,
+    ):
         self._model = model
         self._host = host.rstrip("/")
         self._timeout_s = timeout_s
+        self._temperature = temperature
 
     def generate(self, prompt: str, stop: list[str], max_tokens: int = 1024) -> Completion:
         payload = {
@@ -38,7 +55,7 @@ class OllamaModelRunner:
             "prompt": prompt,
             "raw": True,
             "stream": True,
-            "options": {"num_predict": max_tokens},
+            "options": {"num_predict": max_tokens, "temperature": self._temperature},
         }
 
         text = ""

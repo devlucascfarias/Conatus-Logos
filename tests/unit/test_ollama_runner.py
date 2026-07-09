@@ -58,6 +58,30 @@ def test_generate_uses_raw_mode_not_chat_template(monkeypatch):
     assert captured["stream"] is True
 
 
+def test_generate_defaults_to_temperature_zero(monkeypatch):
+    """D-ollama-temperature-zero — sem isso, a Ollama usa amostragem com temperatura > 0 por
+    padrão, tornando o mesmo prompt não-determinístico entre rodadas (confirmado num teste
+    real: checker correto numa vez, shell com módulo inexistente na outra) e misturando ruído
+    de amostragem com o efeito real de merge/quantização."""
+    captured: dict = {}
+    _install_fake_post(monkeypatch, [{"response": "ok", "done": True, "done_reason": "stop"}], captured)
+
+    runner = OllamaModelRunner(model="logos-v2")
+    runner.generate("prompt", stop=[], max_tokens=10)
+
+    assert captured["json"]["options"]["temperature"] == 0.0
+
+
+def test_generate_allows_overriding_temperature(monkeypatch):
+    captured: dict = {}
+    _install_fake_post(monkeypatch, [{"response": "ok", "done": True, "done_reason": "stop"}], captured)
+
+    runner = OllamaModelRunner(model="logos-v2", temperature=0.7)
+    runner.generate("prompt", stop=[], max_tokens=10)
+
+    assert captured["json"]["options"]["temperature"] == 0.7
+
+
 def test_generate_stops_with_tag_included_in_text(monkeypatch):
     """Diferente do truncamento nativo da Ollama — o texto retornado precisa TERMINAR com a
     stop-sequence, não excluí-la, para bater com o contrato de TransformersModelRunner."""
