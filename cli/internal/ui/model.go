@@ -28,6 +28,13 @@ type revealTickMsg struct{}
 const revealInterval = 16 * time.Millisecond
 const revealStepRunes = 2
 
+// maxHistoryTurns limita quantos turnos anteriores entram no prompt — sem isso o contexto
+// cresce sem parar e eventualmente estoura NumCtx (a Ollama trunca por conta própria pela
+// esquerda quando isso acontece, o que pode cortar até o system prompt). Escolha
+// conservadora dado NumCtx=4096 e trajetórias podendo ser longas (write_file+checker inteiro
+// embutido em JSON).
+const maxHistoryTurns = 6
+
 type Model struct {
 	viewport   viewport.Model
 	textinput  textinput.Model
@@ -38,6 +45,10 @@ type Model struct {
 	generating bool
 	agentDone  bool
 	streamErr  error
+
+	history        []agent.Turn // turnos concluídos desta sessão (D-cli-session-history)
+	currentRequest string       // pedido que iniciou o turno em andamento, pra virar Turn ao finalizar
+	contextTokens  int          // último prompt_eval_count real reportado pela Ollama
 
 	renderedLog []string // trajetórias já finalizadas
 	currentRaw  string   // raw_text completo recebido até agora (fonte da verdade)
@@ -109,6 +120,14 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		switch msg.Type {
 		case tea.KeyCtrlC, tea.KeyEsc:
 			return m, tea.Quit
+		case tea.KeyCtrlR:
+			if m.generating {
+				break
+			}
+			m.history = nil
+			m.contextTokens = 0
+			m.renderedLog = append(m.renderedLog, styleStatusBar.Render("— sessão reiniciada, histórico limpo —"))
+			m.refreshViewport()
 		case tea.KeyEnter:
 			if m.generating {
 				break
@@ -122,13 +141,14 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			m.generating = true
 			m.agentDone = false
 			m.streamErr = nil
+			m.currentRequest = text
 			m.currentRaw = ""
 			m.revealedLen = 0
 			m.genStarted = time.Now()
 
 			ch := make(chan agent.Event)
 			m.streamCh = ch
-			go agent.Run(m.ctx, m.client, text, ch)
+			go agent.Run(m.ctx, m.client, text, m.history, ch)
 
 			cmds = append(cmds, m.spinner.Tick, waitForEvent(ch), revealTick())
 		}
@@ -139,6 +159,9 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			m.generating = false
 			m.agentDone = true
 			break
+		}
+		if msg.ContextTokens > 0 {
+			m.contextTokens = msg.ContextTokens
 		}
 		if msg.Delta != "" {
 			m.currentRaw += msg.Delta
@@ -188,7 +211,14 @@ func (m Model) View() string {
 	}
 
 	header := styleTitle.Render(appTitle(m.client))
-	statusBar := styleStatusBar.Render(m.statusLine())
+
+	left := m.statusLine()
+	right := m.contextLine()
+	gap := m.width - 2 - lipgloss.Width(left) - lipgloss.Width(right) - 2 // -2 do Padding(0,1) da própria barra
+	if gap < 1 {
+		gap = 1
+	}
+	statusBar := styleStatusBar.Render(left + strings.Repeat(" ", gap) + right)
 
 	body := styleViewport.Width(m.width - 2).Render(m.viewport.View())
 	input := styleInputBox.Width(m.width - 2).Render(m.textinput.View())
@@ -196,9 +226,11 @@ func (m Model) View() string {
 	return lipglossJoinVertical(header, body, input, statusBar)
 }
 
-// statusLine monta o texto do rodapé — "Ready" parado, ou "Ready" + spinner + tempo
-// decorrido + taxa real de caracteres/s enquanto gera (nada de token/s estimado — não temos
-// contagem de token de verdade nesta build, só caracteres, então é isso que reportamos).
+// statusLine monta o lado esquerdo do rodapé — "Ready" parado, ou spinner + tempo decorrido
+// + taxa real de caracteres/s enquanto gera (nada de token/s estimado — não temos contagem
+// de token de verdade nesta build pro texto gerado, só caracteres, então é isso que
+// reportamos aqui; o contador de CONTEXTO do lado direito é que usa token real, ver
+// contextLine).
 func (m Model) statusLine() string {
 	if m.streamErr != nil {
 		return styleToolResultErrLabel.Render("erro: " + m.streamErr.Error())
@@ -219,6 +251,22 @@ func (m Model) statusLine() string {
 	)
 }
 
+// contextLine monta o lado direito do rodapé — tokens de PROMPT reais (system + histórico +
+// turno atual), reportados pela própria Ollama (prompt_eval_count), sobre o num_ctx que o
+// cliente pediu explicitamente. Fica vazio antes do primeiro turno completar (ainda não
+// temos nenhum valor real pra mostrar, e não vamos estimar).
+func (m Model) contextLine() string {
+	if m.contextTokens == 0 {
+		return ""
+	}
+	pct := float64(m.contextTokens) / float64(m.client.NumCtx) * 100
+	turns := fmt.Sprintf("%d turno", len(m.history))
+	if len(m.history) != 1 {
+		turns += "s"
+	}
+	return fmt.Sprintf("contexto: %d/%d tokens (%.0f%%) · %s · Ctrl+R reinicia", m.contextTokens, m.client.NumCtx, pct, turns)
+}
+
 func appTitle(client *ollamaclient.Client) string {
 	return fmt.Sprintf("Conatus-Logos — %s (%s)", client.Model, client.Host)
 }
@@ -229,11 +277,18 @@ func (m *Model) appendUserMessage(text string) {
 }
 
 // finalizeCurrentTrajectory move o que foi acumulado durante o streaming para o histórico
-// permanente (já totalmente "assentado", sem gradiente) e limpa o buffer — chamado quando o
-// loop do agente termina E a animação de digitação termina de alcançar o texto real.
+// VISUAL permanente (já totalmente "assentado", sem gradiente) e limpa o buffer — chamado
+// quando o loop do agente termina E a animação de digitação termina de alcançar o texto
+// real. Também grava o turno no histórico de SESSÃO (agent.Turn) usado nos próximos pedidos
+// como contexto — a trajetória INTEIRA entra aqui, não só a resposta final, porque é esse o
+// formato que o [ASSISTANT] sempre teve durante o treino (ver aviso em agent.go).
 func (m *Model) finalizeCurrentTrajectory() {
 	if strings.TrimSpace(m.currentRaw) != "" {
 		m.renderedLog = append(m.renderedLog, renderClosedTrajectory(m.currentRaw))
+		m.history = append(m.history, agent.Turn{UserRequest: m.currentRequest, RawText: m.currentRaw})
+		if len(m.history) > maxHistoryTurns {
+			m.history = m.history[len(m.history)-maxHistoryTurns:]
+		}
 	}
 	m.currentRaw = ""
 	m.revealedLen = 0
@@ -278,7 +333,9 @@ func welcomeText() string {
 	return styleThinkBody.Render(
 		"Sessão iniciada — conectado no Ollama local em modo raw (sem chat template).\n" +
 			"Ferramentas ainda não executam de verdade nesta build (só a geração é real).\n" +
-			"Digite um pedido abaixo. Ctrl+C ou Esc para sair.",
+			"Os últimos turnos ficam no contexto dos próximos pedidos (histórico não é um formato " +
+			"treinado — pode não funcionar tão bem quanto um pedido isolado).\n" +
+			"Digite um pedido abaixo. Ctrl+R reinicia a sessão (limpa o histórico). Ctrl+C ou Esc para sair.",
 	)
 }
 

@@ -146,3 +146,48 @@ func TestGenerateReturnsErrorOnNonOKStatus(t *testing.T) {
 		t.Fatal("esperava erro para status 500, veio nil")
 	}
 }
+
+func TestGenerateCapturesPromptEvalCountEvenWhenStoppingEarly(t *testing.T) {
+	// prompt_eval_count chega logo no início (calculado no prefill, antes do primeiro
+	// token de saída) — precisa continuar disponível mesmo quando cortamos a leitura por
+	// stop-sequence antes da Ollama sinalizar done=true por conta própria, que é o caso
+	// comum (o harness quase sempre para antes do fim natural da geração).
+	srv := newFakeOllamaServer(t, []map[string]any{
+		{"response": "<final>oi", "done": false, "prompt_eval_count": 123},
+		{"response": "</final>", "done": false},
+		{"response": "texto que nunca deveria ser lido", "done": true, "done_reason": "stop"},
+	}, nil)
+	defer srv.Close()
+
+	client := New("logos-v2", srv.URL)
+	completion, err := client.Generate(context.Background(), "prompt", []string{"</final>"}, 100, func(string) {})
+	if err != nil {
+		t.Fatalf("erro inesperado: %v", err)
+	}
+	if completion.PromptEvalCount != 123 {
+		t.Errorf("esperava PromptEvalCount=123, veio %d", completion.PromptEvalCount)
+	}
+	if completion.StopReason != StopReasonSequence {
+		t.Errorf("esperava stop_sequence, veio %v", completion.StopReason)
+	}
+}
+
+func TestGenerateSendsExplicitNumCtx(t *testing.T) {
+	var captured map[string]any
+	srv := newFakeOllamaServer(t, []map[string]any{
+		{"response": "ok", "done": true, "done_reason": "stop"},
+	}, &captured)
+	defer srv.Close()
+
+	client := New("logos-v2", srv.URL)
+	client.NumCtx = 8192
+	_, err := client.Generate(context.Background(), "prompt", nil, 10, func(string) {})
+	if err != nil {
+		t.Fatalf("erro inesperado: %v", err)
+	}
+
+	options, _ := captured["options"].(map[string]any)
+	if options["num_ctx"] != float64(8192) {
+		t.Errorf("esperava num_ctx=8192, veio %v", options["num_ctx"])
+	}
+}

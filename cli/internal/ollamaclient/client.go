@@ -18,7 +18,12 @@ type Client struct {
 	Model       string
 	Host        string
 	Temperature float64
-	HTTPClient  *http.Client
+	// NumCtx é o tamanho da janela de contexto pedido explicitamente à Ollama
+	// (options.num_ctx) — sem fixar isso, a Ollama usa um default próprio não documentado
+	// de forma confiável no retorno da API, e o contador de contexto da UI não teria um
+	// denominador conhecido pra mostrar "usado/limite".
+	NumCtx     int
+	HTTPClient *http.Client
 }
 
 func New(model, host string) *Client {
@@ -26,6 +31,7 @@ func New(model, host string) *Client {
 		Model:       model,
 		Host:        strings.TrimRight(host, "/"),
 		Temperature: 0.0, // D-ollama-temperature-zero — determinismo, mesmo motivo do runner Python
+		NumCtx:      4096,
 		HTTPClient:  http.DefaultClient,
 	}
 }
@@ -42,6 +48,13 @@ type Completion struct {
 	Text        string
 	StopReason  StopReason
 	MatchedStop string
+	// PromptEvalCount é o número REAL de tokens do prompt de entrada, reportado pela
+	// própria Ollama (campo prompt_eval_count) — não é uma estimativa nossa. Ao contrário
+	// de EvalCount (tokens gerados), esse valor fica disponível cedo no streaming
+	// (calculado no prefill, antes do primeiro token de saída), então continua confiável
+	// mesmo quando paramos a leitura antes da Ollama sinalizar done=true por conta própria
+	// (nosso corte por stop-sequence quase sempre acontece antes disso).
+	PromptEvalCount int
 }
 
 type generateRequest struct {
@@ -55,12 +68,14 @@ type generateRequest struct {
 type options struct {
 	NumPredict  int     `json:"num_predict"`
 	Temperature float64 `json:"temperature"`
+	NumCtx      int     `json:"num_ctx"`
 }
 
 type streamChunk struct {
-	Response   string `json:"response"`
-	Done       bool   `json:"done"`
-	DoneReason string `json:"done_reason"`
+	Response        string `json:"response"`
+	Done            bool   `json:"done"`
+	DoneReason      string `json:"done_reason"`
+	PromptEvalCount int    `json:"prompt_eval_count"`
 }
 
 // Generate manda o prompt cru e chama onChunk a cada pedaço de texto recebido (para
@@ -78,6 +93,7 @@ func (c *Client) Generate(
 		Options: options{
 			NumPredict:  maxTokens,
 			Temperature: c.Temperature,
+			NumCtx:      c.NumCtx,
 		},
 	}
 	payload, err := json.Marshal(body)
@@ -104,6 +120,7 @@ func (c *Client) Generate(
 	var text strings.Builder
 	var matchedStop string
 	var doneReason string
+	var promptEvalCount int
 
 	scanner := bufio.NewScanner(resp.Body)
 	scanner.Buffer(make([]byte, 0, 64*1024), 1024*1024)
@@ -115,6 +132,9 @@ func (c *Client) Generate(
 		var chunk streamChunk
 		if err := json.Unmarshal(line, &chunk); err != nil {
 			return Completion{}, fmt.Errorf("decodificando resposta da Ollama: %w", err)
+		}
+		if chunk.PromptEvalCount > 0 {
+			promptEvalCount = chunk.PromptEvalCount
 		}
 		if chunk.Response != "" {
 			text.WriteString(chunk.Response)
@@ -141,10 +161,10 @@ func (c *Client) Generate(
 	}
 
 	if matchedStop != "" {
-		return Completion{Text: text.String(), StopReason: StopReasonSequence, MatchedStop: matchedStop}, nil
+		return Completion{Text: text.String(), StopReason: StopReasonSequence, MatchedStop: matchedStop, PromptEvalCount: promptEvalCount}, nil
 	}
 	if doneReason == "length" {
-		return Completion{Text: text.String(), StopReason: StopReasonMaxTokens}, nil
+		return Completion{Text: text.String(), StopReason: StopReasonMaxTokens, PromptEvalCount: promptEvalCount}, nil
 	}
-	return Completion{Text: text.String(), StopReason: StopReasonEOS}, nil
+	return Completion{Text: text.String(), StopReason: StopReasonEOS, PromptEvalCount: promptEvalCount}, nil
 }

@@ -9,11 +9,19 @@
 // System prompt e stop-sequences copiados verbatim de src/harness/system_prompt.py e
 // AgentLoopConfig (loop.py) — divergir esse texto do treino reproduziria o mesmo tipo de
 // mismatch de formato que D-train-prompt-mask corrigiu no repo principal.
+//
+// Histórico de sessão (Turn/Run com history): ATENÇÃO — o dataset de treino do harness é
+// inteiramente de turno único (um pedido, uma trajetória, sem exemplo de conversa
+// encadeada). Concatenar turnos anteriores no mesmo formato [USER]/[ASSISTANT] é a extensão
+// mais fiel possível ao padrão treinado (reaproveita a mesma gramática, não inventa uma
+// nova), mas não há garantia de que o modelo generalize pra isso tão bem quanto generaliza
+// pro turno único — é território não coberto pelo treino.
 package agent
 
 import (
 	"context"
 	"fmt"
+	"strings"
 
 	"github.com/devlucascfarias/Conatus-Logos/cli/internal/ollamaclient"
 	"github.com/devlucascfarias/Conatus-Logos/cli/internal/segments"
@@ -30,23 +38,43 @@ const (
 
 var stopSequences = []string{"</tool_call>", "</final>"}
 
+// Turn é um turno já concluído da sessão — UserRequest é o pedido, RawText é a trajetória
+// COMPLETA gerada pro turno (com <think>/<tool_call>/<tool_result>/<final>, não só a
+// resposta final), porque é esse o formato que o [ASSISTANT] sempre teve durante o treino.
+type Turn struct {
+	UserRequest string
+	RawText     string
+}
+
 // Event é emitido incrementalmente durante a execução do loop — Delta é texto novo pra
-// renderizar ao vivo na UI; Done marca o fim (sucesso ou erro, ver Err).
+// renderizar ao vivo na UI; Done marca o fim (sucesso ou erro, ver Err). ContextTokens é o
+// número REAL de tokens do prompt (system + histórico + turno atual) reportado pela própria
+// Ollama após a chamada mais recente — 0 se ainda não disponível.
 type Event struct {
-	Delta string
-	Done  bool
-	Err   error
+	Delta         string
+	Done          bool
+	Err           error
+	ContextTokens int
 }
 
 // Run executa o loop e envia eventos em events até fechar o canal. Deve ser chamado numa
-// goroutine própria — bloqueia até terminar.
-func Run(ctx context.Context, client *ollamaclient.Client, userRequest string, events chan<- Event) {
+// goroutine própria — bloqueia até terminar. `history` é opcional (nil/vazio pra sessão sem
+// contexto anterior).
+func Run(ctx context.Context, client *ollamaclient.Client, userRequest string, history []Turn, events chan<- Event) {
 	defer close(events)
+
+	var historyPrefix strings.Builder
+	for _, turn := range history {
+		historyPrefix.WriteString("\n\n[USER]\n")
+		historyPrefix.WriteString(turn.UserRequest)
+		historyPrefix.WriteString("\n\n[ASSISTANT]\n")
+		historyPrefix.WriteString(turn.RawText)
+	}
 
 	rawText := ""
 
 	for step := 0; step < maxSteps; step++ {
-		prompt := SystemPrompt + "\n\n[USER]\n" + userRequest + "\n\n[ASSISTANT]\n" + rawText
+		prompt := SystemPrompt + historyPrefix.String() + "\n\n[USER]\n" + userRequest + "\n\n[ASSISTANT]\n" + rawText
 
 		completion, err := client.Generate(ctx, prompt, stopSequences, maxTokensPerStep, func(delta string) {
 			events <- Event{Delta: delta}
@@ -56,6 +84,9 @@ func Run(ctx context.Context, client *ollamaclient.Client, userRequest string, e
 			return
 		}
 		rawText += completion.Text
+		if completion.PromptEvalCount > 0 {
+			events <- Event{ContextTokens: completion.PromptEvalCount}
+		}
 
 		switch completion.MatchedStop {
 		case "</final>":
