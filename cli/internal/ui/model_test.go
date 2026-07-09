@@ -2,6 +2,7 @@ package ui
 
 import "strings"
 import "testing"
+import "time"
 
 func TestDetectOpenSegmentRecognizesThinkAsSoonAsOpeningTagCloses(t *testing.T) {
 	kind, _, _, body, ok := detectOpenSegment("<think>ainda gerando")
@@ -39,12 +40,15 @@ func TestDetectOpenSegmentExtractsToolCallNameBeforeItCloses(t *testing.T) {
 	}
 }
 
-func TestRenderClosedTrajectoryOmitsThinkingFromFinalRecord(t *testing.T) {
+func TestRenderClosedTrajectoryShowsThoughtSummaryInsteadOfRawThinking(t *testing.T) {
 	raw := `<think>vou fazer isso</think><final>pronto</final>`
-	out := renderClosedTrajectory(raw)
+	out := renderClosedTrajectory(raw, []time.Duration{7 * time.Second})
 
-	if strings.Contains(out, "Thinking") {
-		t.Errorf("Thinking não deveria aparecer no registro finalizado: %q", out)
+	if strings.Contains(out, "vou fazer isso") {
+		t.Errorf("conteúdo cru do pensamento não deveria aparecer no registro finalizado: %q", out)
+	}
+	if !strings.Contains(out, "Thought for 7s") {
+		t.Errorf("esperava 'Thought for 7s' no lugar do pensamento cru: %q", out)
 	}
 	if !strings.Contains(out, "pronto") {
 		t.Errorf("texto da resposta final sumiu: %q", out)
@@ -53,7 +57,7 @@ func TestRenderClosedTrajectoryOmitsThinkingFromFinalRecord(t *testing.T) {
 
 func TestRenderClosedTrajectoryOmitsFinalLabel(t *testing.T) {
 	raw := `<final>a resposta</final>`
-	out := renderClosedTrajectory(raw)
+	out := renderClosedTrajectory(raw, nil)
 
 	// A saída não deve conter uma linha só com o rótulo "resposta" separado do texto —
 	// só o styleFinalBody.Render(texto), sem prefixo de rótulo.
@@ -71,7 +75,7 @@ func TestRenderClosedTrajectoryPreservesUnclosedTrailingContent(t *testing.T) {
 	// Simula uma resposta cortada (ex.: limite de tokens) antes de </final> fechar — o
 	// texto gerado não pode desaparecer silenciosamente.
 	raw := `<final>o código é: print('oi'` // nunca fecha
-	out := renderClosedTrajectory(raw)
+	out := renderClosedTrajectory(raw, nil)
 
 	if !strings.Contains(out, "print('oi'") {
 		t.Errorf("conteúdo cortado foi perdido em vez de aparecido truncado: %q", out)
@@ -80,7 +84,7 @@ func TestRenderClosedTrajectoryPreservesUnclosedTrailingContent(t *testing.T) {
 
 func TestRenderClosedTrajectoryOmitsUnclosedThinking(t *testing.T) {
 	raw := `<think>pensando e cortou aqui`
-	out := renderClosedTrajectory(raw)
+	out := renderClosedTrajectory(raw, nil)
 
 	if strings.Contains(out, "pensando e cortou aqui") {
 		t.Errorf("Thinking incompleto não deveria aparecer no registro finalizado: %q", out)
@@ -91,7 +95,7 @@ func TestRenderClosedTrajectoryCollapsesToolCallResultNeverShowsJSON(t *testing.
 	raw := `<tool_call name="write_file">{"path": "a.py", "content": "x"}</tool_call>` +
 		`<tool_result name="write_file" status="ok">{"path": "a.py", "bytes_written": 1, "mode": "overwrite"}</tool_result>` +
 		`<final>pronto</final>`
-	out := renderClosedTrajectory(raw)
+	out := renderClosedTrajectory(raw, nil)
 
 	if strings.Contains(out, "bytes_written") || strings.Contains(out, `"path"`) {
 		t.Errorf("JSON cru não deveria aparecer na visão colapsada: %q", out)
@@ -105,7 +109,7 @@ func TestRenderClosedTrajectoryShowsRealErrorMessageForFailedTool(t *testing.T) 
 	raw := `<tool_call name="checker">{}</tool_call>` +
 		`<tool_result name="checker" status="error">{"code": "UNSUPPORTED_TOOL", "message": "ferramenta desconhecida/desabilitada: checker"}</tool_result>` +
 		`<final>não deu</final>`
-	out := renderClosedTrajectory(raw)
+	out := renderClosedTrajectory(raw, nil)
 
 	if !strings.Contains(out, "ferramenta desconhecida/desabilitada: checker") {
 		t.Errorf("mensagem de erro real deveria aparecer: %q", out)
@@ -119,7 +123,7 @@ func TestRenderLiveTrajectoryShowsSpinnerWhileToolStillExecuting(t *testing.T) {
 	// tool_call já fechou, mas o tool_result ainda não chegou — ferramenta real ainda
 	// executando (ex.: checker rodando pytest de verdade, pode levar segundos).
 	raw := `<tool_call name="checker">{"language": "python"}</tool_call>`
-	out := renderLiveTrajectory(raw, true, "⠋")
+	out := renderLiveTrajectory(raw, true, "⠋", nil)
 
 	if !strings.Contains(out, "⠋") {
 		t.Errorf("esperava o spinner enquanto o resultado não chega: %q", out)

@@ -49,14 +49,16 @@ type Turn struct {
 }
 
 // Event é emitido incrementalmente durante a execução do loop — Delta é texto novo pra
-// renderizar ao vivo na UI; Done marca o fim (sucesso ou erro, ver Err). ContextTokens é o
-// número REAL de tokens do prompt (system + histórico + turno atual) reportado pela própria
-// Ollama após a chamada mais recente — 0 se ainda não disponível.
+// renderizar ao vivo na UI; Done marca o fim (sucesso ou erro, ver Err). TotalTokens é o
+// número REAL de tokens do prompt completo do turno (system + histórico + este turno
+// inteiro), medido com uma chamada dedicada de contagem (ver ollamaclient.CountTokens) no
+// momento em que o turno termina — 0 se ainda não disponível (turno ainda em andamento, ou a
+// medição falhou; nunca é uma estimativa).
 type Event struct {
-	Delta         string
-	Done          bool
-	Err           error
-	ContextTokens int
+	Delta       string
+	Done        bool
+	Err         error
+	TotalTokens int
 }
 
 // Run executa o loop e envia eventos em events até fechar o canal. Deve ser chamado numa
@@ -87,13 +89,10 @@ func Run(ctx context.Context, client *ollamaclient.Client, userRequest string, h
 			return
 		}
 		rawText += completion.Text
-		if completion.PromptEvalCount > 0 {
-			events <- Event{ContextTokens: completion.PromptEvalCount}
-		}
 
 		switch completion.MatchedStop {
 		case "</final>":
-			events <- Event{Done: true}
+			finishTurn(ctx, client, prompt, completion.Text, events)
 			return
 		case "</tool_call>":
 			toolResult := executeToolCall(completion.Text, workDir)
@@ -103,11 +102,24 @@ func Run(ctx context.Context, client *ollamaclient.Client, userRequest string, h
 		default:
 			// max_tokens ou eos sem tag reconhecida — não dá pra continuar com segurança
 			// (mesmo espírito de MAX_STEPS_EXCEEDED do harness real), encerra aqui.
-			events <- Event{Done: true}
+			finishTurn(ctx, client, prompt, completion.Text, events)
 			return
 		}
 	}
 
+	events <- Event{Done: true}
+}
+
+// finishTurn mede o tamanho real do prompt final do turno (prompt usado na última chamada +
+// o texto que ela gerou = exatamente o que entraria como [ASSISTANT] de um próximo turno) via
+// uma chamada dedicada e barata (num_predict=0, só prefill) antes de sinalizar Done — dá um
+// número real pro contador de contexto da UI sem depender de capturar prompt_eval_count no
+// meio de uma geração normal (não confiável, ver CountTokens).
+func finishTurn(ctx context.Context, client *ollamaclient.Client, promptSoFar, lastText string, events chan<- Event) {
+	finalPrompt := promptSoFar + lastText
+	if total, err := client.CountTokens(ctx, finalPrompt); err == nil {
+		events <- Event{TotalTokens: total}
+	}
 	events <- Event{Done: true}
 }
 

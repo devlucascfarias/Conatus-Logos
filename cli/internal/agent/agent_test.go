@@ -14,15 +14,21 @@ import (
 	"github.com/devlucascfarias/Conatus-Logos/cli/internal/ollamaclient"
 )
 
+// newFakeServer captura só o prompt da PRIMEIRA requisição (a geração principal do turno) —
+// finishTurn dispara uma segunda chamada (CountTokens, prefill-only) depois do </final> que
+// reusaria o mesmo *capturedPrompt e sobrescreveria o valor que os testes de conteúdo do
+// prompt querem checar, então ela é ignorada aqui.
 func newFakeServer(t *testing.T, capturedPrompt *string, response string) *httptest.Server {
 	t.Helper()
+	captured := false
 	return httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		var body map[string]any
 		if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
 			t.Fatalf("decodificando corpo: %v", err)
 		}
-		if capturedPrompt != nil {
+		if capturedPrompt != nil && !captured {
 			*capturedPrompt = body["prompt"].(string)
+			captured = true
 		}
 		enc := json.NewEncoder(w)
 		_ = enc.Encode(map[string]any{"response": response, "done": true, "done_reason": "stop", "prompt_eval_count": 42})
@@ -77,7 +83,10 @@ func TestRunIncludesFullRawTextOfPastTurnsInPrompt(t *testing.T) {
 	}
 }
 
-func TestRunEmitsContextTokensFromRealPromptEvalCount(t *testing.T) {
+func TestRunEmitsTotalTokensFromRealCountTokensCallAtTurnEnd(t *testing.T) {
+	// newFakeServer devolve a mesma resposta canned (prompt_eval_count:42) pra QUALQUER
+	// requisição — inclusive a chamada extra de CountTokens (num_predict=0) que finishTurn
+	// dispara depois do </final>. É essa segunda chamada que deveria produzir o evento.
 	srv := newFakeServer(t, nil, "<final>oi</final>")
 	defer srv.Close()
 
@@ -88,12 +97,12 @@ func TestRunEmitsContextTokensFromRealPromptEvalCount(t *testing.T) {
 
 	found := false
 	for _, ev := range got {
-		if ev.ContextTokens == 42 {
+		if ev.TotalTokens == 42 {
 			found = true
 		}
 	}
 	if !found {
-		t.Errorf("esperava um evento com ContextTokens=42 (prompt_eval_count real), eventos: %+v", got)
+		t.Errorf("esperava um evento com TotalTokens=42 (medição real via CountTokens no fim do turno), eventos: %+v", got)
 	}
 }
 
@@ -129,8 +138,8 @@ func TestRunUnsupportedToolInjectsRealHarnessErrorFormat(t *testing.T) {
 	if !sawUnsupported {
 		t.Errorf("esperava um tool_result UNSUPPORTED_TOOL pra shell, eventos: %+v", got)
 	}
-	if calls != 2 {
-		t.Errorf("esperava 2 chamadas ao servidor (tool_call + retomada), veio %d", calls)
+	if calls != 3 {
+		t.Errorf("esperava 3 chamadas ao servidor (tool_call + retomada + CountTokens do finishTurn), veio %d", calls)
 	}
 }
 

@@ -168,3 +168,18 @@ func (c *Client) Generate(
 	}
 	return Completion{Text: text.String(), StopReason: StopReasonEOS, PromptEvalCount: promptEvalCount}, nil
 }
+
+// CountTokens devolve o número REAL de tokens que `prompt` ocupa, sem gerar nenhum texto
+// (`num_predict: 0` — só prefill, sem decode). Existe porque `prompt_eval_count` só é
+// confiável quando a Ollama chega no seu PRÓPRIO done=true — e o harness quase sempre corta
+// a leitura antes disso (stop-sequence customizada), então capturar esse campo durante uma
+// geração normal (Generate) não funciona na prática. Um `num_predict=0` sempre completa
+// rápido (sem decodificar token nenhum) e sempre chega no done=true de verdade, então o
+// número volta confiável sem sacrificar a parada antecipada das chamadas de geração normais.
+func (c *Client) CountTokens(ctx context.Context, prompt string) (int, error) {
+	completion, err := c.Generate(ctx, prompt, nil, 0, func(string) {})
+	if err != nil {
+		return 0, err
+	}
+	return completion.PromptEvalCount, nil
+}

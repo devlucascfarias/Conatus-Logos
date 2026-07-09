@@ -50,8 +50,12 @@ type Model struct {
 
 	history        []agent.Turn // turnos concluídos desta sessão (D-cli-session-history)
 	currentRequest string       // pedido que iniciou o turno em andamento, pra virar Turn ao finalizar
-	sessionTokens  int          // SOMA de todo prompt_eval_count real reportado pela Ollama nesta sessão
-	promptCalls    int          // quantas chamadas reais de generate() contribuíram pra sessionTokens
+	sessionTokens  int          // SOMA real de TotalTokens de cada turno concluído — só cresce, nunca reseta sozinho
+	contextTokens  int          // última medição real de TotalTokens (pro medidor/barra do lado direito)
+
+	thinkDurations []time.Duration // duração real de cada bloco "Thinking" já FECHADO neste turno, em ordem
+	thinkIsOpen    bool
+	thinkOpenSince time.Time
 
 	renderedLog []string // trajetórias já finalizadas
 	currentRaw  string   // raw_text completo recebido até agora (fonte da verdade)
@@ -130,7 +134,7 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			}
 			m.history = nil
 			m.sessionTokens = 0
-			m.promptCalls = 0
+			m.contextTokens = 0
 			m.renderedLog = append(m.renderedLog, styleStatusBar.Render("— sessão reiniciada, histórico limpo —"))
 			m.refreshViewport()
 		case tea.KeyEnter:
@@ -149,6 +153,8 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			m.currentRequest = text
 			m.currentRaw = ""
 			m.revealedLen = 0
+			m.thinkDurations = nil
+			m.thinkIsOpen = false
 			m.genStarted = time.Now()
 
 			ch := make(chan agent.Event)
@@ -165,12 +171,13 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			m.agentDone = true
 			break
 		}
-		if msg.ContextTokens > 0 {
-			m.sessionTokens += msg.ContextTokens
-			m.promptCalls++
+		if msg.TotalTokens > 0 {
+			m.sessionTokens += msg.TotalTokens
+			m.contextTokens = msg.TotalTokens
 		}
 		if msg.Delta != "" {
 			m.currentRaw += msg.Delta
+			m.trackThinkDuration()
 		}
 		if msg.Done {
 			m.agentDone = true
@@ -232,48 +239,75 @@ func (m Model) View() string {
 	return lipglossJoinVertical(header, body, input, statusBar)
 }
 
-// statusLine monta o lado esquerdo do rodapé — "Ready" parado, ou spinner + tempo decorrido
-// + taxa real de caracteres/s enquanto gera (nada de token/s estimado — não temos contagem
-// de token de verdade nesta build pro texto gerado, só caracteres, então é isso que
-// reportamos aqui; o contador de CONTEXTO do lado direito é que usa token real, ver
-// contextLine).
+// statusLine monta o lado esquerdo do rodapé — o contador de tokens da SESSÃO (soma real,
+// medida via ollamaclient.CountTokens uma vez por turno concluído — ver agent.finishTurn)
+// nunca desaparece nem reseta sozinho, só cresce até Ctrl+R. Durante a geração do turno
+// atual, o número mostrado ainda é o total ANTES desse turno (a medição só fecha quando o
+// turno termina) — por isso o spinner+tempo decorrido ao lado deixa claro que ainda está em
+// andamento, em vez de fingir uma contagem ao vivo que não temos de verdade.
 func (m Model) statusLine() string {
 	if m.streamErr != nil {
 		return styleToolResultErrLabel.Render("erro: " + m.streamErr.Error())
 	}
+
+	tokensText := fmt.Sprintf("%d tokens", m.sessionTokens)
 	if !m.generating {
-		return "Ready"
+		return "Ready · " + tokensText
 	}
 
 	elapsed := time.Since(m.genStarted)
-	chars := len([]rune(m.currentRaw))
-	rate := 0.0
-	if elapsed.Seconds() > 0 {
-		rate = float64(chars) / elapsed.Seconds()
-	}
-	return fmt.Sprintf(
-		"%s gerando... %.1fs · %d caracteres · %.0f car/s",
-		m.spinner.View(), elapsed.Seconds(), chars, rate,
-	)
+	return fmt.Sprintf("%s gerando... %.1fs · %s", m.spinner.View(), elapsed.Seconds(), tokensText)
 }
 
-// contextLine monta o lado direito do rodapé — SOMA de tokens de prompt reais (não
-// estimados) reportados pela própria Ollama (prompt_eval_count) em cada chamada de
-// generate() feita nesta sessão. É um contador de custo/uso acumulado, não "quanto da
-// janela de contexto está preenchida agora" — cada chamada reprocessa o prompt inteiro do
-// zero (a Ollama não reaproveita KV cache entre requisições HTTP separadas aqui), então
-// somar é a contagem honesta de quanto foi processado de verdade, não uma métrica de
-// ocupação da janela (por isso não comparamos mais contra NumCtx). Persiste até Ctrl+R —
-// nunca decresce nem reseta sozinho.
+// contextLine monta o lado direito do rodapé — a última medição REAL (ollamaclient.
+// CountTokens, não estimada) de quantos tokens o prompt completo (system + histórico +
+// turno) ocupa, como uma barra preenchendo até NumCtx. Diferente de statusLine (que soma
+// tudo), aqui é um medidor de OCUPAÇÃO ATUAL — pode até encolher entre turnos se
+// maxHistoryTurns descartar turnos antigos do histórico. Fica vazio até a primeira medição
+// chegar (fim do primeiro turno).
 func (m Model) contextLine() string {
-	if m.sessionTokens == 0 {
+	if m.contextTokens == 0 {
 		return ""
 	}
-	turns := fmt.Sprintf("%d turno", len(m.history))
-	if len(m.history) != 1 {
-		turns += "s"
+	pct := float64(m.contextTokens) / float64(m.client.NumCtx) * 100
+	if pct > 100 {
+		pct = 100
 	}
-	return fmt.Sprintf("%d tokens (sessão, %d chamadas) · %s · Ctrl+R reinicia", m.sessionTokens, m.promptCalls, turns)
+	return fmt.Sprintf("Context: %s %d/%d (%.0f%%)", renderContextBar(pct, contextBarWidth), m.contextTokens, m.client.NumCtx, pct)
+}
+
+const contextBarWidth = 16
+
+func renderContextBar(pct float64, width int) string {
+	filled := int(pct/100*float64(width) + 0.5)
+	if filled > width {
+		filled = width
+	}
+	if filled < 0 {
+		filled = 0
+	}
+	filledStr := lipgloss.NewStyle().Foreground(colorOKGold).Render(strings.Repeat("█", filled))
+	emptyStr := lipgloss.NewStyle().Foreground(colorBorderCol).Render(strings.Repeat("░", width-filled))
+	return filledStr + emptyStr
+}
+
+// trackThinkDuration detecta quando um bloco "Thinking" abre e fecha DE VERDADE (comparando
+// o fragmento ainda aberto — ParseWithTail — a cada novo pedaço de texto recebido) e grava a
+// duração real em thinkDurations quando ele fecha. Chamado a cada Delta recebido do agente,
+// não a cada tick de revelação — a duração reflete o tempo real de geração, não a velocidade
+// da animação de digitação na tela.
+func (m *Model) trackThinkDuration() {
+	_, tail := segments.ParseWithTail(m.currentRaw)
+	kind, _, _, _, ok := detectOpenSegment(tail)
+	isThinkOpenNow := ok && kind == segments.KindThink
+
+	if isThinkOpenNow && !m.thinkIsOpen {
+		m.thinkIsOpen = true
+		m.thinkOpenSince = time.Now()
+	} else if !isThinkOpenNow && m.thinkIsOpen {
+		m.thinkIsOpen = false
+		m.thinkDurations = append(m.thinkDurations, time.Since(m.thinkOpenSince))
+	}
 }
 
 func appTitle(client *ollamaclient.Client, workDir string) string {
@@ -293,7 +327,7 @@ func (m *Model) appendUserMessage(text string) {
 // formato que o [ASSISTANT] sempre teve durante o treino (ver aviso em agent.go).
 func (m *Model) finalizeCurrentTrajectory() {
 	if strings.TrimSpace(m.currentRaw) != "" {
-		m.renderedLog = append(m.renderedLog, renderClosedTrajectory(m.currentRaw))
+		m.renderedLog = append(m.renderedLog, renderClosedTrajectory(m.currentRaw, m.thinkDurations))
 		m.history = append(m.history, agent.Turn{UserRequest: m.currentRequest, RawText: m.currentRaw})
 		if len(m.history) > maxHistoryTurns {
 			m.history = m.history[len(m.history)-maxHistoryTurns:]
@@ -301,6 +335,8 @@ func (m *Model) finalizeCurrentTrajectory() {
 	}
 	m.currentRaw = ""
 	m.revealedLen = 0
+	m.thinkDurations = nil
+	m.thinkIsOpen = false
 	m.refreshViewport()
 }
 
@@ -310,7 +346,7 @@ func (m *Model) refreshViewport() {
 
 	content := m.renderedLog
 	if visible != "" {
-		content = append(append([]string{}, m.renderedLog...), renderLiveTrajectory(visible, stillTyping, m.spinner.View()))
+		content = append(append([]string{}, m.renderedLog...), renderLiveTrajectory(visible, stillTyping, m.spinner.View(), m.thinkDurations))
 	}
 
 	joined := strings.Join(content, "\n\n")
@@ -350,21 +386,21 @@ func welcomeText(workDir string) string {
 }
 
 // renderClosedTrajectory estiliza uma trajetória totalmente finalizada — sem gradiente, tudo
-// já "assentado" na cor bege base. Dois comportamentos deliberados, diferentes da renderização
-// ao vivo: (1) segmentos "Thinking" são OMITIDOS aqui — só aparecem enquanto a geração está
-// rolando (renderLiveTrajectory), somem do registro permanente quando a resposta termina; (2)
-// usa ParseWithTail, não Parse, porque uma resposta pode ser cortada antes de fechar a última
-// tag (ex.: limite de tokens) — descartar essa cauda incompleta faria o texto gerado
-// desaparecer silenciosamente em vez de aparecer truncado.
-func renderClosedTrajectory(rawText string) string {
+// já "assentado" na cor bege base. Blocos "Thinking" viram "Thought for Xs" (duração real,
+// de thinkDurations — ver trackThinkDuration), nunca mostrando o raciocínio em si, mas
+// também nunca desaparecendo por completo. Usa ParseWithTail, não Parse, porque uma resposta
+// pode ser cortada antes de fechar a última tag (ex.: limite de tokens) — descartar essa
+// cauda incompleta faria o texto gerado desaparecer silenciosamente em vez de aparecer
+// truncado.
+func renderClosedTrajectory(rawText string, thinkDurations []time.Duration) string {
 	segs, tail := segments.ParseWithTail(rawText)
-	blocks := renderCollapsedSegments(segs, true, "")
+	blocks := renderCollapsedSegments(segs, thinkDurations, "")
 
 	if trimmedTail := strings.TrimSpace(tail); trimmedTail != "" {
 		kind, toolName, status, body, ok := detectOpenSegment(tail)
 		switch {
 		case ok && kind == segments.KindThink:
-			// Thinking incompleto — mesma regra, não aparece no registro final.
+			// Thinking cortado antes de fechar — sem duração final conhecida, omite.
 		case ok && kind == segments.KindToolCall:
 			// resposta cortada bem no meio de uma chamada de ferramenta — sem resultado
 			// pra parear, não dá pra saber se passou ou falhou.
@@ -390,10 +426,10 @@ func renderClosedTrajectory(rawText string) string {
 // `tool_result` pareado ainda (a ferramenta está executando de verdade — pode levar
 // segundos num `checker` com pytest), mostra spinner + nome, animado; assim que o resultado
 // chega, vira uma linha estática "└ nome" (dourado se ok, rust se erro, com a mensagem de
-// erro real embaixo quando aplicável).
-func renderLiveTrajectory(rawText string, glowing bool, spinnerView string) string {
+// erro real embaixo quando aplicável). Blocos "Thinking" já fechados viram "Thought for Xs".
+func renderLiveTrajectory(rawText string, glowing bool, spinnerView string, thinkDurations []time.Duration) string {
 	segs, tail := segments.ParseWithTail(rawText)
-	blocks := renderCollapsedSegments(segs, false, spinnerView)
+	blocks := renderCollapsedSegments(segs, thinkDurations, spinnerView)
 
 	if tail == "" {
 		return strings.Join(blocks, "\n")
@@ -445,16 +481,22 @@ func renderLiveTrajectory(rawText string, glowing bool, spinnerView string) stri
 // tool_call+tool_result adjacente numa única linha compacta — nunca mostra o JSON de
 // argumentos nem o corpo bruto do resultado. Um tool_call sem o tool_result logo em
 // seguida significa que a ferramenta ainda está executando de verdade (spinnerView anima
-// isso); só acontece na visão ao vivo, nunca numa trajetória já finalizada.
-func renderCollapsedSegments(segs []segments.Segment, skipThink bool, spinnerView string) []string {
+// isso); só acontece na visão ao vivo, nunca numa trajetória já finalizada. Cada bloco
+// "Thinking" fechado vira "Thought for Xs" usando thinkDurations, na ordem em que os blocos
+// de pensamento aparecem (thinkIdx acompanha isso).
+func renderCollapsedSegments(segs []segments.Segment, thinkDurations []time.Duration, spinnerView string) []string {
 	var blocks []string
+	thinkIdx := 0
 	for i := 0; i < len(segs); i++ {
 		seg := segs[i]
 		switch seg.Kind {
 		case segments.KindThink:
-			if !skipThink {
-				blocks = append(blocks, renderSegment(seg))
+			var dur time.Duration
+			if thinkIdx < len(thinkDurations) {
+				dur = thinkDurations[thinkIdx]
 			}
+			blocks = append(blocks, renderThoughtSummary(dur))
+			thinkIdx++
 		case segments.KindToolCall:
 			if i+1 < len(segs) && segs[i+1].Kind == segments.KindToolResult {
 				next := segs[i+1]
@@ -478,6 +520,17 @@ func renderCollapsedSegments(segs []segments.Segment, skipThink bool, spinnerVie
 // chegou (execução real em andamento, ex.: checker rodando pytest de verdade).
 func renderToolPendingLine(toolName, spinnerView string) string {
 	return spinnerView + " " + styleToolCallLabel.Render(toolName)
+}
+
+// renderThoughtSummary é o estado ESTÁTICO de um bloco Thinking já fechado — nunca mostra o
+// texto do raciocínio, só quanto tempo real ele levou. `d == 0` significa que a duração não
+// foi capturada (não deveria acontecer em uso normal — trackThinkDuration grava toda vez que
+// um bloco fecha —, mas evita "Thought for 0s" caso aconteça).
+func renderThoughtSummary(d time.Duration) string {
+	if d <= 0 {
+		return styleThinkLabel.Render("Thought")
+	}
+	return styleThinkLabel.Render(fmt.Sprintf("Thought for %.0fs", d.Seconds()))
 }
 
 // renderToolResultLine é o estado ESTÁTICO — resultado já chegou. Conector "└" fixo, sem
@@ -550,12 +603,11 @@ func detectOpenSegment(tail string) (kind segments.Kind, toolName, status, body 
 	}
 }
 
-// renderSegment só lida com Think/Final agora — tool_call/tool_result são sempre
-// interceptados antes por renderCollapsedSegments (vira "└ nome"/spinner, nunca JSON cru).
+// renderSegment só lida com Final agora — Think vira "Thought for Xs" via renderThoughtSummary
+// e tool_call/tool_result são sempre interceptados antes por renderCollapsedSegments (vira
+// "└ nome"/spinner, nunca JSON cru).
 func renderSegment(seg segments.Segment) string {
 	switch seg.Kind {
-	case segments.KindThink:
-		return styleThinkLabel.Render("Thinking") + "\n" + styleThinkBody.Render(strings.TrimSpace(seg.Body))
 	case segments.KindFinal:
 		return styleFinalBody.Render(strings.TrimSpace(seg.Body))
 	default:

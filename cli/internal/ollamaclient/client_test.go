@@ -191,3 +191,25 @@ func TestGenerateSendsExplicitNumCtx(t *testing.T) {
 		t.Errorf("esperava num_ctx=8192, veio %v", options["num_ctx"])
 	}
 }
+
+func TestCountTokensSendsNumPredictZeroAndReturnsRealCount(t *testing.T) {
+	var captured map[string]any
+	srv := newFakeOllamaServer(t, []map[string]any{
+		{"response": "", "done": true, "done_reason": "stop", "prompt_eval_count": 777},
+	}, &captured)
+	defer srv.Close()
+
+	client := New("logos-v2", srv.URL)
+	count, err := client.CountTokens(context.Background(), "system + histórico + turno atual")
+	if err != nil {
+		t.Fatalf("erro inesperado: %v", err)
+	}
+	if count != 777 {
+		t.Errorf("esperava 777, veio %d", count)
+	}
+
+	options, _ := captured["options"].(map[string]any)
+	if options["num_predict"] != float64(0) {
+		t.Errorf("esperava num_predict=0 (só prefill, sem gerar nada), veio %v", options["num_predict"])
+	}
+}
