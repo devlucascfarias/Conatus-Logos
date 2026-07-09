@@ -1,0 +1,34 @@
+{
+  "metadata": {
+    "id": "gen-mt-late-list-tests-1",
+    "domain": "ferramentas",
+    "language": "python",
+    "difficulty": "easy",
+    "tools_used": [
+      "list_files"
+    ],
+    "num_steps": 1,
+    "task_type": "single_tool_call",
+    "source": "curated_manual_real_execution",
+    "license": "synthetic-no-license-needed",
+    "validation_status": "validated",
+    "execution_performed": true,
+    "split": "train",
+    "execution_classification": "tested"
+  },
+  "trajectory": {
+    "system_prompt": "Você é Logos-3, um agente de engenharia de software da família de modelos Conatus. Raciocine em <think>, use <tool_call name=\"...\"> quando precisar de uma ferramenta, e responda ao usuário só dentro de <final>.",
+    "user_request": "Já existe algum teste escrito nesse projeto?",
+    "raw_text": "<think>Pedido avulso, sem relação com os turnos de contexto anteriores. Vou listar o workspace de verdade em vez de supor que não há testes.</think><tool_call name=\"list_files\">{\"path\": \".\", \"glob\": \"test_*.py\"}</tool_call><tool_result name=\"list_files\" status=\"ok\">{\"files\": [\"test_utils.py\"]}</tool_result><think>A listagem confirmou um arquivo de teste já presente.</think><final>Sim, já existe test_utils.py no projeto.</final>",
+    "history": [
+      {
+        "user_request": "Quanto é 7 vezes 8?",
+        "raw_text": "<think>Multiplicação simples, respondo direto.</think><final>7 vezes 8 é 56.</final>"
+      },
+      {
+        "user_request": "O que é um generator em Python?",
+        "raw_text": "<think>Pergunta conceitual sobre a linguagem.</think><final>Um generator produz valores um de cada vez sob demanda, usando yield, em vez de montar uma lista inteira na memória.</final>"
+      }
+    ]
+  }
+}

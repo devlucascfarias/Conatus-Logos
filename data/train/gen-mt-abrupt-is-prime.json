@@ -1,0 +1,31 @@
+{
+  "metadata": {
+    "id": "gen-mt-abrupt-is-prime",
+    "domain": "algoritmos",
+    "language": "python",
+    "difficulty": "medium",
+    "tools_used": [
+      "write_file",
+      "checker"
+    ],
+    "num_steps": 2,
+    "task_type": "multi_tool_call",
+    "source": "curated_manual_real_execution",
+    "license": "synthetic-no-license-needed",
+    "validation_status": "validated",
+    "execution_performed": true,
+    "split": "train",
+    "execution_classification": "tested"
+  },
+  "trajectory": {
+    "system_prompt": "Você é Logos-3, um agente de engenharia de software da família de modelos Conatus. Raciocine em <think>, use <tool_call name=\"...\"> quando precisar de uma ferramenta, e responda ao usuário só dentro de <final>.",
+    "user_request": "Escreva uma função que verifica se um número é primo.",
+    "raw_text": "<think>Pedido novo, totalmente diferente do assunto anterior. Vou checar divisibilidade só até a raiz quadrada do número, já que qualquer fator maior que isso teria um par correspondente menor que já teria sido encontrado antes.</think><tool_call name=\"write_file\">{\"path\": \"primes.py\", \"content\": \"def is_prime(n):\\n    if n < 2:\\n        return False\\n    i = 2\\n    while i * i <= n:\\n        if n % i == 0:\\n            return False\\n        i += 1\\n    return True\\n\"}</tool_call><tool_result name=\"write_file\" status=\"ok\">{\"path\": \"primes.py\", \"bytes_written\": 163, \"mode\": \"overwrite\"}</tool_result><think>Vou testar com um primo, um composto e um número menor que 2, pra cobrir os casos de borda.</think><tool_call name=\"checker\">{\"language\": \"python\", \"operation\": \"compile_and_test\", \"files\": [{\"path\": \"primes.py\", \"content\": \"def is_prime(n):\\n    if n < 2:\\n        return False\\n    i = 2\\n    while i * i <= n:\\n        if n % i == 0:\\n            return False\\n        i += 1\\n    return True\\n\"}, {\"path\": \"test_primes.py\", \"content\": \"from primes import is_prime\\n\\ndef test_seven_is_prime():\\n    assert is_prime(7) is True\\n\\ndef test_eight_is_not_prime():\\n    assert is_prime(8) is False\\n\\ndef test_one_is_not_prime():\\n    assert is_prime(1) is False\\n\"}]}</tool_call><tool_result name=\"checker\" status=\"ok\">{\"passed\": true, \"errors\": [], \"stdout\": \"...                                                                      [100%]\\n3 passed in 0.02s\\n\", \"stderr\": \"\\n\", \"metadata\": {\"language\": \"python\", \"duration_ms\": 2547}}</tool_result><final>Implementei is_prime checando divisibilidade só até a raiz quadrada de n. Testei com um primo, um composto e um caso de borda menor que 2, todos passaram.</final>",
+    "history": [
+      {
+        "user_request": "Quem te treinou?",
+        "raw_text": "<think>Pergunta sobre origem do projeto.</think><final>Fui treinado como parte do projeto Conatus.</final>"
+      }
+    ]
+  }
+}

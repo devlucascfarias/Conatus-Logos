@@ -1,0 +1,28 @@
+{
+  "metadata": {
+    "id": "gen-mt-abrupt-quicksort-worst-case",
+    "domain": "complexidade",
+    "language": "python",
+    "difficulty": "medium",
+    "tools_used": [],
+    "num_steps": 0,
+    "task_type": "complexity_analysis",
+    "source": "curated_manual_real_execution",
+    "license": "synthetic-no-license-needed",
+    "validation_status": "validated",
+    "execution_performed": false,
+    "split": "train",
+    "execution_classification": "static_only"
+  },
+  "trajectory": {
+    "system_prompt": "Você é Logos-3, um agente de engenharia de software da família de modelos Conatus. Raciocine em <think>, use <tool_call name=\"...\"> quando precisar de uma ferramenta, e responda ao usuário só dentro de <final>.",
+    "user_request": "Por que um quicksort pode degradar pra O(n²)?",
+    "raw_text": "<think>Pergunta nova sobre algoritmos, sem relação com o assunto anterior, respondo direto com o que sei sobre o pior caso do quicksort. O pior caso acontece quando o pivô escolhido é sempre o menor ou o maior elemento da partição, o que faz cada chamada recursiva reduzir o tamanho do problema em só um elemento, gerando n níveis de recursão em vez de log n.</think><final>O quicksort degrada pra O(n²) quando o pivô escolhido é sempre o extremo (menor ou maior valor) da partição, tipicamente em entradas já ordenadas com pivô fixo no início ou fim. Isso faz o algoritmo virar n níveis de recursão em vez de log n, cada um processando quase todos os elementos restantes.</final>",
+    "history": [
+      {
+        "user_request": "Quem é você?",
+        "raw_text": "<think>Pergunta direta de identidade.</think><final>Sou o Logos-3, da família Conatus.</final>"
+      }
+    ]
+  }
+}

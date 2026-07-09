@@ -1,0 +1,30 @@
+{
+  "metadata": {
+    "id": "gen-mt-late-read-env-example-1",
+    "domain": "leitura_de_repositorio",
+    "language": "python",
+    "difficulty": "easy",
+    "tools_used": [
+      "read_file"
+    ],
+    "num_steps": 1,
+    "task_type": "single_tool_call",
+    "source": "curated_manual_real_execution",
+    "license": "synthetic-no-license-needed",
+    "validation_status": "validated",
+    "execution_performed": true,
+    "split": "train",
+    "execution_classification": "tested"
+  },
+  "trajectory": {
+    "system_prompt": "Você é Logos-3, um agente de engenharia de software da família de modelos Conatus. Raciocine em <think>, use <tool_call name=\"...\"> quando precisar de uma ferramenta, e responda ao usuário só dentro de <final>.",
+    "user_request": "Quais variáveis de ambiente esse projeto espera?",
+    "raw_text": "<think>Pedido avulso, sem relação com o assunto anterior. Vou ler o arquivo de exemplo real pra saber quais variáveis são esperadas.</think><tool_call name=\"read_file\">{\"path\": \".env.example\"}</tool_call><tool_result name=\"read_file\" status=\"ok\">{\"content\": \"DATABASE_URL=\\nSECRET_KEY=\\n\", \"start_line\": 1, \"end_line\": 2, \"total_lines\": 2}</tool_result><think>O arquivo lista duas variáveis esperadas.</think><final>O projeto espera DATABASE_URL e SECRET_KEY, conforme .env.example.</final>",
+    "history": [
+      {
+        "user_request": "O que é recursão de cauda?",
+        "raw_text": "<think>Pergunta conceitual sobre recursão.</think><final>É quando a chamada recursiva é a última operação da função, permitindo que alguns compiladores otimizem isso sem crescer a pilha.</final>"
+      }
+    ]
+  }
+}

@@ -1,0 +1,32 @@
+{
+  "metadata": {
+    "id": "gen-mt-abrupt-composition-vs-inheritance",
+    "domain": "design_patterns",
+    "language": "python",
+    "difficulty": "medium",
+    "tools_used": [],
+    "num_steps": 0,
+    "task_type": "direct_answer",
+    "source": "curated_manual_real_execution",
+    "license": "synthetic-no-license-needed",
+    "validation_status": "validated",
+    "execution_performed": false,
+    "split": "train",
+    "execution_classification": "static_only"
+  },
+  "trajectory": {
+    "system_prompt": "Você é Logos-3, um agente de engenharia de software da família de modelos Conatus. Raciocine em <think>, use <tool_call name=\"...\"> quando precisar de uma ferramenta, e responda ao usuário só dentro de <final>.",
+    "user_request": "Qual a diferença entre composição e herança?",
+    "raw_text": "<think>Assunto novo, sem relação com o turno anterior. Herança modela uma relação 'é um' (Cachorro é um Animal), fixada em tempo de compilação/definição; composição modela 'tem um' (Carro tem um Motor), mais flexível porque pode trocar o componente em tempo de execução.</think><final>Herança modela uma relação 'é um' (Cachorro é um Animal), definida na estrutura de classes. Composição modela 'tem um' (Carro tem um Motor), montando o objeto a partir de componentes menores, geralmente mais flexível porque o componente pode ser trocado sem alterar a hierarquia de classes.</final>",
+    "history": [
+      {
+        "user_request": "O que significa complexidade O(n log n)?",
+        "raw_text": "<think>Pergunta conceitual de complexidade.</think><final>Significa que o tempo de execução cresce proporcionalmente a n multiplicado pelo logaritmo de n, típico de algoritmos de ordenação eficientes como merge sort.</final>"
+      },
+      {
+        "user_request": "Quanto é 2 elevado a 10?",
+        "raw_text": "<think>Potenciação simples.</think><final>2 elevado a 10 é 1024.</final>"
+      }
+    ]
+  }
+}

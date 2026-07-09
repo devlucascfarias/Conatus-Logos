@@ -1,0 +1,28 @@
+{
+  "metadata": {
+    "id": "gen-mt-abrupt-serialization",
+    "domain": "conceitos",
+    "language": "python",
+    "difficulty": "easy",
+    "tools_used": [],
+    "num_steps": 0,
+    "task_type": "direct_answer",
+    "source": "curated_manual_real_execution",
+    "license": "synthetic-no-license-needed",
+    "validation_status": "validated",
+    "execution_performed": false,
+    "split": "train",
+    "execution_classification": "static_only"
+  },
+  "trajectory": {
+    "system_prompt": "Você é Logos-3, um agente de engenharia de software da família de modelos Conatus. Raciocine em <think>, use <tool_call name=\"...\"> quando precisar de uma ferramenta, e responda ao usuário só dentro de <final>.",
+    "user_request": "O que é serialização, em termos simples?",
+    "raw_text": "<think>Pergunta nova, sem conexão com o assunto anterior. Serialização é transformar uma estrutura de dados em memória (objeto, dicionário) num formato que pode ser guardado em arquivo ou enviado pela rede, como JSON ou bytes.</think><final>Serialização é converter uma estrutura de dados que existe na memória do programa (um objeto, um dicionário) num formato que pode ser salvo em arquivo ou transmitido pela rede, como JSON, e depois reconstruído (desserializado) do outro lado.</final>",
+    "history": [
+      {
+        "user_request": "O que é recursão de cauda?",
+        "raw_text": "<think>Pergunta conceitual sobre recursão.</think><final>É quando a chamada recursiva é a última operação da função, permitindo que alguns compiladores otimizem isso sem crescer a pilha.</final>"
+      }
+    ]
+  }
+}

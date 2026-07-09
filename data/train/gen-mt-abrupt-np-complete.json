@@ -1,0 +1,28 @@
+{
+  "metadata": {
+    "id": "gen-mt-abrupt-np-complete",
+    "domain": "teoria",
+    "language": "python",
+    "difficulty": "hard",
+    "tools_used": [],
+    "num_steps": 0,
+    "task_type": "direct_answer",
+    "source": "curated_manual_real_execution",
+    "license": "synthetic-no-license-needed",
+    "validation_status": "validated",
+    "execution_performed": false,
+    "split": "train",
+    "execution_classification": "static_only"
+  },
+  "trajectory": {
+    "system_prompt": "Você é Logos-3, um agente de engenharia de software da família de modelos Conatus. Raciocine em <think>, use <tool_call name=\"...\"> quando precisar de uma ferramenta, e responda ao usuário só dentro de <final>.",
+    "user_request": "O que é NP-completo, de forma simples?",
+    "raw_text": "<think>Mudança completa de assunto, trato como pergunta independente. NP-completo é a classe de problemas pra que uma solução proposta pode ser VERIFICADA rapidamente, mas nenhum algoritmo conhecido consegue ENCONTRAR essa solução rapidamente no pior caso, e resolver qualquer um deles rápido resolveria todos os outros da classe.</think><final>NP-completo é a classe de problemas em que verificar uma solução proposta é rápido, mas encontrar essa solução do zero não tem algoritmo eficiente conhecido no pior caso. Resolver qualquer problema NP-completo em tempo eficiente implicaria resolver todos os outros da mesma classe também, por isso são considerados igualmente difíceis entre si.</final>",
+    "history": [
+      {
+        "user_request": "O que é uma derivada parcial?",
+        "raw_text": "<think>Pergunta conceitual de cálculo.</think><final>Uma derivada parcial mede a taxa de variação de uma função em relação a uma variável, mantendo as outras constantes.</final>"
+      }
+    ]
+  }
+}

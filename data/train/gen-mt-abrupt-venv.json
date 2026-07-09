@@ -1,0 +1,28 @@
+{
+  "metadata": {
+    "id": "gen-mt-abrupt-venv",
+    "domain": "ferramentas",
+    "language": "python",
+    "difficulty": "easy",
+    "tools_used": [],
+    "num_steps": 0,
+    "task_type": "documentation_usage",
+    "source": "curated_manual_real_execution",
+    "license": "synthetic-no-license-needed",
+    "validation_status": "validated",
+    "execution_performed": false,
+    "split": "train",
+    "execution_classification": "static_only"
+  },
+  "trajectory": {
+    "system_prompt": "Você é Logos-3, um agente de engenharia de software da família de modelos Conatus. Raciocine em <think>, use <tool_call name=\"...\"> quando precisar de uma ferramenta, e responda ao usuário só dentro de <final>.",
+    "user_request": "O que é um virtual environment em Python e por que usar?",
+    "raw_text": "<think>Pergunta nova sobre ferramentas, sem relação com o assunto anterior. Um virtual environment isola as dependências de um projeto das dependências globais do sistema, evitando conflito de versões entre projetos diferentes.</think><final>Um virtual environment cria um ambiente Python isolado, com suas próprias dependências separadas das instaladas globalmente no sistema. Isso evita que projetos diferentes, que precisam de versões diferentes da mesma biblioteca, entrem em conflito.</final>",
+    "history": [
+      {
+        "user_request": "O que é um generator em Python?",
+        "raw_text": "<think>Pergunta conceitual sobre a linguagem.</think><final>Um generator produz valores um de cada vez sob demanda, usando yield, em vez de montar uma lista inteira na memória.</final>"
+      }
+    ]
+  }
+}

@@ -1,0 +1,34 @@
+{
+  "metadata": {
+    "id": "gen-mt-late-shell-cat-2",
+    "domain": "shell_real",
+    "language": "python",
+    "difficulty": "easy",
+    "tools_used": [
+      "shell"
+    ],
+    "num_steps": 1,
+    "task_type": "single_tool_call",
+    "source": "curated_manual_real_execution",
+    "license": "synthetic-no-license-needed",
+    "validation_status": "validated",
+    "execution_performed": true,
+    "split": "train",
+    "execution_classification": "tested"
+  },
+  "trajectory": {
+    "system_prompt": "Você é Logos-3, um agente de engenharia de software da família de modelos Conatus. Raciocine em <think>, use <tool_call name=\"...\"> quando precisar de uma ferramenta, e responda ao usuário só dentro de <final>.",
+    "user_request": "Usa cat pra ver o que tem no main.py.",
+    "raw_text": "<think>Pedido novo, sem relação com o turno anterior. Vou rodar cat de verdade.</think><tool_call name=\"shell\">{\"binary\": \"cat\", \"args\": [\"main.py\"]}</tool_call><tool_result name=\"shell\" status=\"ok\">{\"stdout\": \"def greet():\\n    print('ola mundo')\\n\", \"stderr\": \"\", \"returncode\": 0}</tool_result><think>O cat mostrou uma função de saudação simples.</think><final>main.py contém uma função greet() que imprime 'ola mundo'.</final>",
+    "history": [
+      {
+        "user_request": "O que é um decorator em Python, resumidamente?",
+        "raw_text": "<think>Pergunta conceitual sobre a linguagem.</think><final>Um decorator envolve uma função com outra, adicionando comportamento extra sem alterar o código original.</final>"
+      },
+      {
+        "user_request": "Quanto é 7 vezes 8?",
+        "raw_text": "<think>Multiplicação simples, respondo direto.</think><final>7 vezes 8 é 56.</final>"
+      }
+    ]
+  }
+}

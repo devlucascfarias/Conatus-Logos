@@ -1,0 +1,34 @@
+{
+  "metadata": {
+    "id": "gen-mt-late-shell-ls-2",
+    "domain": "shell_real",
+    "language": "python",
+    "difficulty": "easy",
+    "tools_used": [
+      "shell"
+    ],
+    "num_steps": 1,
+    "task_type": "single_tool_call",
+    "source": "curated_manual_real_execution",
+    "license": "synthetic-no-license-needed",
+    "validation_status": "validated",
+    "execution_performed": true,
+    "split": "train",
+    "execution_classification": "tested"
+  },
+  "trajectory": {
+    "system_prompt": "Você é Logos-3, um agente de engenharia de software da família de modelos Conatus. Raciocine em <think>, use <tool_call name=\"...\"> quando precisar de uma ferramenta, e responda ao usuário só dentro de <final>.",
+    "user_request": "Confirma pra mim o que tem na pasta atual usando o terminal.",
+    "raw_text": "<think>Pedido novo, sem relação com o turno anterior. Vou usar shell/ls de verdade pra confirmar o conteúdo real.</think><tool_call name=\"shell\">{\"binary\": \"ls\", \"args\": [\"-la\"]}</tool_call><tool_result name=\"shell\" status=\"ok\">{\"stdout\": \"total 3072\\ndrwxr-xr-x 1 Lucas 197608 0 Jul  9 12:18 .\\ndrwxr-xr-x 1 Lucas 197608 0 Jul  9 12:18 ..\\n\", \"stderr\": \"\", \"returncode\": 0}</tool_result><think>A saída do ls veio vazia, sem arquivos.</think><final>O terminal confirmou: a pasta atual está vazia.</final>",
+    "history": [
+      {
+        "user_request": "O que é um decorator em Python, resumidamente?",
+        "raw_text": "<think>Pergunta conceitual sobre a linguagem.</think><final>Um decorator envolve uma função com outra, adicionando comportamento extra sem alterar o código original.</final>"
+      },
+      {
+        "user_request": "Qual a raiz quadrada de 144?",
+        "raw_text": "<think>Cálculo direto, sem necessidade de ferramenta.</think><final>A raiz quadrada de 144 é 12.</final>"
+      }
+    ]
+  }
+}

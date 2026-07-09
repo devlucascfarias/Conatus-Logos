@@ -1,0 +1,28 @@
+{
+  "metadata": {
+    "id": "gen-mt-abrupt-confused-1",
+    "domain": "clarificacao",
+    "language": "python",
+    "difficulty": "easy",
+    "tools_used": [],
+    "num_steps": 0,
+    "task_type": "insufficient_information",
+    "source": "curated_manual_real_execution",
+    "license": "synthetic-no-license-needed",
+    "validation_status": "validated",
+    "execution_performed": false,
+    "split": "train",
+    "execution_classification": "static_only"
+  },
+  "trajectory": {
+    "system_prompt": "Você é Logos-3, um agente de engenharia de software da família de modelos Conatus. Raciocine em <think>, use <tool_call name=\"...\"> quando precisar de uma ferramenta, e responda ao usuário só dentro de <final>.",
+    "user_request": "O quê?",
+    "raw_text": "<think>O usuário está reagindo com confusão a algo que eu disse antes, não fazendo um pedido novo com conteúdo próprio. Não sei exatamente qual parte confundiu, preciso perguntar em vez de assumir ou repetir uma resposta genérica.</think><final>Desculpa, não ficou claro o que confundiu. Pode me dizer qual parte da resposta anterior não fez sentido?</final>",
+    "history": [
+      {
+        "user_request": "O que é uma derivada parcial?",
+        "raw_text": "<think>Pergunta conceitual de cálculo.</think><final>Uma derivada parcial mede a taxa de variação de uma função em relação a uma variável, mantendo as outras constantes.</final>"
+      }
+    ]
+  }
+}

@@ -1,0 +1,30 @@
+{
+  "metadata": {
+    "id": "gen-mt-late-read-requirements-1",
+    "domain": "leitura_de_repositorio",
+    "language": "python",
+    "difficulty": "easy",
+    "tools_used": [
+      "read_file"
+    ],
+    "num_steps": 1,
+    "task_type": "single_tool_call",
+    "source": "curated_manual_real_execution",
+    "license": "synthetic-no-license-needed",
+    "validation_status": "validated",
+    "execution_performed": true,
+    "split": "train",
+    "execution_classification": "tested"
+  },
+  "trajectory": {
+    "system_prompt": "Você é Logos-3, um agente de engenharia de software da família de modelos Conatus. Raciocine em <think>, use <tool_call name=\"...\"> quando precisar de uma ferramenta, e responda ao usuário só dentro de <final>.",
+    "user_request": "Quais dependências estão no requirements.txt?",
+    "raw_text": "<think>Pedido avulso, sem relação com o assunto anterior. Vou ler o arquivo real pra listar as dependências corretas.</think><tool_call name=\"read_file\">{\"path\": \"requirements.txt\"}</tool_call><tool_result name=\"read_file\" status=\"ok\">{\"content\": \"requests==2.31.0\\npytest==7.4.0\\n\", \"start_line\": 1, \"end_line\": 2, \"total_lines\": 2}</tool_result><think>O arquivo lista duas dependências com versões fixadas.</think><final>requirements.txt lista requests==2.31.0 e pytest==7.4.0.</final>",
+    "history": [
+      {
+        "user_request": "O que é uma race condition?",
+        "raw_text": "<think>Pergunta conceitual de concorrência.</think><final>É quando o resultado de um programa depende da ordem imprevisível em que threads ou processos acessam um recurso compartilhado.</final>"
+      }
+    ]
+  }
+}

@@ -1,0 +1,30 @@
+{
+  "metadata": {
+    "id": "gen-mt-late-shell-ls-3",
+    "domain": "shell_real",
+    "language": "python",
+    "difficulty": "easy",
+    "tools_used": [
+      "shell"
+    ],
+    "num_steps": 1,
+    "task_type": "single_tool_call",
+    "source": "curated_manual_real_execution",
+    "license": "synthetic-no-license-needed",
+    "validation_status": "validated",
+    "execution_performed": true,
+    "split": "train",
+    "execution_classification": "tested"
+  },
+  "trajectory": {
+    "system_prompt": "Você é Logos-3, um agente de engenharia de software da família de modelos Conatus. Raciocine em <think>, use <tool_call name=\"...\"> quando precisar de uma ferramenta, e responda ao usuário só dentro de <final>.",
+    "user_request": "Dá um ls -la nesse diretório?",
+    "raw_text": "<think>Pedido avulso, sem conexão com o assunto anterior. Vou rodar o comando de verdade.</think><tool_call name=\"shell\">{\"binary\": \"ls\", \"args\": [\"-la\"]}</tool_call><tool_result name=\"shell\" status=\"ok\">{\"stdout\": \"total 3074\\ndrwxr-xr-x 1 Lucas 197608  0 Jul  9 12:18 .\\ndrwxr-xr-x 1 Lucas 197608  0 Jul  9 12:18 ..\\n-rw-r--r-- 1 Lucas 197608 10 Jul  9 12:18 data.csv\\n-rw-r--r-- 1 Lucas 197608  6 Jul  9 12:18 script.py\\n\", \"stderr\": \"\", \"returncode\": 0}</tool_result><think>A saída mostrou dois arquivos no diretório.</think><final>ls -la mostrou dois arquivos: script.py e data.csv.</final>",
+    "history": [
+      {
+        "user_request": "O que é uma race condition?",
+        "raw_text": "<think>Pergunta conceitual de concorrência.</think><final>É quando o resultado de um programa depende da ordem imprevisível em que threads ou processos acessam um recurso compartilhado.</final>"
+      }
+    ]
+  }
+}

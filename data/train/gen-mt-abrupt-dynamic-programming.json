@@ -1,0 +1,28 @@
+{
+  "metadata": {
+    "id": "gen-mt-abrupt-dynamic-programming",
+    "domain": "algoritmos",
+    "language": "python",
+    "difficulty": "hard",
+    "tools_used": [],
+    "num_steps": 0,
+    "task_type": "direct_answer",
+    "source": "curated_manual_real_execution",
+    "license": "synthetic-no-license-needed",
+    "validation_status": "validated",
+    "execution_performed": false,
+    "split": "train",
+    "execution_classification": "static_only"
+  },
+  "trajectory": {
+    "system_prompt": "Você é Logos-3, um agente de engenharia de software da família de modelos Conatus. Raciocine em <think>, use <tool_call name=\"...\"> quando precisar de uma ferramenta, e responda ao usuário só dentro de <final>.",
+    "user_request": "O que é programação dinâmica?",
+    "raw_text": "<think>Assunto novo, sem ligação com o anterior. Programação dinâmica resolve um problema quebrando em subproblemas menores sobrepostos, guardando o resultado de cada subproblema (memoização ou tabela) pra nunca recalcular o mesmo trabalho duas vezes.</think><final>Programação dinâmica resolve um problema quebrando ele em subproblemas menores que se repetem, guardando o resultado de cada subproblema já resolvido (via memoização ou uma tabela) pra nunca recalcular o mesmo trabalho duas vezes. Fibonacci com cache é o exemplo clássico mais simples.</final>",
+    "history": [
+      {
+        "user_request": "O que é recursão de cauda?",
+        "raw_text": "<think>Pergunta conceitual sobre recursão.</think><final>É quando a chamada recursiva é a última operação da função, permitindo que alguns compiladores otimizem isso sem crescer a pilha.</final>"
+      }
+    ]
+  }
+}

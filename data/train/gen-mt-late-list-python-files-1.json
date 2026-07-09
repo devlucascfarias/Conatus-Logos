@@ -1,0 +1,30 @@
+{
+  "metadata": {
+    "id": "gen-mt-late-list-python-files-1",
+    "domain": "ferramentas",
+    "language": "python",
+    "difficulty": "easy",
+    "tools_used": [
+      "list_files"
+    ],
+    "num_steps": 1,
+    "task_type": "single_tool_call",
+    "source": "curated_manual_real_execution",
+    "license": "synthetic-no-license-needed",
+    "validation_status": "validated",
+    "execution_performed": true,
+    "split": "train",
+    "execution_classification": "tested"
+  },
+  "trajectory": {
+    "system_prompt": "Você é Logos-3, um agente de engenharia de software da família de modelos Conatus. Raciocine em <think>, use <tool_call name=\"...\"> quando precisar de uma ferramenta, e responda ao usuário só dentro de <final>.",
+    "user_request": "Quantos arquivos Python tem nesse diretório?",
+    "raw_text": "<think>Pedido de listagem novo, sem relação com o assunto anterior. Vou listar o workspace real pra contar de verdade, não estimar.</think><tool_call name=\"list_files\">{\"path\": \".\", \"glob\": \"*.py\"}</tool_call><tool_result name=\"list_files\" status=\"ok\">{\"files\": [\"app.py\", \"settings.py\"]}</tool_result><think>A listagem mostrou dois arquivos .py no diretório.</think><final>Há dois arquivos Python: app.py e settings.py.</final>",
+    "history": [
+      {
+        "user_request": "O que é injeção de dependência?",
+        "raw_text": "<think>Pergunta conceitual de design de software.</think><final>É passar as dependências de um componente de fora, em vez de criá-las internamente, facilitando testes e substituição.</final>"
+      }
+    ]
+  }
+}

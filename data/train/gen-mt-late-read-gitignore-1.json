@@ -1,0 +1,30 @@
+{
+  "metadata": {
+    "id": "gen-mt-late-read-gitignore-1",
+    "domain": "leitura_de_repositorio",
+    "language": "python",
+    "difficulty": "easy",
+    "tools_used": [
+      "read_file"
+    ],
+    "num_steps": 1,
+    "task_type": "single_tool_call",
+    "source": "curated_manual_real_execution",
+    "license": "synthetic-no-license-needed",
+    "validation_status": "validated",
+    "execution_performed": true,
+    "split": "train",
+    "execution_classification": "tested"
+  },
+  "trajectory": {
+    "system_prompt": "Você é Logos-3, um agente de engenharia de software da família de modelos Conatus. Raciocine em <think>, use <tool_call name=\"...\"> quando precisar de uma ferramenta, e responda ao usuário só dentro de <final>.",
+    "user_request": "O que está no .gitignore desse projeto?",
+    "raw_text": "<think>Pedido novo e independente. Vou ler o arquivo de verdade em vez de supor um conteúdo padrão.</think><tool_call name=\"read_file\">{\"path\": \".gitignore\"}</tool_call><tool_result name=\"read_file\" status=\"ok\">{\"content\": \"__pycache__/\\n.venv/\\n\", \"start_line\": 1, \"end_line\": 2, \"total_lines\": 2}</tool_result><think>O arquivo ignora cache de bytecode e ambientes virtuais.</think><final>O .gitignore ignora __pycache__/ e .venv/.</final>",
+    "history": [
+      {
+        "user_request": "O que é um decorator em Python, resumidamente?",
+        "raw_text": "<think>Pergunta conceitual sobre a linguagem.</think><final>Um decorator envolve uma função com outra, adicionando comportamento extra sem alterar o código original.</final>"
+      }
+    ]
+  }
+}

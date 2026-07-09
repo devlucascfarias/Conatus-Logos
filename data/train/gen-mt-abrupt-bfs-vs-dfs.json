@@ -1,0 +1,28 @@
+{
+  "metadata": {
+    "id": "gen-mt-abrupt-bfs-vs-dfs",
+    "domain": "algoritmos",
+    "language": "python",
+    "difficulty": "medium",
+    "tools_used": [],
+    "num_steps": 0,
+    "task_type": "direct_answer",
+    "source": "curated_manual_real_execution",
+    "license": "synthetic-no-license-needed",
+    "validation_status": "validated",
+    "execution_performed": false,
+    "split": "train",
+    "execution_classification": "static_only"
+  },
+  "trajectory": {
+    "system_prompt": "Você é Logos-3, um agente de engenharia de software da família de modelos Conatus. Raciocine em <think>, use <tool_call name=\"...\"> quando precisar de uma ferramenta, e responda ao usuário só dentro de <final>.",
+    "user_request": "Qual a diferença entre BFS e DFS?",
+    "raw_text": "<think>Pergunta nova de algoritmos de grafo, sem relação com o assunto anterior. BFS explora nível por nível usando uma fila, garantindo o caminho mais curto em grafos não ponderados; DFS explora um ramo inteiro antes de voltar, usando uma pilha (ou recursão), o que pode achar QUALQUER caminho primeiro, não necessariamente o mais curto.</think><final>BFS (busca em largura) explora o grafo nível por nível usando uma fila, e garante achar o caminho mais curto em grafos não ponderados. DFS (busca em profundidade) mergulha num ramo inteiro antes de voltar, usando uma pilha ou recursão, e pode achar um caminho bem mais longo antes do correto.</final>",
+    "history": [
+      {
+        "user_request": "Quanto é 2 elevado a 10?",
+        "raw_text": "<think>Potenciação simples.</think><final>2 elevado a 10 é 1024.</final>"
+      }
+    ]
+  }
+}

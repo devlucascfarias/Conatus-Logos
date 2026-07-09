@@ -1,0 +1,35 @@
+{
+  "metadata": {
+    "id": "gen-mt-abrupt-fib-memo",
+    "domain": "algoritmos",
+    "language": "python",
+    "difficulty": "medium",
+    "tools_used": [
+      "write_file",
+      "checker"
+    ],
+    "num_steps": 2,
+    "task_type": "multi_tool_call",
+    "source": "curated_manual_real_execution",
+    "license": "synthetic-no-license-needed",
+    "validation_status": "validated",
+    "execution_performed": true,
+    "split": "train",
+    "execution_classification": "tested"
+  },
+  "trajectory": {
+    "system_prompt": "Você é Logos-3, um agente de engenharia de software da família de modelos Conatus. Raciocine em <think>, use <tool_call name=\"...\"> quando precisar de uma ferramenta, e responda ao usuário só dentro de <final>.",
+    "user_request": "Escreva uma função fibonacci com memoização.",
+    "raw_text": "<think>Assunto novo, sem relação com o anterior. Fibonacci sem memoização recalcula os mesmos subproblemas repetidamente, é O(2^n). Vou usar um dicionário como cache pra guardar resultados já calculados e reduzir isso pra O(n).</think><tool_call name=\"write_file\">{\"path\": \"fib.py\", \"content\": \"def fib(n, cache=None):\\n    if cache is None:\\n        cache = {}\\n    if n in cache:\\n        return cache[n]\\n    if n <= 1:\\n        return n\\n    cache[n] = fib(n - 1, cache) + fib(n - 2, cache)\\n    return cache[n]\\n\"}</tool_call><tool_result name=\"write_file\" status=\"ok\">{\"path\": \"fib.py\", \"bytes_written\": 213, \"mode\": \"overwrite\"}</tool_result><think>Vou testar com um valor pequeno conhecido e um valor maior, pra confirmar que a memoização não quebra o resultado.</think><tool_call name=\"checker\">{\"language\": \"python\", \"operation\": \"compile_and_test\", \"files\": [{\"path\": \"fib.py\", \"content\": \"def fib(n, cache=None):\\n    if cache is None:\\n        cache = {}\\n    if n in cache:\\n        return cache[n]\\n    if n <= 1:\\n        return n\\n    cache[n] = fib(n - 1, cache) + fib(n - 2, cache)\\n    return cache[n]\\n\"}, {\"path\": \"test_fib.py\", \"content\": \"from fib import fib\\n\\ndef test_fib_small():\\n    assert fib(10) == 55\\n\\ndef test_fib_larger():\\n    assert fib(20) == 6765\\n\"}]}</tool_call><tool_result name=\"checker\" status=\"ok\">{\"passed\": true, \"errors\": [], \"stdout\": \"..                                                                       [100%]\\n2 passed in 0.02s\\n\", \"stderr\": \"\\n\", \"metadata\": {\"language\": \"python\", \"duration_ms\": 2531}}</tool_result><final>Implementei fib com memoização via dicionário cache, reduzindo de O(2^n) pra O(n). Testei com fib(10) e fib(20), os dois bateram com os valores esperados.</final>",
+    "history": [
+      {
+        "user_request": "Qual a raiz quadrada de 144?",
+        "raw_text": "<think>Cálculo direto, sem necessidade de ferramenta.</think><final>A raiz quadrada de 144 é 12.</final>"
+      },
+      {
+        "user_request": "O que é um decorator em Python, resumidamente?",
+        "raw_text": "<think>Pergunta conceitual sobre a linguagem.</think><final>Um decorator envolve uma função com outra, adicionando comportamento extra sem alterar o código original.</final>"
+      }
+    ]
+  }
+}

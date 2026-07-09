@@ -1,12 +1,13 @@
 # Plano: wave 2 do dataset — identidade Logos-3/Conatus + generalização multi-turno
 
-Status: **identidade, upgrade de estilo (taxonomia completa, 22/22 task_types) e a extensão de
-schema multi-turno completa (itens 1 E 2) executados em 2026-07-09** (ver
-`D-conatus-logos3-identity`, `D-style-upgrade-wave2-pilot`, `D-style-upgrade-wave2-round2`,
-`D-style-upgrade-wave2-round3`, `D-dataset-history-schema` e `D-dataset-history-loss-mask` em
-`docs/PLAN.md`). O bloqueio técnico está removido — dá pra gerar as categorias multi-turno em
-si agora (mudança abrupta de direção, pedido de ferramenta tardio); isso é o próximo passo,
-ainda não feito.
+Status: **wave 2 completa em 2026-07-09** — identidade, upgrade de estilo (taxonomia completa,
+22/22 task_types), extensão de schema multi-turno (itens 1 e 2) E as duas categorias
+multi-turno em si (85 exemplos: 45 mudança abrupta + 40 pedido de ferramenta tardio), todas
+executadas (ver `D-conatus-logos3-identity`, `D-style-upgrade-wave2-pilot`,
+`D-style-upgrade-wave2-round2`, `D-style-upgrade-wave2-round3`, `D-dataset-history-schema`,
+`D-dataset-history-loss-mask` e `D-dataset-multiturn-wave2-pilot` em `docs/PLAN.md`). Nenhum
+item planejado desta wave continua bloqueado por infraestrutura; o que resta é decisão de
+retreino e validação com o modelo real, não mais escrita de dataset.
 
 ## 1. Motivação
 
@@ -34,8 +35,8 @@ Duas origens distintas, ambas de uso real da CLI (`conatus`), não hipotéticas:
 | Categoria | Contagem alvo | Status |
 |---|---|---|
 | Identidade (perguntas diretas + confusão com concorrentes) | ~50-60 | **28 executados** nesta sessão (`scripts/gen_identity_wave2_pilot.py`) — primeira leva real, hand-authored, sem duplicação mecânica |
-| Mudança abrupta de direção (multi-turno) | ~200-250 | Pendente — requer extensão de schema (seção 4) |
-| Pedido de ferramenta avulso/tardio numa sessão poluída (multi-turno) | ~150-200 | Pendente — mesma dependência |
+| Mudança abrupta de direção (multi-turno) | 45 (revisado de ~200-250, ver seção 6.2) | **45 executados** nesta sessão (`scripts/gen_multiturn_wave2_pilot.py`) |
+| Pedido de ferramenta avulso/tardio numa sessão poluída (multi-turno) | 40 (revisado de ~150-200, ver seção 6.2) | **40 executados** nesta sessão (`scripts/gen_multiturn_wave2_pilot.py`) |
 | Upgrade de estilo (think técnico proporcional + final caloroso) sobre task_types existentes | ~300-400 | **27 executados** nesta sessão (`scripts/gen_style_upgrade_wave2_pilot.py`) — **todos os 22 task_types da taxonomia cobertos**, incluindo os seis que exigiam FALHA/recusa real controlada (checker_rejects_code, test_fails, forbidden_operation, tool_unavailable, invalid_call_then_correction, model_fixes_after_error) |
 
 Total desta sessão: **55 exemplos novos (28 identidade + 27 upgrade de estilo) + ~3679
@@ -248,6 +249,64 @@ cobertura no novo estilo de `<think>`/`<final>`** — não significa que cada um
 suficiente pra generalizar bem (a maioria tem só 1 exemplo), mas fecha o objetivo desta
 fatia: demonstrar o padrão em toda a superfície da taxonomia antes de decidir onde aprofundar.
 
+## 6.2 Categorias multi-turno — executadas (85 exemplos, 45 + 40)
+
+`scripts/gen_multiturn_wave2_pilot.py`. Alvo revisado explicitamente pelo usuário: em vez do
+número aspiracional original (~200-250 + ~150-200), mirar um número maior de cara pra reduzir
+risco de precisar de uma segunda rodada, mas ainda proporcional ao custo real de gerar
+multi-turno com execução verdadeira — resultou em 45 (mudança abrupta) + 40 (pedido de
+ferramenta tardio) = 85.
+
+**Mecanismo**: um banco de 12 turnos de CONTEXTO reutilizáveis (`FILLERS` — identidade,
+matemática simples, conceitos de linguagem, sem ferramenta) vira `history` em combinações
+diferentes (1-3 turnos, ordem e composição variando por exemplo). O que efetivamente TREINA em
+cada exemplo é só o turno ÂNCORA (`user_request`/`raw_text` de topo, via
+`Trajectory(..., history=...).to_example_dict()` — D-dataset-history-schema). Reutilizar os
+mesmos FILLERS como contexto em sessões diferentes não é a duplicação que o "AVISO CRÍTICO" dos
+gaps anteriores alertava — aquele aviso era sobre duplicar o texto que TREINA, e `history` fica
+inteiramente mascarado da loss (D-dataset-history-loss-mask); cada um dos 85 âncoras foi escrito
+com conteúdo técnico genuinamente distinto.
+
+**Categoria 1 (45 âncoras, mudança abrupta de direção)**: cobre algoritmos/complexidade
+(quicksort no pior caso, hash maps, busca binária, Dijkstra, programação dinâmica...), teoria
+de CS (NP-completo, BFS vs DFS, greedy), conceitos de linguagem (imutabilidade, `==` vs `is`,
+late binding em closures, context managers), segurança (injeção de SQL), concorrência (race
+condition, deadlock, processo vs thread), ferramentas de dev (git rebase vs merge, virtual
+environment, CI/CD, linter), 3 exemplos de escrita de código com execução REAL
+(`write_file`+`checker`: `is_prime`, fibonacci com memoização, validador de parênteses
+balanceados), 3 exemplos de debugging REAL (off-by-one, argumento padrão mutável, operador de
+comparação errado — bug plantado de propósito, real `checker` confirmando a falha e depois a
+correção), e 4 exemplos de reação de confusão (`"O quê?"`, `"Isso não faz sentido"`), espelhando
+diretamente o padrão observado na falha ao vivo original (`docs/PLAN.md` seção 1 deste
+documento).
+
+**Categoria 2 (40 âncoras, pedido de ferramenta tardio)**: 10 `list_files` (workspace vazio,
+com arquivos, com subpasta, filtrado por glob), 10 `read_file` (config, main, utils, README,
+requirements, model, gitignore, env.example, changelog, constants — todos arquivos reais
+materializados no sandbox antes da chamada), 8 `shell ls`, 6 `shell cat`, 6 `shell grep`
+(incluindo um caso real de `grep` sem nenhuma ocorrência — retorno de código 1, convenção do
+próprio `grep` pra "sem match", não uma falha real de execução; o `<think>` do âncora precisa
+interpretar isso corretamente). Toda ferramenta roda de verdade via `ToolExecutorRegistry`/
+`SandboxContext`, nenhum `tool_result` fabricado.
+
+**Achados durante a execução, corrigidos antes de aceitar os exemplos**:
+- Mesmo vazamento de caminho absoluto local via `pytest_asyncio` já corrigido em
+  `D-style-upgrade-wave2-pilot` — reaplicado aqui (o sanitizador não é compartilhado entre os
+  dois scripts geradores, cada um tem sua cópia).
+- Três hífens gramaticais evitáveis do português (`soma-se`, `quebrando-o`, `executá-lo` —
+  construções pronominais reflexivas/clíticas) foram reescritos sem hífen (`some as`,
+  `quebrando ele`, `executar ele`), mantendo a regra de pontuação estrita em vez de abrir mais
+  uma exceção. Ficaram só as exceções já estabelecidas: nomes próprios (`Logos-3`, `GPT-4`,
+  `NP-completo`) e notação de código/matemática citada em prosa (`items[:-1]`, `len(items) - 1`).
+
+**Validação ponta a ponta real**: além de `structural_validate`/`schema_validate` (0 problemas
+nos 85), 0 leaks, 0 ids duplicados com o resto do dataset (~3706 exemplos), rodei um exemplo de
+verdade através de `build_pretokenized_dataset` (a mesma função que o notebook de treino usaria)
+e confirmei, decodificando só os tokens com loss ativo, que o pedido do turno de histórico
+realmente não aparece no texto treinado — não é só teste sintético isolado
+(`tests/unit/test_dataset_history_schema.py`/`test_data_collator.py`), é o dataset real passando
+pela pipeline real de ponta a ponta.
+
 ## 7. Achado colateral (não é retrabalho, é higiene de schema pré-existente)
 
 Ao validar o novo lote de identidade contra `structural_validate`
@@ -302,6 +361,17 @@ padrão não foram tocados aqui (fora de escopo desta wave, registrado para limp
 - [x] Rodar suite de testes Python de novo após a máscara de loss (161/161, ignorando o único
       teste pré-existente que já falhava antes desta sessão inteira por um problema de
       ambiente Windows/cp1252 no `trl`, não relacionado a nada disto)
-- [ ] Categorias multi-turno em si (mudança abrupta, pedido tardio) — **bloqueio técnico
-      removido, pendente só a geração dos exemplos** — próximo passo real
+- [x] Gerar categorias multi-turno em si (85 exemplos: 45 mudança abrupta + 40 pedido de
+      ferramenta tardio) — `scripts/gen_multiturn_wave2_pilot.py`, seção 6.2
+- [x] Validar estrutura/schema dos 85 exemplos (0 problemas), checar vazamento de detalhe
+      interno (0 leaks, depois de corrigir o mesmo vazamento do `pytest_asyncio` já visto em
+      `D-style-upgrade-wave2-pilot`), pontuação (0 violações depois de reescrever 3 hífens
+      gramaticais evitáveis do português) e ids duplicados com o resto do dataset (0)
+- [x] Validação ponta a ponta real: um exemplo do lote passado por
+      `build_pretokenized_dataset` de verdade confirma que o histórico não vaza pro texto
+      treinado, não só nos testes sintéticos
+- [x] Rodar suite de testes Python de novo (161/161, mesmo teste pré-existente do `trl`
+      ignorado)
 - [x] Atualizar `docs/PLAN.md`, commit
+- [ ] Retreinar e validar com o modelo real (checkpoint novo) — fora do escopo desta sessão,
+      decisão de quando/como retreinar fica com o usuário

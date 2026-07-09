@@ -1,0 +1,31 @@
+{
+  "metadata": {
+    "id": "gen-mt-abrupt-balanced-parens",
+    "domain": "algoritmos",
+    "language": "python",
+    "difficulty": "medium",
+    "tools_used": [
+      "write_file",
+      "checker"
+    ],
+    "num_steps": 2,
+    "task_type": "multi_tool_call",
+    "source": "curated_manual_real_execution",
+    "license": "synthetic-no-license-needed",
+    "validation_status": "validated",
+    "execution_performed": true,
+    "split": "train",
+    "execution_classification": "tested"
+  },
+  "trajectory": {
+    "system_prompt": "Você é Logos-3, um agente de engenharia de software da família de modelos Conatus. Raciocine em <think>, use <tool_call name=\"...\"> quando precisar de uma ferramenta, e responda ao usuário só dentro de <final>.",
+    "user_request": "Escreva um validador de parênteses balanceados.",
+    "raw_text": "<think>Pedido novo, sem ligação com o turno anterior. Vou usar uma pilha: empilho cada abertura, e a cada fechamento verifico se ela corresponde ao topo da pilha; no final, a pilha precisa estar vazia pra estar tudo balanceado.</think><tool_call name=\"write_file\">{\"path\": \"balanced.py\", \"content\": \"def is_balanced(s):\\n    pairs = {')': '(', ']': '[', '}': '{'}\\n    stack = []\\n    for ch in s:\\n        if ch in '([{':\\n            stack.append(ch)\\n        elif ch in pairs:\\n            if not stack or stack.pop() != pairs[ch]:\\n                return False\\n    return not stack\\n\"}</tool_call><tool_result name=\"write_file\" status=\"ok\">{\"path\": \"balanced.py\", \"bytes_written\": 278, \"mode\": \"overwrite\"}</tool_result><think>Vou testar com um caso balanceado, um desbalanceado por tipo errado e um com fechamento sobrando.</think><tool_call name=\"checker\">{\"language\": \"python\", \"operation\": \"compile_and_test\", \"files\": [{\"path\": \"balanced.py\", \"content\": \"def is_balanced(s):\\n    pairs = {')': '(', ']': '[', '}': '{'}\\n    stack = []\\n    for ch in s:\\n        if ch in '([{':\\n            stack.append(ch)\\n        elif ch in pairs:\\n            if not stack or stack.pop() != pairs[ch]:\\n                return False\\n    return not stack\\n\"}, {\"path\": \"test_balanced.py\", \"content\": \"from balanced import is_balanced\\n\\ndef test_balanced_mixed():\\n    assert is_balanced('([{}])') is True\\n\\ndef test_wrong_type_order():\\n    assert is_balanced('([)]') is False\\n\\ndef test_extra_closing():\\n    assert is_balanced('())') is False\\n\"}]}</tool_call><tool_result name=\"checker\" status=\"ok\">{\"passed\": true, \"errors\": [], \"stdout\": \"...                                                                      [100%]\\n3 passed in 0.02s\\n\", \"stderr\": \"\\n\", \"metadata\": {\"language\": \"python\", \"duration_ms\": 2531}}</tool_result><final>Implementei is_balanced usando uma pilha pra rastrear aberturas e conferir cada fechamento contra o topo. Testei balanceado, tipo errado e fechamento sobrando, todos corretos.</final>",
+    "history": [
+      {
+        "user_request": "O que é uma race condition?",
+        "raw_text": "<think>Pergunta conceitual de concorrência.</think><final>É quando o resultado de um programa depende da ordem imprevisível em que threads ou processos acessam um recurso compartilhado.</final>"
+      }
+    ]
+  }
+}

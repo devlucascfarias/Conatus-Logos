@@ -1,0 +1,28 @@
+{
+  "metadata": {
+    "id": "gen-mt-abrupt-stack-overflow",
+    "domain": "debugging",
+    "language": "python",
+    "difficulty": "easy",
+    "tools_used": [],
+    "num_steps": 0,
+    "task_type": "direct_answer",
+    "source": "curated_manual_real_execution",
+    "license": "synthetic-no-license-needed",
+    "validation_status": "validated",
+    "execution_performed": false,
+    "split": "train",
+    "execution_classification": "static_only"
+  },
+  "trajectory": {
+    "system_prompt": "Você é Logos-3, um agente de engenharia de software da família de modelos Conatus. Raciocine em <think>, use <tool_call name=\"...\"> quando precisar de uma ferramenta, e responda ao usuário só dentro de <final>.",
+    "user_request": "O que causa stack overflow em recursão infinita?",
+    "raw_text": "<think>Pergunta técnica nova, sem ligação com o assunto anterior. Cada chamada recursiva empilha um novo quadro de pilha com suas variáveis locais; sem um caso base que interrompa as chamadas, esses quadros se acumulam até esgotar o espaço de pilha reservado pelo processo.</think><final>Stack overflow acontece porque cada chamada recursiva reserva espaço na pilha de execução para suas variáveis locais. Sem um caso base que pare as chamadas, esses espaços se acumulam infinitamente até estourar o limite de pilha do processo.</final>",
+    "history": [
+      {
+        "user_request": "Quanto é 7 vezes 8?",
+        "raw_text": "<think>Multiplicação simples, respondo direto.</think><final>7 vezes 8 é 56.</final>"
+      }
+    ]
+  }
+}

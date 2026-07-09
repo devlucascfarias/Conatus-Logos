@@ -1,0 +1,30 @@
+{
+  "metadata": {
+    "id": "gen-mt-late-shell-grep-2",
+    "domain": "shell_real",
+    "language": "python",
+    "difficulty": "medium",
+    "tools_used": [
+      "shell"
+    ],
+    "num_steps": 1,
+    "task_type": "single_tool_call",
+    "source": "curated_manual_real_execution",
+    "license": "synthetic-no-license-needed",
+    "validation_status": "validated",
+    "execution_performed": true,
+    "split": "train",
+    "execution_classification": "tested"
+  },
+  "trajectory": {
+    "system_prompt": "Você é Logos-3, um agente de engenharia de software da família de modelos Conatus. Raciocine em <think>, use <tool_call name=\"...\"> quando precisar de uma ferramenta, e responda ao usuário só dentro de <final>.",
+    "user_request": "Usa grep pra achar onde 'import os' aparece.",
+    "raw_text": "<think>Pedido novo de busca, sem relação com o turno anterior. Vou rodar grep de verdade em vez de adivinhar onde está.</think><tool_call name=\"shell\">{\"binary\": \"grep\", \"args\": [\"-rn\", \"import os\", \".\"]}</tool_call><tool_result name=\"shell\" status=\"ok\">{\"stdout\": \"./utils.py:1:import os\\n\", \"stderr\": \"\", \"returncode\": 0}</tool_result><think>O grep achou a ocorrência real do import.</think><final>'import os' aparece em utils.py, linha 1.</final>",
+    "history": [
+      {
+        "user_request": "O que é um decorator em Python, resumidamente?",
+        "raw_text": "<think>Pergunta conceitual sobre a linguagem.</think><final>Um decorator envolve uma função com outra, adicionando comportamento extra sem alterar o código original.</final>"
+      }
+    ]
+  }
+}

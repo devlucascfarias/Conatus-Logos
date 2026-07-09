@@ -1,0 +1,30 @@
+{
+  "metadata": {
+    "id": "gen-mt-late-shell-cat-3",
+    "domain": "shell_real",
+    "language": "python",
+    "difficulty": "easy",
+    "tools_used": [
+      "shell"
+    ],
+    "num_steps": 1,
+    "task_type": "single_tool_call",
+    "source": "curated_manual_real_execution",
+    "license": "synthetic-no-license-needed",
+    "validation_status": "validated",
+    "execution_performed": true,
+    "split": "train",
+    "execution_classification": "tested"
+  },
+  "trajectory": {
+    "system_prompt": "Você é Logos-3, um agente de engenharia de software da família de modelos Conatus. Raciocine em <think>, use <tool_call name=\"...\"> quando precisar de uma ferramenta, e responda ao usuário só dentro de <final>.",
+    "user_request": "Cat no requirements.txt, por favor.",
+    "raw_text": "<think>Pedido avulso, sem conexão com o assunto anterior. Vou rodar cat de verdade pra listar as dependências reais.</think><tool_call name=\"shell\">{\"binary\": \"cat\", \"args\": [\"requirements.txt\"]}</tool_call><tool_result name=\"shell\" status=\"ok\">{\"stdout\": \"flask==3.0.0\\n\", \"stderr\": \"\", \"returncode\": 0}</tool_result><think>O cat mostrou uma única dependência.</think><final>requirements.txt contém só: flask==3.0.0.</final>",
+    "history": [
+      {
+        "user_request": "O que é uma race condition?",
+        "raw_text": "<think>Pergunta conceitual de concorrência.</think><final>É quando o resultado de um programa depende da ordem imprevisível em que threads ou processos acessam um recurso compartilhado.</final>"
+      }
+    ]
+  }
+}

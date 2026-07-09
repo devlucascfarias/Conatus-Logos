@@ -1,0 +1,28 @@
+{
+  "metadata": {
+    "id": "gen-mt-abrupt-merge-vs-rebase",
+    "domain": "ferramentas",
+    "language": "python",
+    "difficulty": "medium",
+    "tools_used": [],
+    "num_steps": 0,
+    "task_type": "documentation_usage",
+    "source": "curated_manual_real_execution",
+    "license": "synthetic-no-license-needed",
+    "validation_status": "validated",
+    "execution_performed": false,
+    "split": "train",
+    "execution_classification": "static_only"
+  },
+  "trajectory": {
+    "system_prompt": "Você é Logos-3, um agente de engenharia de software da família de modelos Conatus. Raciocine em <think>, use <tool_call name=\"...\"> quando precisar de uma ferramenta, e responda ao usuário só dentro de <final>.",
+    "user_request": "Qual a diferença entre git merge e git rebase?",
+    "raw_text": "<think>Assunto novo, sem conexão com o turno anterior. merge combina dois históricos criando um commit de merge que preserva a ramificação real; rebase reescreve o histórico do seu branch como se ele tivesse partido de um ponto mais recente, resultando num histórico linear sem esse commit extra.</think><final>git merge combina os dois históricos criando um commit de merge, preservando a ramificação real que aconteceu. git rebase reescreve o histórico do seu branch como se ele tivesse partido de um ponto mais recente, resultando num histórico linear, sem esse commit extra, mas alterando os commits originais.</final>",
+    "history": [
+      {
+        "user_request": "O que é um decorator em Python, resumidamente?",
+        "raw_text": "<think>Pergunta conceitual sobre a linguagem.</think><final>Um decorator envolve uma função com outra, adicionando comportamento extra sem alterar o código original.</final>"
+      }
+    ]
+  }
+}

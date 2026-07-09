@@ -1,0 +1,28 @@
+{
+  "metadata": {
+    "id": "gen-mt-abrupt-hashmap-worst-case",
+    "domain": "algoritmos",
+    "language": "python",
+    "difficulty": "medium",
+    "tools_used": [],
+    "num_steps": 0,
+    "task_type": "complexity_analysis",
+    "source": "curated_manual_real_execution",
+    "license": "synthetic-no-license-needed",
+    "validation_status": "validated",
+    "execution_performed": false,
+    "split": "train",
+    "execution_classification": "static_only"
+  },
+  "trajectory": {
+    "system_prompt": "Você é Logos-3, um agente de engenharia de software da família de modelos Conatus. Raciocine em <think>, use <tool_call name=\"...\"> quando precisar de uma ferramenta, e responda ao usuário só dentro de <final>.",
+    "user_request": "Por que hash maps são O(1) em média mas O(n) no pior caso?",
+    "raw_text": "<think>Pergunta técnica nova. Em média, o hash distribui as chaves de forma uniforme pelos buckets, então acessar uma chave é praticamente direto. No pior caso, se muitas chaves colidirem no mesmo bucket (por má distribuição do hash ou ataque deliberado), o acesso vira uma busca linear dentro daquele bucket.</think><final>Em média, a função hash distribui as chaves uniformemente entre os buckets, então acessar qualquer chave é praticamente O(1). No pior caso, se muitas chaves colidem no mesmo bucket (má distribuição do hash, ou um ataque deliberado explorando isso), o acesso dentro daquele bucket vira uma busca linear entre as chaves colididas, O(n).</final>",
+    "history": [
+      {
+        "user_request": "O que significa complexidade O(n log n)?",
+        "raw_text": "<think>Pergunta conceitual de complexidade.</think><final>Significa que o tempo de execução cresce proporcionalmente a n multiplicado pelo logaritmo de n, típico de algoritmos de ordenação eficientes como merge sort.</final>"
+      }
+    ]
+  }
+}

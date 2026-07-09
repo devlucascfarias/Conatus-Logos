@@ -1,0 +1,34 @@
+{
+  "metadata": {
+    "id": "gen-mt-late-shell-ls-6",
+    "domain": "shell_real",
+    "language": "python",
+    "difficulty": "easy",
+    "tools_used": [
+      "shell"
+    ],
+    "num_steps": 1,
+    "task_type": "single_tool_call",
+    "source": "curated_manual_real_execution",
+    "license": "synthetic-no-license-needed",
+    "validation_status": "validated",
+    "execution_performed": true,
+    "split": "train",
+    "execution_classification": "tested"
+  },
+  "trajectory": {
+    "system_prompt": "Você é Logos-3, um agente de engenharia de software da família de modelos Conatus. Raciocine em <think>, use <tool_call name=\"...\"> quando precisar de uma ferramenta, e responda ao usuário só dentro de <final>.",
+    "user_request": "Roda ls de novo, quero confirmar o estado atual.",
+    "raw_text": "<think>Pedido novo e independente do assunto anterior. Vou rodar o comando de verdade, não vou supor que nada mudou.</think><tool_call name=\"shell\">{\"binary\": \"ls\", \"args\": [\"-la\"]}</tool_call><tool_result name=\"shell\" status=\"ok\">{\"stdout\": \"total 3073\\ndrwxr-xr-x 1 Lucas 197608  0 Jul  9 12:18 .\\ndrwxr-xr-x 1 Lucas 197608  0 Jul  9 12:18 ..\\n-rw-r--r-- 1 Lucas 197608 32 Jul  9 12:18 test_app.py\\n\", \"stderr\": \"\", \"returncode\": 0}</tool_result><think>A saída mostrou um arquivo de teste presente.</think><final>O estado atual: só test_app.py está presente no diretório.</final>",
+    "history": [
+      {
+        "user_request": "Quanto é 2 elevado a 10?",
+        "raw_text": "<think>Potenciação simples.</think><final>2 elevado a 10 é 1024.</final>"
+      },
+      {
+        "user_request": "O que é um decorator em Python, resumidamente?",
+        "raw_text": "<think>Pergunta conceitual sobre a linguagem.</think><final>Um decorator envolve uma função com outra, adicionando comportamento extra sem alterar o código original.</final>"
+      }
+    ]
+  }
+}

@@ -1,0 +1,35 @@
+{
+  "metadata": {
+    "id": "gen-mt-abrupt-wrong-comparison",
+    "domain": "debugging",
+    "language": "python",
+    "difficulty": "easy",
+    "tools_used": [
+      "write_file",
+      "checker"
+    ],
+    "num_steps": 2,
+    "task_type": "debugging",
+    "source": "curated_manual_real_execution",
+    "license": "synthetic-no-license-needed",
+    "validation_status": "validated",
+    "execution_performed": true,
+    "split": "train",
+    "execution_classification": "tested"
+  },
+  "trajectory": {
+    "system_prompt": "Você é Logos-3, um agente de engenharia de software da família de modelos Conatus. Raciocine em <think>, use <tool_call name=\"...\"> quando precisar de uma ferramenta, e responda ao usuário só dentro de <final>.",
+    "user_request": "Essa função devia checar se a lista está vazia, mas sempre retorna False. def is_empty(items): return items == None",
+    "raw_text": "<think>Assunto novo, sem relação com o turno anterior. Comparar com None não detecta lista vazia, uma lista vazia é [] e [] == None é False. O jeito certo de checar vazio é len(items) == 0 ou simplesmente not items.</think><tool_call name=\"write_file\">{\"path\": \"isempty.py\", \"content\": \"def is_empty(items):\\n    return not items\\n\"}</tool_call><tool_result name=\"write_file\" status=\"ok\">{\"path\": \"isempty.py\", \"bytes_written\": 42, \"mode\": \"overwrite\"}</tool_result><think>Vou testar com uma lista vazia e uma lista com elementos, pra confirmar os dois lados.</think><tool_call name=\"checker\">{\"language\": \"python\", \"operation\": \"compile_and_test\", \"files\": [{\"path\": \"isempty.py\", \"content\": \"def is_empty(items):\\n    return not items\\n\"}, {\"path\": \"test_isempty.py\", \"content\": \"from isempty import is_empty\\n\\ndef test_empty_list_is_true():\\n    assert is_empty([]) is True\\n\\ndef test_nonempty_list_is_false():\\n    assert is_empty([1]) is False\\n\"}]}</tool_call><tool_result name=\"checker\" status=\"ok\">{\"passed\": true, \"errors\": [], \"stdout\": \"..                                                                       [100%]\\n2 passed in 0.01s\\n\", \"stderr\": \"\\n\", \"metadata\": {\"language\": \"python\", \"duration_ms\": 2531}}</tool_result><final>O bug era comparar items == None, que nunca é verdadeiro pra uma lista vazia de verdade ([] é diferente de None). Corrigi pra not items, que é True tanto pra lista vazia quanto pra None. Testei lista vazia e lista com elemento, os dois corretos agora.</final>",
+    "history": [
+      {
+        "user_request": "Qual a raiz quadrada de 144?",
+        "raw_text": "<think>Cálculo direto, sem necessidade de ferramenta.</think><final>A raiz quadrada de 144 é 12.</final>"
+      },
+      {
+        "user_request": "O que é um generator em Python?",
+        "raw_text": "<think>Pergunta conceitual sobre a linguagem.</think><final>Um generator produz valores um de cada vez sob demanda, usando yield, em vez de montar uma lista inteira na memória.</final>"
+      }
+    ]
+  }
+}

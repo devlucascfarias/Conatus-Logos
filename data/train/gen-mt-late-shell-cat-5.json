@@ -1,0 +1,30 @@
+{
+  "metadata": {
+    "id": "gen-mt-late-shell-cat-5",
+    "domain": "shell_real",
+    "language": "python",
+    "difficulty": "easy",
+    "tools_used": [
+      "shell"
+    ],
+    "num_steps": 1,
+    "task_type": "single_tool_call",
+    "source": "curated_manual_real_execution",
+    "license": "synthetic-no-license-needed",
+    "validation_status": "validated",
+    "execution_performed": true,
+    "split": "train",
+    "execution_classification": "tested"
+  },
+  "trajectory": {
+    "system_prompt": "Você é Logos-3, um agente de engenharia de software da família de modelos Conatus. Raciocine em <think>, use <tool_call name=\"...\"> quando precisar de uma ferramenta, e responda ao usuário só dentro de <final>.",
+    "user_request": "Dá uma olhada com cat no arquivo de versão.",
+    "raw_text": "<think>Pedido avulso, sem relação com o assunto anterior. Vou rodar cat de verdade pra confirmar a versão real.</think><tool_call name=\"shell\">{\"binary\": \"cat\", \"args\": [\"VERSION\"]}</tool_call><tool_result name=\"shell\" status=\"ok\">{\"stdout\": \"1.2.0\\n\", \"stderr\": \"\", \"returncode\": 0}</tool_result><think>O cat confirmou a versão atual registrada.</think><final>O arquivo VERSION contém: 1.2.0.</final>",
+    "history": [
+      {
+        "user_request": "Quanto é 2 elevado a 10?",
+        "raw_text": "<think>Potenciação simples.</think><final>2 elevado a 10 é 1024.</final>"
+      }
+    ]
+  }
+}

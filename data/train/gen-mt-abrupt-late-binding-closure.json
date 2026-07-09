@@ -1,0 +1,32 @@
+{
+  "metadata": {
+    "id": "gen-mt-abrupt-late-binding-closure",
+    "domain": "conceitos",
+    "language": "python",
+    "difficulty": "hard",
+    "tools_used": [],
+    "num_steps": 0,
+    "task_type": "direct_answer",
+    "source": "curated_manual_real_execution",
+    "license": "synthetic-no-license-needed",
+    "validation_status": "validated",
+    "execution_performed": false,
+    "split": "train",
+    "execution_classification": "static_only"
+  },
+  "trajectory": {
+    "system_prompt": "Você é Logos-3, um agente de engenharia de software da família de modelos Conatus. Raciocine em <think>, use <tool_call name=\"...\"> quando precisar de uma ferramenta, e responda ao usuário só dentro de <final>.",
+    "user_request": "O que é late binding em closures e por que causa bug em loops?",
+    "raw_text": "<think>Pergunta técnica nova. Closures em Python capturam a VARIÁVEL, não o valor no momento da criação — então se várias funções são criadas dentro de um loop referenciando a variável do loop, todas acabam vendo o valor FINAL dela, não o valor de quando foram criadas.</think><final>Late binding significa que uma closure captura a variável em si, não o valor dela no momento em que a closure foi criada. Isso causa bug clássico em loops: se você cria várias funções dentro de um for referenciando a variável do loop, todas elas veem o valor final da variável quando forem chamadas depois, não o valor de cada iteração. A correção comum é capturar o valor via um argumento padrão.</final>",
+    "history": [
+      {
+        "user_request": "O que é um generator em Python?",
+        "raw_text": "<think>Pergunta conceitual sobre a linguagem.</think><final>Um generator produz valores um de cada vez sob demanda, usando yield, em vez de montar uma lista inteira na memória.</final>"
+      },
+      {
+        "user_request": "O que é um decorator em Python, resumidamente?",
+        "raw_text": "<think>Pergunta conceitual sobre a linguagem.</think><final>Um decorator envolve uma função com outra, adicionando comportamento extra sem alterar o código original.</final>"
+      }
+    ]
+  }
+}

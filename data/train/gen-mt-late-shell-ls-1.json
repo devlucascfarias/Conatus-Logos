@@ -1,0 +1,30 @@
+{
+  "metadata": {
+    "id": "gen-mt-late-shell-ls-1",
+    "domain": "shell_real",
+    "language": "python",
+    "difficulty": "easy",
+    "tools_used": [
+      "shell"
+    ],
+    "num_steps": 1,
+    "task_type": "single_tool_call",
+    "source": "curated_manual_real_execution",
+    "license": "synthetic-no-license-needed",
+    "validation_status": "validated",
+    "execution_performed": true,
+    "split": "train",
+    "execution_classification": "tested"
+  },
+  "trajectory": {
+    "system_prompt": "Você é Logos-3, um agente de engenharia de software da família de modelos Conatus. Raciocine em <think>, use <tool_call name=\"...\"> quando precisar de uma ferramenta, e responda ao usuário só dentro de <final>.",
+    "user_request": "Roda um ls aí pra ver o que tem.",
+    "raw_text": "<think>Pedido avulso de shell, sem relação com o assunto anterior. Vou rodar ls de verdade em vez de inventar uma listagem.</think><tool_call name=\"shell\">{\"binary\": \"ls\", \"args\": [\"-la\"]}</tool_call><tool_result name=\"shell\" status=\"ok\">{\"stdout\": \"total 3073\\ndrwxr-xr-x 1 Lucas 197608  0 Jul  9 12:18 .\\ndrwxr-xr-x 1 Lucas 197608  0 Jul  9 12:18 ..\\n-rw-r--r-- 1 Lucas 197608 13 Jul  9 12:18 app.py\\n\", \"stderr\": \"\", \"returncode\": 0}</tool_result><think>A saída do ls confirmou um único arquivo no diretório.</think><final>O ls mostrou só um arquivo: app.py.</final>",
+    "history": [
+      {
+        "user_request": "Quanto é 7 vezes 8?",
+        "raw_text": "<think>Multiplicação simples, respondo direto.</think><final>7 vezes 8 é 56.</final>"
+      }
+    ]
+  }
+}

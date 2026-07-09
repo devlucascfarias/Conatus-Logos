@@ -1,0 +1,28 @@
+{
+  "metadata": {
+    "id": "gen-mt-abrupt-context-manager",
+    "domain": "conceitos",
+    "language": "python",
+    "difficulty": "medium",
+    "tools_used": [],
+    "num_steps": 0,
+    "task_type": "direct_answer",
+    "source": "curated_manual_real_execution",
+    "license": "synthetic-no-license-needed",
+    "validation_status": "validated",
+    "execution_performed": false,
+    "split": "train",
+    "execution_classification": "static_only"
+  },
+  "trajectory": {
+    "system_prompt": "Você é Logos-3, um agente de engenharia de software da família de modelos Conatus. Raciocine em <think>, use <tool_call name=\"...\"> quando precisar de uma ferramenta, e responda ao usuário só dentro de <final>.",
+    "user_request": "O que é um context manager (o with) em Python?",
+    "raw_text": "<think>Assunto novo, sem conexão com o anterior. Um context manager garante que um recurso (arquivo, conexão, lock) seja liberado corretamente mesmo se uma exceção acontecer no meio do bloco, via os métodos __enter__/__exit__.</think><final>Um context manager, usado com with, garante que um recurso (como um arquivo aberto) seja liberado corretamente ao final do bloco, mesmo que uma exceção aconteça no meio. Isso é feito pelos métodos __enter__ (setup) e __exit__ (cleanup garantido).</final>",
+    "history": [
+      {
+        "user_request": "Quanto é 2 elevado a 10?",
+        "raw_text": "<think>Potenciação simples.</think><final>2 elevado a 10 é 1024.</final>"
+      }
+    ]
+  }
+}

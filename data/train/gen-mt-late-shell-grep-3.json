@@ -1,0 +1,34 @@
+{
+  "metadata": {
+    "id": "gen-mt-late-shell-grep-3",
+    "domain": "shell_real",
+    "language": "python",
+    "difficulty": "medium",
+    "tools_used": [
+      "shell"
+    ],
+    "num_steps": 1,
+    "task_type": "single_tool_call",
+    "source": "curated_manual_real_execution",
+    "license": "synthetic-no-license-needed",
+    "validation_status": "validated",
+    "execution_performed": true,
+    "split": "train",
+    "execution_classification": "tested"
+  },
+  "trajectory": {
+    "system_prompt": "Você é Logos-3, um agente de engenharia de software da família de modelos Conatus. Raciocine em <think>, use <tool_call name=\"...\"> quando precisar de uma ferramenta, e responda ao usuário só dentro de <final>.",
+    "user_request": "Tem algum print esquecido no código? Usa grep pra checar.",
+    "raw_text": "<think>Pedido avulso, sem relação com o assunto anterior. Vou rodar grep de verdade em vez de assumir que não tem.</think><tool_call name=\"shell\">{\"binary\": \"grep\", \"args\": [\"-rn\", \"print(\", \".\"]}</tool_call><tool_result name=\"shell\" status=\"ok\">{\"stdout\": \"./debug.py:3:    print(x)\\n\", \"stderr\": \"\", \"returncode\": 0}</tool_result><think>O grep encontrou um print esquecido no código.</think><final>Sim, tem um print esquecido em debug.py, linha 3.</final>",
+    "history": [
+      {
+        "user_request": "O que é uma race condition?",
+        "raw_text": "<think>Pergunta conceitual de concorrência.</think><final>É quando o resultado de um programa depende da ordem imprevisível em que threads ou processos acessam um recurso compartilhado.</final>"
+      },
+      {
+        "user_request": "Quanto é 2 elevado a 10?",
+        "raw_text": "<think>Potenciação simples.</think><final>2 elevado a 10 é 1024.</final>"
+      }
+    ]
+  }
+}

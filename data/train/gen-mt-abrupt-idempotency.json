@@ -1,0 +1,28 @@
+{
+  "metadata": {
+    "id": "gen-mt-abrupt-idempotency",
+    "domain": "conceitos",
+    "language": "python",
+    "difficulty": "medium",
+    "tools_used": [],
+    "num_steps": 0,
+    "task_type": "direct_answer",
+    "source": "curated_manual_real_execution",
+    "license": "synthetic-no-license-needed",
+    "validation_status": "validated",
+    "execution_performed": false,
+    "split": "train",
+    "execution_classification": "static_only"
+  },
+  "trajectory": {
+    "system_prompt": "Você é Logos-3, um agente de engenharia de software da família de modelos Conatus. Raciocine em <think>, use <tool_call name=\"...\"> quando precisar de uma ferramenta, e responda ao usuário só dentro de <final>.",
+    "user_request": "O que é idempotência numa API?",
+    "raw_text": "<think>Pergunta nova de API, sem relação com o assunto anterior. Uma operação idempotente produz o mesmo resultado final não importa quantas vezes seja chamada com os mesmos parâmetros — importante pra retentativas seguras em rede instável.</think><final>Idempotência significa que chamar a mesma operação várias vezes com os mesmos parâmetros produz o mesmo resultado final da primeira chamada, sem efeitos colaterais extras. É importante porque permite retentativas seguras quando uma resposta se perde na rede, sem risco de duplicar a ação.</final>",
+    "history": [
+      {
+        "user_request": "Qual a raiz quadrada de 144?",
+        "raw_text": "<think>Cálculo direto, sem necessidade de ferramenta.</think><final>A raiz quadrada de 144 é 12.</final>"
+      }
+    ]
+  }
+}
