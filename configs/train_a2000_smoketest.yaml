@@ -3,6 +3,13 @@
 # 24GB com seq_len=4096; numa placa de 12GB isso fica na borda ou estoura, então reduzimos aqui
 # antes de medir de verdade com scripts/vram_smoketest.py). Copiado de train_l4.yaml com dois
 # valores trocados: sequence_length e require_gpu_name_contains.
+#
+# sequence_length=2048 ainda estourou no teste real (--longest --num-examples 1): pico de
+# ~9.95 GiB só pra ESSA parte, mais ~1.37 GiB que o nvidia-smi confirmou serem do ambiente
+# gráfico do desktop (Xorg/GNOME Shell/VS Code/navegador) rodando na MESMA GPU — essa não é
+# uma GPU dedicada de treino, headless. Reduzido pra 1536: afeta só os ~10 exemplos
+# desproporcionalmente grandes (gen-hyprevision-*, 13-15KB) de ~2455 em data/train, perda de
+# sinal de treino desprezível.
 
 version: 1
 
@@ -29,7 +36,7 @@ lora:
 data:
   train_path: "data/train"
   validation_path: "data/validation"
-  sequence_length: 2048
+  sequence_length: 1536
   group_by_length: true
 
 training:
