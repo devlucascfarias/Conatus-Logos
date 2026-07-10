@@ -23,10 +23,10 @@
 #   "Input Data" e aponte RESUME_FROM_CHECKPOINT (célula 13) pro checkpoint copiado.
 #
 # Use com o notebook via a variável de ambiente TRAIN_CONFIG_PATH (ver notebooks/
-# train_granite_l4.ipynb, célula 4):
+# train_logos-v3.ipynb, célula 4):
 #
 #   TRAIN_CONFIG_PATH=configs/train_kaggle.yaml jupyter nbconvert --to notebook --execute \
-#       --inplace notebooks/train_granite_l4.ipynb
+#       --inplace notebooks/train_logos-v3.ipynb
 
 version: 1
 

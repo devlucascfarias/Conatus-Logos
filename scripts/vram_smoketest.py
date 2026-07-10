@@ -3,7 +3,7 @@
 completo — carregamento do modelo em 4-bit + LoRA + forward + backward — antes de comprometer
 horas de treino numa GPU nova (ex.: RTX A2000 12GB) sem saber se cabe.
 
-Mesma lógica das células 19/21/23 do notebook (notebooks/train_granite_l4.ipynb), mas: (a) roda
+Mesma lógica das células 19/21/23 do notebook (notebooks/train_logos-v3.ipynb), mas: (a) roda
 como script standalone, sem as partes específicas do Colab (montagem de Drive); (b) mede o pico
 depois de um passo de treino de VERDADE (forward + backward + optimizer.step()), não só depois
 de carregar o modelo — ativações durante o backward são o componente mais variável da estimativa
@@ -19,7 +19,7 @@ from __future__ import annotations
 
 import os
 
-# D-cuda-fragmentation (mesmo achado do notebook, cél. 4, notebooks/train_granite_l4.ipynb):
+# D-cuda-fragmentation (mesmo achado do notebook, cél. 4, notebooks/train_logos-v3.ipynb):
 # precisa ser definida ANTES de qualquer import de torch/CUDA — sem isso, o caching allocator
 # do PyTorch acumula memória "reservada mas não alocada" e pode bater OutOfMemoryError mesmo
 # com VRAM livre suficiente em teoria (confirmado de novo aqui na A2000: erro real reportou

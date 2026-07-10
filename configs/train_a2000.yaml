@@ -19,10 +19,10 @@
 # com o Qwen3.
 #
 # Use com o notebook via a variável de ambiente TRAIN_CONFIG_PATH (ver notebooks/
-# train_granite_l4.ipynb, célula 4):
+# train_logos-v3.ipynb, célula 4):
 #
 #   TRAIN_CONFIG_PATH=configs/train_a2000.yaml jupyter nbconvert --to notebook --execute \
-#       --inplace notebooks/train_granite_l4.ipynb
+#       --inplace notebooks/train_logos-v3.ipynb
 
 version: 1
 
