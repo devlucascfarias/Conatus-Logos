@@ -1,6 +1,4 @@
-"""Testes do executor `search_code` (PLAN.md seção 4.6, reativada em D-frontend-pivot-model-swap
-— docs/plan_frontend_specialization_wave3.md seção 4, dimensão "reuse-before-create" do think
-técnico de frontend)."""
+"""Testes do executor `search_code` (PLAN.md seção 4.6, reativada em D-search-code-reenable)."""
 
 import pytest
 

@@ -1,5 +1,6 @@
-"""CLI offline para o passo de julgamento visual do pivô de frontend (docs/
-plan_frontend_specialization_wave3.md seção 3, camada 5): renderiza um arquivo HTML de verdade
+"""CLI offline pra julgamento visual de uma página renderizada (docs/PLAN.md,
+D-checker-html-backend, camada 5 do design em camadas do backend html do checker): renderiza um
+arquivo HTML de verdade
 num Chromium headless, salva um screenshot real e imprime erros de console — depois disso um
 humano (ou Claude, olhando o PNG) julga se ficou bonito. Não existe métrica automática de
 "beleza" neste projeto e este script não finge ter uma (D-search-code-reenable e D11 seguem o

@@ -14,9 +14,9 @@ def _char_level_offsets(text: str) -> list[tuple[int, int]]:
 
 
 def test_train_config_loads_from_default_yaml():
-    # D-frontend-pivot-model-swap: base trocada pra Qwen3-4B-Instruct-2507 (docs/
-    # plan_frontend_specialization_wave3.md). target_modules NÃO inclui q_proj/k_proj —
-    # QK-norm do Qwen3 é incompatível com LoRA nessas duas projeções (D-qwen3-qknorm-lora).
+    # D-frontend-pivot-model-swap: base trocada pra Qwen3-4B-Instruct-2507 (ver docs/PLAN.md).
+    # target_modules NÃO inclui q_proj/k_proj — QK-norm do Qwen3 é incompatível com LoRA nessas
+    # duas projeções (D-qwen3-qknorm-lora).
     config = TrainConfig.load()
     assert config.base_model == "Qwen/Qwen3-4B-Instruct-2507"
     assert config.load_in_4bit is True

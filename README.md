@@ -1,12 +1,13 @@
 # Praxis-SFT v2
 
-Modelo especializado em frontend (landing pages, dashboards, componentes visuais — ver
-`docs/plan_frontend_specialization_wave3.md`), derivado via **QLoRA** de
+Modelo especializado em engenharia de software, derivado via **QLoRA** de
 `Qwen/Qwen3-4B-Instruct-2507`, treinado para raciocinar, chamar ferramentas estruturadas,
-interpretar retornos reais dessas ferramentas, verificar sua própria solução (inclusive
-visualmente, via renderização real) e emitir uma resposta pública limpa. Treino em NVIDIA L4
-(Google Colab) ou GPUs menores (ex.: RTX A2000 12GB, `configs/train_a2000.yaml`) — o modelo de
-4B foi escolhido em parte por caber em hardware mais modesto que o 8B generalista anterior.
+interpretar retornos reais dessas ferramentas, verificar sua própria solução e emitir uma
+resposta pública limpa. Treino em NVIDIA L4 (Google Colab) ou GPUs menores (ex.: RTX A2000
+12GB, `configs/train_a2000.yaml`) — o modelo de 4B (`D-frontend-pivot-model-swap`, ver
+`docs/PLAN.md`) foi escolhido por caber com folga em hardware mais modesto que o 8B generalista
+anterior (`ibm-granite/granite-4.1-8b`) e por não ter modo de "thinking" nativo, evitando
+conflito com a gramática `<think>`/`<tool_call>`/`<final>` treinada por cima.
 
 O plano técnico completo — decisões arquiteturais, formato canônico de trajetória, schemas de
 ferramenta, desenho do harness/loop do agente, estratégia de segurança, dataset, treino,

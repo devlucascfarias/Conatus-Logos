@@ -1,6 +1,5 @@
-"""Backend do checker para frontend estático (PLAN.md seção 10.4 + docs/
-plan_frontend_specialization_wave3.md seção 3): fase 1 do pivô de frontend, HTML/CSS/JS sem
-build step. Registrado em `src.checker.core` sob a chave "html".
+"""Backend do checker para HTML/CSS/JS estático (PLAN.md seção 10.4, D-checker-html-backend),
+sem build step. Registrado em `src.checker.core` sob a chave "html".
 
 Camada 1 do design em camadas do checker de frontend (seção 3 do plano): renderiza a página de
 verdade num Chromium headless (Playwright) e falha se houver erro de console ou exceção JS não

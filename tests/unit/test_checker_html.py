@@ -1,5 +1,5 @@
-"""Testes do backend `html` do checker (docs/plan_frontend_specialization_wave3.md seção 3,
-camada 1: "renderiza sem erro de console/JS").
+"""Testes do backend `html` do checker (docs/PLAN.md, D-checker-html-backend, camada 1:
+"renderiza sem erro de console/JS").
 
 Pulados (não falham) se o Playwright/Chromium não estiverem disponíveis no ambiente — o backend
 em si já trata essa ausência como MISSING_DEPENDENCY estruturado (ver

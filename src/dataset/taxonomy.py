@@ -30,10 +30,10 @@ TASK_TYPES = frozenset(
     }
 )
 
-# MVP = Python + Go (D4). "html" entrou com o pivô de frontend (D-checker-html-backend,
-# docs/plan_frontend_specialization_wave3.md) — tem backend de checker real registrado
-# (src/checker/backends/frontend_backend.py), não é mais uma linguagem "de schema só". Outras
-# linguagens do enum do checker (seção 4.1) continuam sem backend, não devem aparecer no dataset.
+# MVP = Python + Go (D4). "html" entrou depois (D-checker-html-backend, ver docs/PLAN.md) — tem
+# backend de checker real registrado (src/checker/backends/frontend_backend.py), não é mais uma
+# linguagem "de schema só", mesmo sem exemplos de HTML no dataset atual. Outras linguagens do
+# enum do checker (seção 4.1) continuam sem backend, não devem aparecer no dataset.
 MVP_LANGUAGES = frozenset({"python", "go", "html"})
 
 DIFFICULTIES = frozenset({"easy", "medium", "hard"})

@@ -1,7 +1,7 @@
 """Executor da ferramenta `search_code` (seção 4.6) — busca por texto/regex em arquivos do
-workspace, tipo `ctrl+shift+f`. Reativada para o pivô de frontend (D-frontend-pivot-model-swap,
-docs/plan_frontend_specialization_wave3.md seção 4): usada no dimension "reuse-before-create" do
-`<think>` — checar se já existe um componente antes de criar um novo, evitando código morto.
+workspace, tipo `ctrl+shift+f`. Reativada (D-search-code-reenable, ver docs/PLAN.md) por ser
+útil em qualquer projeto: checar se já existe uma função/componente antes de criar um novo,
+evitando código morto e duplicação.
 
 Implementação em Python puro (sem depender de `grep`/`rg` no PATH) para ficar OS-independente,
 mesmo espírito do `shell.json` v2 (seção 4.5)."""

@@ -16,9 +16,8 @@ def test_all_mvp_tools_enabled(registry: ToolRegistry):
 
 
 def test_search_code_reenabled_per_frontend_pivot(registry: ToolRegistry):
-    # D-frontend-pivot-model-swap: search_code saiu do escopo "fase 2 / D5 adiada" — reativada
-    # para a dimensão "reuse-before-create" do think técnico de frontend (docs/
-    # plan_frontend_specialization_wave3.md seção 4).
+    # D-search-code-reenable: search_code saiu do escopo "fase 2 / D5 adiada" — reativada por
+    # ser útil em qualquer projeto (ver docs/PLAN.md).
     assert registry.get("search_code") is not None
 
 

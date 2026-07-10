@@ -2,11 +2,12 @@
 # Valores são baseline experimental (seção 11.2), não definitivos — ajustar após profiling
 # real de VRAM na primeira execução (célula 9 do notebook, torch.cuda.max_memory_allocated()).
 #
-# D-frontend-pivot-model-swap (2026-07-09, docs/plan_frontend_specialization_wave3.md seção 2):
-# trocado de ibm-granite/granite-4.1-8b para Qwen/Qwen3-4B-Instruct-2507 — modelo 4B, sem modo
-# de "thinking" nativo (não briga com a gramática <think>/<tool_call>/<final> treinada por
-# cima), base mais leve pro hardware disponível (a A2000 12GB penava com o 8B mesmo em
-# sequence_length=1024).
+# D-frontend-pivot-model-swap (2026-07-09, docs/PLAN.md): trocado de ibm-granite/granite-4.1-8b
+# para Qwen/Qwen3-4B-Instruct-2507 — modelo 4B, sem modo de "thinking" nativo (não briga com a
+# gramática <think>/<tool_call>/<final> treinada por cima), base mais leve pro hardware
+# disponível (a A2000 12GB penava com o 8B mesmo em sequence_length=1024). Apesar do nome da
+# decisão (cunhado durante um pivô de especialização em frontend que foi revertido depois — ver
+# docs/PLAN.md), a troca de modelo em si é independente disso e continua valendo.
 
 version: 1
 

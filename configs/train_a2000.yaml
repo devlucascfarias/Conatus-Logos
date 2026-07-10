@@ -7,8 +7,8 @@
 #   — o VS Code em si fica aberto o treino inteiro nesse fluxo (diferente de rodar via
 #   `nohup`, onde dava pra fechar tudo), consumindo VRAM que o smoketest isolado não contava.
 # - Reduzido pra 1024 pro Granite-4.1-8B. Perda de sinal pequena (3.3% de data/train truncado),
-#   ganho real de margem, mas ainda apertado — foi exatamente essa dor que motivou o pivô de
-#   modelo (docs/plan_frontend_specialization_wave3.md).
+#   ganho real de margem, mas ainda apertado — foi exatamente essa dor que motivou a troca de
+#   modelo base (ver docs/PLAN.md).
 #
 # D-frontend-pivot-model-swap: base trocada pra Qwen/Qwen3-4B-Instruct-2507 (4B, ~metade do
 # tamanho do Granite-4.1-8B em 4-bit) — sequence_length devolvido pra 2048 como ponto de
