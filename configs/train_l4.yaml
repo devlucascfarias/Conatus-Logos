@@ -59,6 +59,14 @@ training:
   # um número grande "por via das dúvidas".
   max_steps: -1
   optim: "paged_adamw_8bit"
+  # D-l4-checkpointing-tradeoff: achado real no Kaggle (Tesla T4, 16GB) com esse mesmo modelo/
+  # LoRA — com gradient_checkpointing=true e sequence_length=2048, só 7,6GB de ~15GB usados
+  # (~metade sobrando). A L4 tem 24GB, mais que o dobro da VRAM da T4 — bem provável que sobre
+  # folga de sobra mesmo sem checkpointing, mesmo em sequence_length=4096. Desligar isso troca
+  # VRAM por velocidade real (checkpointing recalcula parte do forward durante o backward,
+  # custo típico de 20-40%). NÃO MEDIDO NA L4 ainda — se for testar `false`, rode
+  # scripts/vram_smoketest.py primeiro; se estourar, volta pra `true` sem perder nada, já que
+  # isso é decidido antes do treino começar (célula 21 do notebook), não durante.
   gradient_checkpointing: true
   seed: 42
 
