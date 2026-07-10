@@ -26,8 +26,8 @@ quê** cada peça existe.
 | M2 | Checker Python + Go (`src/checker`) | ✅ (19 testes, 7 pulados sem toolchain Go local) |
 | M3 | Sandbox, ferramentas, busca, inferência mock, harness/loop (`src/security`, `src/tools`, `src/search`, `src/inference`, `src/harness`) | ✅ (32 testes) |
 | M4 | Pipeline de validação de dataset (`src/dataset`) + 556 exemplos (Python + Go, todos os `task_type` da taxonomia, gerados com biblioteca de ~78 funções + injetores de bug + checker como oráculo) | ✅ **556/556 validados** (465 train / 78 validation / 13 adversarial) — degrau "generalização" (500-800), ainda abaixo do que um dataset de produção real usaria (milhares+) |
-| M5 | Notebook de treino (`notebooks/train_logos-v3.ipynb`) + `TransformersModelRunner.generate()` | ✅ `generate()` implementado e testado ponta a ponta contra modelo real minúsculo (`tests/unit/test_transformers_runner.py`); células 7-16 do notebook ainda exigem GPU real (Colab) e não foram executadas contra o Granite de verdade — riscos abertos: acesso ao modelo (gated?), nomes de `lora_target_modules`, VRAM real |
-| M6 | Avaliador + 4 probes reais (`src/evaluation`) | ✅ mecanismo provado contra `ScriptedModelRunner` **e** contra Transformers real (modelo de teste); falta rodar contra o adapter Granite treinado de verdade |
+| M5 | Notebook de treino (`notebooks/train_logos-v3.ipynb`) + `TransformersModelRunner.generate()` | ✅ `generate()` testado ponta a ponta contra modelo real minúsculo (`tests/unit/test_transformers_runner.py`); notebook rodado de verdade em A2000 local e Kaggle (T4) com o Qwen3-4B-Instruct-2507 — modelo não é gated, `lora_target_modules` batem certo, treino em andamento; VRAM/tempo real na L4 ainda não medidos |
+| M6 | Avaliador + 4 probes reais (`src/evaluation`) | ✅ mecanismo provado contra `ScriptedModelRunner` **e** contra Transformers real (modelo de teste); falta rodar contra o adapter Qwen3-4B treinado de verdade (treino em andamento) |
 | M7/M8 | Fase 2 (JS/TS, `apply_patch`...) / porte do harness para Go | Fora de escopo desta geração (ver seção 18 do plano) |
 
 ## Requisitos
@@ -76,8 +76,31 @@ python scripts/run_eval.py --demo
 Roda os 4 probes implementados (`src/evaluation/probes/`) contra um `ScriptedModelRunner` com
 respostas roteirizadas — prova o mecanismo de avaliação. `TransformersModelRunner.generate()`
 (`src/inference/transformers_runner.py`) já está implementado e testado contra um modelo real
-minúsculo do Hugging Face Hub; rodar os probes contra o **adapter Granite treinado de verdade**
-ainda depende de M5 (treino real no Colab).
+minúsculo do Hugging Face Hub; rodar os probes contra o **adapter Qwen3-4B treinado de verdade**
+depende do treino real (M5) terminar.
+
+## Rodar o notebook de treino (Colab/Kaggle)
+
+`notebooks/train_logos-v3.ipynb` detecta o ambiente (Colab, Kaggle, ou local) e ajusta clone do
+repositório, leitura de secrets e exportação de artefatos automaticamente — nenhuma edição do
+notebook é necessária pra trocar de ambiente. Fora do Colab/Kaggle (ex.: `jupyter nbconvert`
+local), essas etapas são puladas e o notebook assume que já está numa cópia local do repositório.
+
+Pré-requisito (uma vez, fora do notebook): gere um Personal Access Token no GitHub (Settings →
+Developer settings → Personal access tokens → Fine-grained, acesso só ao repositório
+`Conatus-Logos`, permissão de leitura em "Contents"). **Nunca** cole o token direto numa célula.
+
+- **Colab**: ícone de chave 🔑 na barra lateral esquerda → "Add new secret" → nome `GH_TOKEN`,
+  valor = o token. Repita para `PRAXIS_OLLAMA_SEARCH_API_KEY` (opcional, só afeta `web_search`).
+  O toggle "Notebook access" precisa estar ligado pra cada notebook — criar o secret uma vez
+  não basta.
+- **Kaggle**: aba "Add-ons" → "Secrets" → "Add a new secret", mesmos dois nomes. Marque a opção
+  de anexar o secret ao notebook, e habilite "Internet" em "Settings" (sem isso a leitura do
+  secret falha).
+
+Qual config usar (`configs/train_l4.yaml`, `train_a2000.yaml` ou `train_kaggle.yaml`) é
+selecionado via a variável de ambiente `TRAIN_CONFIG_PATH`; ausente, o notebook usa
+`train_l4.yaml` por padrão.
 
 ## Estrutura
 

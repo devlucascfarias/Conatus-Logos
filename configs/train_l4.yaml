@@ -1,6 +1,6 @@
 # Configuração de treino (seções 11 e 12 do PLAN.md).
 # Valores são baseline experimental (seção 11.2), não definitivos — ajustar após profiling
-# real de VRAM na primeira execução (célula 9 do notebook, torch.cuda.max_memory_allocated()).
+# real de VRAM na primeira execução (célula de VRAM do notebook, torch.cuda.max_memory_allocated()).
 #
 # D-frontend-pivot-model-swap (2026-07-09, docs/PLAN.md): trocado de ibm-granite/granite-4.1-8b
 # para Qwen/Qwen3-4B-Instruct-2507 — modelo 4B, sem modo de "thinking" nativo (não briga com a
@@ -59,15 +59,18 @@ training:
   # um número grande "por via das dúvidas".
   max_steps: -1
   optim: "paged_adamw_8bit"
-  # D-l4-checkpointing-tradeoff: achado real no Kaggle (Tesla T4, 16GB) com esse mesmo modelo/
-  # LoRA — com gradient_checkpointing=true e sequence_length=2048, só 7,6GB de ~15GB usados
-  # (~metade sobrando). A L4 tem 24GB, mais que o dobro da VRAM da T4 — bem provável que sobre
-  # folga de sobra mesmo sem checkpointing, mesmo em sequence_length=4096. Desligar isso troca
-  # VRAM por velocidade real (checkpointing recalcula parte do forward durante o backward,
-  # custo típico de 20-40%). NÃO MEDIDO NA L4 ainda — se for testar `false`, rode
-  # scripts/vram_smoketest.py primeiro; se estourar, volta pra `true` sem perder nada, já que
-  # isso é decidido antes do treino começar (célula 21 do notebook), não durante.
-  gradient_checkpointing: true
+  # D-l4-checkpointing-tradeoff: desligado por decisão explícita do usuário, ACEITANDO RISCO
+  # calculado (não medido) de OOM. Cálculo com dados reais de pesquisa (não só extrapolação da
+  # T4): checkpointing tipicamente economiza ~20-30% de VRAM total, ponta a ponta (não os
+  # 70-80% às vezes citados pra ativações isoladas — essa fatia raramente domina o total).
+  # T4 usou 7,6GB com checkpointing=true em sequence_length=2048; sem checkpointing, no mesmo
+  # seq_len, estimativa ~7,6 / (1-0,25) ≈ 10GB; escalando pra sequence_length=4096 da L4
+  # (dobrar sequence_length tipicamente custa 1,5-2x de VRAM, não linear puro) dá uma faixa de
+  # ~15-20GB — a L4 tem 24GB (~22-23GB úteis), então PROVAVELMENTE cabe, mas com margem
+  # apertada, não folgada. Se estourar OOM de verdade, volte pra `true` — isso é decidido antes
+  # do treino começar (célula de configuração QLoRA do notebook), não durante, então não perde
+  # nada além de tempo até o próximo carregamento do modelo.
+  gradient_checkpointing: false
   seed: 42
 
 evaluation:
@@ -91,5 +94,5 @@ paths:
 
 runtime:
   run_on_colab: true
-  require_gpu_name_contains: "L4"       # célula 1 do notebook aborta se nvidia-smi não bater com isto
+  require_gpu_name_contains: "L4"       # célula de verificação da GPU aborta se nvidia-smi não bater com isto
   mixed_precision: "bf16"
