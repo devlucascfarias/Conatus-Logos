@@ -1,0 +1,91 @@
+# Config de treino pra GPU gratuita do Kaggle (D-kaggle-training-support, ver docs/PLAN.md).
+#
+# Kaggle Notebooks oferece de graça, por semana: 30h de cota de GPU, 1x Tesla P100 (16GB) OU
+# 2x Tesla T4 (16GB cada, mas este projeto não faz treino multi-GPU — só a primeira é usada),
+# sessão de até ~9-12h. Isso é MAIS VRAM que a RTX A2000 (12GB, configs/train_a2000.yaml) e
+# MENOS que a L4 do Colab (24GB, configs/train_l4.yaml).
+#
+# sequence_length=2048 aqui é o mesmo valor conservador da A2000, NÃO um número escalado pra
+# aproveitar os ~33% a mais de VRAM — é uma expectativa (deve caber com folga ainda maior que
+# na A2000, já que o Qwen3-4B nem chegou perto do limite lá), não uma medição no Kaggle de
+# verdade. RODE scripts/vram_smoketest.py --longest --num-examples 1 dentro de um notebook
+# Kaggle antes de confiar nisso pra um treino completo, e suba o valor se sobrar margem real.
+#
+# Diferenças operacionais do Kaggle vs Colab que o notebook trata (célula 2 e 6):
+# - Token do GitHub (pra clonar o repo privado) e a chave de busca da Ollama são lidos via
+#   Kaggle Secrets (aba "Add-ons" -> "Secrets" do notebook, API kaggle_secrets), não via
+#   google.colab.userdata.
+# - Sem Google Drive — outputs ficam em /kaggle/working (dentro do clone do repo) e persistem
+#   quando você salva uma versão do notebook ("Save Version"); não há mount nem cópia extra
+#   (run_on_colab: false já faz o notebook pular esse passo, mesmo padrão da A2000).
+# - Sessão tem teto de tempo: se o treino não terminar numa sessão, salve a versão do notebook
+#   (persiste /kaggle/working como output), depois numa sessão nova adicione esse output como
+#   "Input Data" e aponte RESUME_FROM_CHECKPOINT (célula 13) pro checkpoint copiado.
+#
+# Use com o notebook via a variável de ambiente TRAIN_CONFIG_PATH (ver notebooks/
+# train_granite_l4.ipynb, célula 4):
+#
+#   TRAIN_CONFIG_PATH=configs/train_kaggle.yaml jupyter nbconvert --to notebook --execute \
+#       --inplace notebooks/train_granite_l4.ipynb
+
+version: 1
+
+model:
+  base_model: "Qwen/Qwen3-4B-Instruct-2507"
+  load_in_4bit: true
+  bnb_4bit_quant_type: "nf4"
+  bnb_4bit_compute_dtype: "bfloat16"
+  bnb_4bit_use_double_quant: true
+
+lora:
+  r: 16
+  alpha: 32
+  dropout: 0.05
+  # D-qwen3-qknorm-lora (mesma nota em train_l4.yaml/train_a2000.yaml): Qwen3 usa QK-norm,
+  # LoRA em q_proj/k_proj é incompatível com esse caminho de normalização (erro CUBLAS
+  # reportado). Excluído aqui também. Confirmar via named_modules() na primeira carga real.
+  target_modules:
+    - "v_proj"
+    - "o_proj"
+    - "gate_proj"
+    - "up_proj"
+    - "down_proj"
+
+data:
+  train_path: "data/train"
+  validation_path: "data/validation"
+  sequence_length: 2048
+  group_by_length: true
+
+training:
+  batch_size_per_device: 1
+  gradient_accumulation_steps: 16
+  learning_rate: 2.0e-4
+  lr_scheduler_type: "cosine"
+  warmup_ratio: 0.03
+  num_train_epochs: 3
+  max_steps: -1
+  optim: "paged_adamw_8bit"
+  gradient_checkpointing: true
+  seed: 42
+
+evaluation:
+  # data/train tem 2455 exemplos hoje — ~76 passos = meia época com lote efetivo 16
+  # (batch_size_per_device x gradient_accumulation_steps). Mesma nota em train_l4.yaml.
+  eval_steps: 76
+  save_steps: 76
+  save_total_limit: 3
+
+paths:
+  output_dir: "outputs/checkpoints"
+  logs_dir: "outputs/logs"
+  adapter_dir: "outputs/adapter"
+  drive_mount_point: "/content/drive"   # não usado (run_on_colab: false, sem Drive no Kaggle)
+
+runtime:
+  run_on_colab: false
+  # "Tesla" cobre os dois nomes que o Kaggle expõe (Tesla P100-PCIE-16GB / Tesla T4) sem
+  # travar a execução se o Kaggle sortear um dos dois — diferente de train_a2000.yaml/
+  # train_l4.yaml, que travam num nome de GPU específico porque só existe uma opção real.
+  require_gpu_name_contains: "Tesla"
+  mixed_precision: "bf16"
