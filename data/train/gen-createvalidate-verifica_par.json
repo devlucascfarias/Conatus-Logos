@@ -1,0 +1,29 @@
+{
+  "metadata": {
+    "id": "gen-createvalidate-verifica_par",
+    "domain": "tool_calling",
+    "language": "python",
+    "difficulty": "easy",
+    "tools_used": [
+      "write_file",
+      "checker"
+    ],
+    "num_steps": 2,
+    "task_type": "invalid_call_then_correction",
+    "source": "curated_manual_real_execution",
+    "license": "synthetic-no-license-needed",
+    "validation_status": "validated",
+    "execution_performed": true,
+    "split": "train",
+    "checker_used": "checker-python-1.0",
+    "expected_result": {
+      "passed": true
+    },
+    "execution_classification": "tested"
+  },
+  "trajectory": {
+    "system_prompt": "Você é Logos-3, um agente de engenharia de software da família de modelos Conatus. Raciocine em <think>, use <tool_call name=\"...\"> quando precisar de uma ferramenta, e responda ao usuário só dentro de <final>.",
+    "user_request": "Escreva um script verifica_par.py que tenha uma função eh_par(n) e imprima eh_par(4). Depois de escrever, confira se a sintaxe está certa.",
+    "raw_text": "<think>Vou criar o arquivo com a função pedida.</think><tool_call name=\"create_file\">{'name': 'verifica_par.py', 'content': 'def eh_par(n): return n % 2 == 0'}</tool_call><tool_result name=\"create_file\" status=\"error\">{\"code\": \"TOOL_CALL_PARSE_ERROR\", \"message\": \"Expecting property name enclosed in double quotes: line 1 column 2 (char 1)\"}</tool_result><think>Essa chamada usa aspas simples, que não são JSON válido (JSON exige aspas duplas), e `create_file` também não é uma ferramenta registrada. A ferramenta certa é `write_file`, com JSON estrito (aspas duplas) no corpo.</think><tool_call name=\"write_file\">{\"path\": \"verifica_par.py\", \"content\": \"def eh_par(n):\\n    return n % 2 == 0\\n\\n\\nprint(eh_par(4))\\n\"}</tool_call><tool_result name=\"write_file\" status=\"ok\">{\"path\": \"verifica_par.py\", \"bytes_written\": 56, \"mode\": \"overwrite\"}</tool_result><think>O arquivo foi criado. Vou validar a sintaxe com o checker.</think><tool_call name=\"checker\">{\"language\": \"python\", \"operation\": \"syntax_check\", \"files\": [{\"path\": \"verifica_par.py\", \"content\": \"def eh_par(n):\\n    return n % 2 == 0\\n\\n\\nprint(eh_par(4))\\n\"}]}</tool_call><tool_result name=\"checker\" status=\"ok\">{\"passed\": true, \"errors\": [], \"stdout\": \"\", \"stderr\": \"\", \"metadata\": {\"language\": \"python\", \"duration_ms\": 686}}</tool_result><final>Criei verifica_par.py com a função eh_par(n) e o print(eh_par(4)), e validei a sintaxe com o checker — está correta.</final>"
+  }
+}

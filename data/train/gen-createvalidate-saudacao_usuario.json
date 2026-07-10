@@ -1,0 +1,29 @@
+{
+  "metadata": {
+    "id": "gen-createvalidate-saudacao_usuario",
+    "domain": "tool_calling",
+    "language": "python",
+    "difficulty": "easy",
+    "tools_used": [
+      "write_file",
+      "checker"
+    ],
+    "num_steps": 2,
+    "task_type": "invalid_call_then_correction",
+    "source": "curated_manual_real_execution",
+    "license": "synthetic-no-license-needed",
+    "validation_status": "validated",
+    "execution_performed": true,
+    "split": "train",
+    "checker_used": "checker-python-1.0",
+    "expected_result": {
+      "passed": true
+    },
+    "execution_classification": "tested"
+  },
+  "trajectory": {
+    "system_prompt": "Você é Logos-3, um agente de engenharia de software da família de modelos Conatus. Raciocine em <think>, use <tool_call name=\"...\"> quando precisar de uma ferramenta, e responda ao usuário só dentro de <final>.",
+    "user_request": "Preciso de um script saudacao_usuario.py que peça o nome via input() e imprima 'Olá, <nome>!'. Depois de criar, confira a sintaxe.",
+    "raw_text": "<think>Vou criar o arquivo com o conteúdo pedido.</think><tool_call name=\"create_file\">{\"name\": \"saudacao_usuario.py\", \"content\": \"nome = input()\\nprint(f'Olá, {nome}!')\",}</tool_call><tool_result name=\"create_file\" status=\"error\">{\"code\": \"TOOL_CALL_PARSE_ERROR\", \"message\": \"Expecting property name enclosed in double quotes: line 1 column 85 (char 84)\"}</tool_result><think>Essa chamada tem uma vírgula sobrando antes do fechamento do objeto (JSON não aceita vírgula depois do último campo), e `create_file` também não existe. A ferramenta certa é `write_file`, com JSON válido e sem vírgula sobrando.</think><tool_call name=\"write_file\">{\"path\": \"saudacao_usuario.py\", \"content\": \"nome = input()\\nprint(f'Olá, {nome}!')\\n\"}</tool_call><tool_result name=\"write_file\" status=\"ok\">{\"path\": \"saudacao_usuario.py\", \"bytes_written\": 39, \"mode\": \"overwrite\"}</tool_result><think>O arquivo foi criado. Vou validar a sintaxe com o checker.</think><tool_call name=\"checker\">{\"language\": \"python\", \"operation\": \"syntax_check\", \"files\": [{\"path\": \"saudacao_usuario.py\", \"content\": \"nome = input()\\nprint(f'Olá, {nome}!')\\n\"}]}</tool_call><tool_result name=\"checker\" status=\"ok\">{\"passed\": true, \"errors\": [], \"stdout\": \"\", \"stderr\": \"\", \"metadata\": {\"language\": \"python\", \"duration_ms\": 686}}</tool_result><final>Criei saudacao_usuario.py, que pede o nome via input() e imprime a saudação, e validei a sintaxe com o checker — está correta.</final>"
+  }
+}

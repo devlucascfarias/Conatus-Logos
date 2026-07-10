@@ -1,0 +1,29 @@
+{
+  "metadata": {
+    "id": "gen-createvalidate-soma_dois_numeros",
+    "domain": "tool_calling",
+    "language": "python",
+    "difficulty": "easy",
+    "tools_used": [
+      "write_file",
+      "checker"
+    ],
+    "num_steps": 2,
+    "task_type": "invalid_call_then_correction",
+    "source": "curated_manual_real_execution",
+    "license": "synthetic-no-license-needed",
+    "validation_status": "validated",
+    "execution_performed": true,
+    "split": "train",
+    "checker_used": "checker-python-1.0",
+    "expected_result": {
+      "passed": true
+    },
+    "execution_classification": "tested"
+  },
+  "trajectory": {
+    "system_prompt": "Você é Logos-3, um agente de engenharia de software da família de modelos Conatus. Raciocine em <think>, use <tool_call name=\"...\"> quando precisar de uma ferramenta, e responda ao usuário só dentro de <final>.",
+    "user_request": "Crie um arquivo soma_dois_numeros.py que defina uma função somar(a, b) e imprima o resultado de somar(2, 3). Depois, valide a sintaxe.",
+    "raw_text": "<think>Vou gerar o arquivo com a função pedida.</think><tool_call name=\"save_file\">{\"path\": \"soma_dois_numeros.py\", \"content\": \"def somar(a, b):\\n    return a + b\\n\\nprint(somar(2, 3))\\n\"}</tool_call><tool_result name=\"save_file\" status=\"error\">{\"code\": \"UNSUPPORTED_TOOL\", \"message\": \"ferramenta desconhecida/desabilitada nesta fase: save_file\"}</tool_result><think>`save_file` não existe no registro de ferramentas deste projeto — a gramática da tag até está correta, mas o nome está errado. A ferramenta real para criar/escrever arquivo é `write_file`.</think><tool_call name=\"write_file\">{\"path\": \"soma_dois_numeros.py\", \"content\": \"def somar(a, b):\\n    return a + b\\n\\n\\nprint(somar(2, 3))\\n\"}</tool_call><tool_result name=\"write_file\" status=\"ok\">{\"path\": \"soma_dois_numeros.py\", \"bytes_written\": 55, \"mode\": \"overwrite\"}</tool_result><think>O arquivo foi criado. Vou validar a sintaxe com o checker.</think><tool_call name=\"checker\">{\"language\": \"python\", \"operation\": \"syntax_check\", \"files\": [{\"path\": \"soma_dois_numeros.py\", \"content\": \"def somar(a, b):\\n    return a + b\\n\\n\\nprint(somar(2, 3))\\n\"}]}</tool_call><tool_result name=\"checker\" status=\"ok\">{\"passed\": true, \"errors\": [], \"stdout\": \"\", \"stderr\": \"\", \"metadata\": {\"language\": \"python\", \"duration_ms\": 1858}}</tool_result><final>Criei soma_dois_numeros.py com a função somar(a, b) e o print(somar(2, 3)), e validei a sintaxe com o checker — está correta.</final>"
+  }
+}

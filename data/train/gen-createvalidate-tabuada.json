@@ -1,0 +1,29 @@
+{
+  "metadata": {
+    "id": "gen-createvalidate-tabuada",
+    "domain": "tool_calling",
+    "language": "python",
+    "difficulty": "easy",
+    "tools_used": [
+      "write_file",
+      "checker"
+    ],
+    "num_steps": 2,
+    "task_type": "invalid_call_then_correction",
+    "source": "curated_manual_real_execution",
+    "license": "synthetic-no-license-needed",
+    "validation_status": "validated",
+    "execution_performed": true,
+    "split": "train",
+    "checker_used": "checker-python-1.0",
+    "expected_result": {
+      "passed": true
+    },
+    "execution_classification": "tested"
+  },
+  "trajectory": {
+    "system_prompt": "Você é Logos-3, um agente de engenharia de software da família de modelos Conatus. Raciocine em <think>, use <tool_call name=\"...\"> quando precisar de uma ferramenta, e responda ao usuário só dentro de <final>.",
+    "user_request": "Gera um arquivo tabuada.py que imprima a tabuada do 7 (de 1 a 10). Confere a sintaxe depois.",
+    "raw_text": "<think>Vou gerar o arquivo com a tabuada pedida.</think><tool_call name=\"write_new_file\">{\"file_name\": \"tabuada.py\", \"code\": \"for i in range(1, 11):\\n    print(f\\\"7 x {i} = {7 * i}\\\")\\n\"}</tool_call><tool_result name=\"write_new_file\" status=\"error\">{\"code\": \"UNSUPPORTED_TOOL\", \"message\": \"ferramenta desconhecida/desabilitada nesta fase: write_new_file\"}</tool_result><think>`write_new_file` não existe — a ferramenta real chama-se `write_file`, e os argumentos certos são `path` e `content`, não `file_name`/`code`.</think><tool_call name=\"write_file\">{\"path\": \"tabuada.py\", \"content\": \"for i in range(1, 11):\\n    print(f\\\"7 x {i} = {7 * i}\\\")\\n\"}</tool_call><tool_result name=\"write_file\" status=\"ok\">{\"path\": \"tabuada.py\", \"bytes_written\": 55, \"mode\": \"overwrite\"}</tool_result><think>O arquivo foi criado. Vou validar a sintaxe com o checker.</think><tool_call name=\"checker\">{\"language\": \"python\", \"operation\": \"syntax_check\", \"files\": [{\"path\": \"tabuada.py\", \"content\": \"for i in range(1, 11):\\n    print(f\\\"7 x {i} = {7 * i}\\\")\\n\"}]}</tool_call><tool_result name=\"checker\" status=\"ok\">{\"passed\": true, \"errors\": [], \"stdout\": \"\", \"stderr\": \"\", \"metadata\": {\"language\": \"python\", \"duration_ms\": 1859}}</tool_result><final>Criei tabuada.py imprimindo a tabuada do 7 de 1 a 10, e validei a sintaxe com o checker — está correta.</final>"
+  }
+}

@@ -1,0 +1,29 @@
+{
+  "metadata": {
+    "id": "gen-createvalidate-ola_mundo",
+    "domain": "tool_calling",
+    "language": "python",
+    "difficulty": "easy",
+    "tools_used": [
+      "write_file",
+      "checker"
+    ],
+    "num_steps": 2,
+    "task_type": "invalid_call_then_correction",
+    "source": "curated_manual_real_execution",
+    "license": "synthetic-no-license-needed",
+    "validation_status": "validated",
+    "execution_performed": true,
+    "split": "train",
+    "checker_used": "checker-python-1.0",
+    "expected_result": {
+      "passed": true
+    },
+    "execution_classification": "tested"
+  },
+  "trajectory": {
+    "system_prompt": "Você é Logos-3, um agente de engenharia de software da família de modelos Conatus. Raciocine em <think>, use <tool_call name=\"...\"> quando precisar de uma ferramenta, e responda ao usuário só dentro de <final>.",
+    "user_request": "Preciso de um script chamado ola_mundo.py que imprima 'Olá, mundo!' na tela. Depois de criar, confira se a sintaxe está correta.",
+    "raw_text": "<think>Vou criar o arquivo com o conteúdo pedido.</think><tool_call name=\"create_file\">{name: \"ola_mundo.py\", content: \"print('Olá, mundo!')\"}</tool_call><tool_result name=\"create_file\" status=\"error\">{\"code\": \"TOOL_CALL_PARSE_ERROR\", \"message\": \"Expecting property name enclosed in double quotes: line 1 column 2 (char 1)\"}</tool_result><think>Essa chamada tem dois problemas: `create_file` não existe no registro de ferramentas deste projeto, e o corpo nem é JSON válido (as chaves precisam vir entre aspas duplas). A ferramenta certa é `write_file`, com JSON válido no corpo.</think><tool_call name=\"write_file\">{\"path\": \"ola_mundo.py\", \"content\": \"print('Olá, mundo!')\\n\"}</tool_call><tool_result name=\"write_file\" status=\"ok\">{\"path\": \"ola_mundo.py\", \"bytes_written\": 22, \"mode\": \"overwrite\"}</tool_result><think>O arquivo foi criado. Vou validar a sintaxe com o checker.</think><tool_call name=\"checker\">{\"language\": \"python\", \"operation\": \"syntax_check\", \"files\": [{\"path\": \"ola_mundo.py\", \"content\": \"print('Olá, mundo!')\\n\"}]}</tool_call><tool_result name=\"checker\" status=\"ok\">{\"passed\": true, \"errors\": [], \"stdout\": \"\", \"stderr\": \"\", \"metadata\": {\"language\": \"python\", \"duration_ms\": 703}}</tool_result><final>Criei ola_mundo.py com print('Olá, mundo!') e validei a sintaxe com o checker — está correta.</final>"
+  }
+}
