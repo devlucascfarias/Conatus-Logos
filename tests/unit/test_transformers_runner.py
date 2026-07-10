@@ -15,9 +15,36 @@ pytest.importorskip("transformers")
 pytest.importorskip("peft")
 pytest.importorskip("torch")
 
-from src.inference.transformers_runner import TransformersModelRunner  # noqa: E402
+from src.inference.transformers_runner import TransformersModelRunner, _find_earliest_stop  # noqa: E402
 
 _TINY_MODEL = "hf-internal-testing/tiny-random-gpt2"
+
+
+# --- _find_earliest_stop (D-stop-sequence-merge) ------------------------------------------
+
+
+def test_find_earliest_stop_matches_exact_suffix():
+    match = _find_earliest_stop("hello world</final>", ["</final>"])
+    assert match == ("</final>", 11)
+
+
+def test_find_earliest_stop_matches_mid_string_not_just_suffix():
+    # O caso real que quebrava com `text.endswith(...)`: a stop sequence aparece no MEIO do
+    # texto (o tokenizer gerou conteúdo depois dela, fundindo o fim da tag com o token
+    # seguinte) — precisa achar mesmo assim, não só quando está no fim exato.
+    match = _find_earliest_stop("<tool_call>...</tool_call>\nmais texto gerado depois", ["</tool_call>"])
+    assert match == ("</tool_call>", 14)
+
+
+def test_find_earliest_stop_picks_earliest_among_multiple_candidates():
+    text = "<think>ok</think><tool_call>...</tool_call>"
+    match = _find_earliest_stop(text, ["</tool_call>", "</think>"])
+    assert match is not None
+    assert match[0] == "</think>"
+
+
+def test_find_earliest_stop_returns_none_when_nothing_matches():
+    assert _find_earliest_stop("texto qualquer", ["</final>", "</tool_call>"]) is None
 
 
 @pytest.fixture(scope="module")
@@ -47,6 +74,35 @@ def test_generate_stops_exactly_at_stop_sequence(runner: TransformersModelRunner
     assert result.stop_reason == "stop_sequence"
     assert result.matched_stop == "if"
     assert result.text.endswith("if")
+
+
+def test_generate_truncates_trailing_content_when_stop_detected_late(runner: TransformersModelRunner, monkeypatch):
+    """D-stop-sequence-merge, reproduzindo o achado real: simula a StoppingCriteria NÃO
+    disparando a tempo (`model.generate` devolvido diretamente com conteúdo gerado depois da
+    stop sequence, como aconteceria se o tokenizer fundisse o fim da tag com o token
+    seguinte). Mesmo assim, o `Completion.text` final tem que vir truncado exatamente no fim
+    da stop sequence — nunca vazar o que veio depois. Sem essa truncagem pós-geração, foi
+    exatamente isso que aconteceu contra o adapter real: dois `<tool_call>` fabricados (com
+    ferramentas que nem existem) mais um `<final>` alegando sucesso, tudo numa Completion só,
+    nunca interrompida a tempo, nunca executada/rejeitada pelo harness."""
+    import torch
+
+    prompt = "Hello world"
+    inputs = runner._tokenizer(prompt, return_tensors="pt")
+    prompt_len = inputs["input_ids"].shape[1]
+
+    extra_text = "</tool_call>\nconteudo fabricado que nunca deveria aparecer na Completion"
+    extra_ids = runner._tokenizer(extra_text, return_tensors="pt")["input_ids"][0]
+    fake_output = torch.cat([inputs["input_ids"][0], extra_ids]).unsqueeze(0)
+
+    monkeypatch.setattr(runner._model, "generate", lambda **kwargs: fake_output)
+
+    result = runner.generate(prompt, stop=["</tool_call>"], max_tokens=50)
+
+    assert result.stop_reason == "stop_sequence"
+    assert result.matched_stop == "</tool_call>"
+    assert result.text.endswith("</tool_call>")
+    assert "conteudo fabricado" not in result.text
 
 
 def test_generate_returns_completion_with_correct_types(runner: TransformersModelRunner):

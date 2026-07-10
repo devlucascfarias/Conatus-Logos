@@ -20,6 +20,30 @@ from typing import Any, Optional
 from .base import Completion
 
 
+def _find_earliest_stop(text: str, stop_strings: list[str]) -> Optional[tuple[str, int]]:
+    """Procura a PRIMEIRA ocorrência (menor índice) de qualquer uma das `stop_strings` em
+    `text`. Usado tanto pra decidir quando interromper a geração quanto (depois, sobre o texto
+    final já decodificado) pra truncar o que é devolvido.
+
+    D-stop-sequence-merge (achado real, não hipótese): checar só se o texto TERMINA
+    exatamente na stop string (`text.endswith(...)`) falha quando o tokenizer funde o fim da
+    tag com o token seguinte num único token (ex.: "</tool_call>" + "\\n" viram um token só) —
+    nesse caso nenhum passo de decodificação termina EXATAMENTE na stop string, a
+    StoppingCriteria nunca dispara ali, e a geração continua até max_tokens ou EOS. Confirmado
+    contra o adapter real treinado: o modelo gerou DOIS `<tool_call>` inteiros (com nomes de
+    ferramenta que nem existem no registro) mais um `<final>` alegando sucesso, tudo numa
+    única Completion nunca interrompida — o harness só viu o `<final>` no fim (via
+    `parse_last_segment`) e encerrou o loop sem nunca executar nem rejeitar os tool_calls
+    fabricados no meio. `find` (contains, não endswith) sobre o texto inteiro pega o match
+    mesmo com conteúdo gerado depois; truncar ali (não só detectar) é o que fecha o buraco."""
+    best: Optional[tuple[str, int]] = None
+    for candidate in stop_strings:
+        idx = text.find(candidate)
+        if idx != -1 and (best is None or idx < best[1]):
+            best = (candidate, idx)
+    return best
+
+
 class TransformersModelRunner:
     def __init__(
         self,
@@ -95,18 +119,13 @@ class TransformersModelRunner:
                 self.tokenizer = tokenizer
                 self.prompt_len = prompt_len
                 self.stop_strings = stop_strings
-                self.matched: Optional[str] = None
 
             def __call__(self, input_ids, scores, **kwargs) -> bool:
                 if not self.stop_strings:
                     return False
                 generated_ids = input_ids[0][self.prompt_len :]
                 text = self.tokenizer.decode(generated_ids, skip_special_tokens=True)
-                for candidate in self.stop_strings:
-                    if text.endswith(candidate):
-                        self.matched = candidate
-                        return True
-                return False
+                return _find_earliest_stop(text, self.stop_strings) is not None
 
         stopper = _StopOnStrings(self._tokenizer, prompt_len, stop)
 
@@ -141,8 +160,15 @@ class TransformersModelRunner:
         generated_ids = output_ids[0][prompt_len:]
         text = self._tokenizer.decode(generated_ids, skip_special_tokens=True)
 
-        if stopper.matched is not None:
-            return Completion(text=text, stop_reason="stop_sequence", matched_stop=stopper.matched)
+        # Recalcula sobre o texto FINAL já decodificado, em vez de confiar só no que a
+        # StoppingCriteria pegou passo a passo — ela ainda é necessária pra não desperdiçar
+        # geração além do necessário, mas a decisão de truncar não pode depender de ter
+        # acertado o timing exato (ver D-stop-sequence-merge em _find_earliest_stop).
+        match = _find_earliest_stop(text, stop)
+        if match is not None:
+            matched_str, idx = match
+            text = text[: idx + len(matched_str)]
+            return Completion(text=text, stop_reason="stop_sequence", matched_stop=matched_str)
         if generated_ids.shape[0] >= max_tokens:
             return Completion(text=text, stop_reason="max_tokens", matched_stop=None)
         return Completion(text=text, stop_reason="eos", matched_stop=None)
