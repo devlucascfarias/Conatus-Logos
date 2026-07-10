@@ -1,9 +1,19 @@
 # Config de treino pra GPU gratuita do Kaggle (D-kaggle-training-support, ver docs/PLAN.md).
 #
 # Kaggle Notebooks oferece de graça, por semana: 30h de cota de GPU, 1x Tesla P100 (16GB) OU
-# 2x Tesla T4 (16GB cada, mas este projeto não faz treino multi-GPU — só a primeira é usada),
-# sessão de até ~9-12h. Isso é MAIS VRAM que a RTX A2000 (12GB, configs/train_a2000.yaml) e
-# MENOS que a L4 do Colab (24GB, configs/train_l4.yaml).
+# 2x Tesla T4 (16GB cada), sessão de até ~9-12h. Isso é MAIS VRAM que a RTX A2000 (12GB,
+# configs/train_a2000.yaml) e MENOS que a L4 do Colab (24GB, configs/train_l4.yaml).
+#
+# D-kaggle-p100-incompatible (ACHADO REAL, não hipótese): escolha "GPU T4 x2" no Kaggle, NUNCA
+# P100. O P100 é arquitetura Pascal (compute capability 6.0/sm_60) — a imagem Docker atual do
+# Kaggle vem com um PyTorch que só suporta compute capability 7.0 em diante (Volta/Turing/
+# Ampere/Hopper/Blackwell), confirmado rodando de verdade: "Minimum and Maximum cuda capability
+# supported by this version of PyTorch is (7.0) - (12.0)" seguido de
+# "Error named symbol not found at line 62 in file /src/csrc/ops.cu" assim que o bitsandbytes
+# tenta rodar o kernel de quantização 4-bit no P100 — o binário simplesmente não tem um kernel
+# compilado pra sm_60. Não é algo que uma config nossa resolve; é o binário de PyTorch da
+# imagem do Kaggle que não suporta mais Pascal. T4 é Turing (sm_75), dentro da faixa suportada
+# — funciona.
 #
 # sequence_length=2048 aqui é o mesmo valor conservador da A2000, NÃO um número escalado pra
 # aproveitar os ~33% a mais de VRAM — é uma expectativa (deve caber com folga ainda maior que
@@ -84,8 +94,10 @@ paths:
 
 runtime:
   run_on_colab: false
-  # "Tesla" cobre os dois nomes que o Kaggle expõe (Tesla P100-PCIE-16GB / Tesla T4) sem
-  # travar a execução se o Kaggle sortear um dos dois — diferente de train_a2000.yaml/
-  # train_l4.yaml, que travam num nome de GPU específico porque só existe uma opção real.
-  require_gpu_name_contains: "Tesla"
+  # Era "Tesla" (aceitava P100 OU T4) até D-kaggle-p100-incompatible confirmar de verdade que
+  # o P100 não roda nesta imagem do Kaggle (PyTorch atual exige compute capability >= 7.0, P100
+  # é 6.0). Restrito a "T4" de propósito — falha RÁPIDO na célula 4 (antes de baixar 8GB de
+  # modelo e chegar no meio do carregamento dos pesos) se alguém selecionar P100 por engano,
+  # em vez de deixar o erro real e confuso do bitsandbytes acontecer lá na frente.
+  require_gpu_name_contains: "T4"
   mixed_precision: "bf16"
