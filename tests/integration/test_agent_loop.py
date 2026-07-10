@@ -134,6 +134,63 @@ def test_prod_mode_hides_reasoning_and_tool_calls(sandbox, registry):
     assert "<think>" not in result.public_output
 
 
+def test_final_smuggled_after_malformed_tool_call_is_rejected(sandbox, registry):
+    """D-segment-smuggling (achado real, adapter L4 pós-D-stop-sequence-merge): o modelo gerou
+    tool_calls em sintaxe self-closing (`<tool_call name="x" args="{...}"/>`) que o parser não
+    reconhece como tag de abertura — viram texto solto (MalformedSegment/UNRECOGNIZED_CONTENT)
+    — seguidos de um `<final>` alegando sucesso, tudo numa ÚNICA geração nunca interrompida a
+    tempo. `parse_last_segment` via só o `<final>` e aceitava como sucesso genuíno sem nenhuma
+    ferramenta ter sido executada de verdade. O loop precisa REJEITAR esse `<final>` (não
+    aceitar) porque veio precedido de conteúdo não processado na mesma geração."""
+    runner = ScriptedModelRunner(
+        [
+            '<tool_call name="create_file" args="{\\"name\\": \\"a.py\\"}"/>\n\n'
+            "<final>Arquivo criado com sucesso</final>",
+            "<final>desisto, não consigo formatar a chamada corretamente</final>",
+        ]
+    )
+    config = AgentLoopConfig(mode="prod")
+    result = run_agent_loop("crie a.py", "system", runner, registry, sandbox, config=config)
+    assert runner.calls_made == 2
+    assert error_codes.SEGMENT_SMUGGLING in result.trajectory.raw_text
+    # em modo prod, o <final> fabricado (smuggled) nunca pode virar a resposta pública —
+    # só o <final> real, que veio depois do erro de SEGMENT_SMUGGLING, é exposto.
+    assert result.public_output.strip() == "desisto, não consigo formatar a chamada corretamente"
+    assert not (sandbox.workspace / "a.py").exists()
+
+
+def test_final_smuggled_after_real_tool_call_is_rejected_not_silently_executed(sandbox, registry):
+    """Mesma classe de bug (D-segment-smuggling), mas com sintaxe BEM formada: dois
+    `<tool_call>` reais seguidos de um `<final>`, tudo numa geração só (o cenário original do
+    D-stop-sequence-merge, antes da variante self-closing aparecer). Nem a ferramenta deve
+    rodar de verdade neste passo, nem o `<final>` deve ser aceito — o loop deve forçar
+    retentativa, uma ação por vez."""
+    runner = ScriptedModelRunner(
+        [
+            '<tool_call name="write_file">{"path": "a.py", "content": "print(1)\\n"}</tool_call>'
+            "<final>arquivo criado com sucesso</final>",
+            "<final>ok, vou parar por aqui</final>",
+        ]
+    )
+    result = run_agent_loop("crie a.py", "system", runner, registry, sandbox)
+    assert runner.calls_made == 2
+    assert error_codes.SEGMENT_SMUGGLING in result.trajectory.raw_text
+    assert not (sandbox.workspace / "a.py").exists()
+
+
+def test_think_then_final_in_one_generation_still_works(sandbox, registry):
+    """<think> seguido de <final> (ou tool_call) na MESMA geração é o padrão normal — não pode
+    ser tratado como smuggling (ver test_direct_answer_no_tool_needed, já cobria isso, mas aqui
+    fica explícito que o filtro de ThinkSegment em D-segment-smuggling não quebra esse caso)."""
+    runner = ScriptedModelRunner(
+        ["<think>não preciso de ferramenta</think><final>2 + 2 = 4</final>"]
+    )
+    result = run_agent_loop("quanto é 2 + 2?", "system", runner, registry, sandbox)
+    assert runner.calls_made == 1
+    assert "4" in result.public_output
+    assert error_codes.SEGMENT_SMUGGLING not in result.trajectory.raw_text
+
+
 def test_max_tokens_per_step_is_forwarded_to_model_runner(sandbox, registry):
     """D-maxtokens: sem isso, um modelo que não emite a stop-sequence de forma limpa gera até
     o teto padrão do backend (1024) em cada passo — o contexto acumulado pode estourar VRAM no

@@ -17,9 +17,9 @@ from src.checker import errors as error_codes
 from src.parsers import (
     contains_fabricated_tool_result,
     final_segment_leaks_internal_tags,
-    parse_last_segment,
+    parse_segments,
 )
-from src.parsers.segments import FinalSegment, MalformedSegment, ToolCallSegment
+from src.parsers.segments import FinalSegment, MalformedSegment, Segment, ThinkSegment, ToolCallSegment
 from src.tools import ToolExecutorRegistry
 
 from .renderer import render
@@ -61,6 +61,25 @@ def _canonicalize(args: dict[str, Any]) -> str:
     return json.dumps(args, sort_keys=True, ensure_ascii=False)
 
 
+def _smuggled_name(segment: Segment) -> str:
+    """Nome de ferramenta pra anexar no `<tool_result>` de erro (D-segment-smuggling) —
+    reaproveita o nome que o segmento descartado já carregava, quando existe."""
+    return getattr(segment, "attempted_name", None) or getattr(segment, "name", None) or "unknown"
+
+
+def _smuggled_message(segment: Segment) -> str:
+    """Mensagem de erro pra devolver ao modelo quando um segmento é descartado por
+    D-segment-smuggling — inclui o motivo original quando o segmento já carregava um
+    (MalformedSegment), pra dar ao modelo um sinal específico de autocorreção."""
+    reason = getattr(segment, "message", None)
+    base = (
+        f"conteúdo de tipo '{segment.kind}' foi ignorado porque outro segmento veio depois "
+        "na mesma geração — só o ÚLTIMO segmento de cada geração é processado; nunca gere "
+        "mais de uma ação (tool_call/final) na mesma resposta"
+    )
+    return f"{base}: {reason}" if reason else base
+
+
 def run_agent_loop(
     user_request: str,
     system_prompt: str,
@@ -99,7 +118,33 @@ def run_agent_loop(
             continue
 
         trajectory.append_raw(completion.text)
-        segment = parse_last_segment(trajectory.raw_text)
+
+        # D-segment-smuggling: olha TODOS os segmentos desta geração, não só o último.
+        # <think> antes de agir/responder na MESMA geração é o padrão normal (por isso é
+        # filtrado aqui) — mas qualquer outra coisa (tool_call, malformação) antes do segmento
+        # final é conteúdo que `parse_last_segment` descartava em silêncio, deixando um
+        # <final> aparentemente limpo passar como sucesso mesmo quando precedido por tool_calls
+        # nunca executados de verdade (achado real, seção acima em SEGMENT_SMUGGLING).
+        new_segments = [s for s in parse_segments(completion.text) if not isinstance(s, ThinkSegment)]
+
+        if not new_segments:
+            trajectory.append_tool_result(
+                name="unknown",
+                status="error",
+                body={"code": error_codes.TOOL_CALL_PARSE_ERROR, "message": "segmento não reconhecido pelo loop"},
+            )
+            continue
+
+        segment = new_segments[-1]
+        smuggled = new_segments[:-1]
+
+        if smuggled:
+            trajectory.append_tool_result(
+                name=_smuggled_name(smuggled[0]),
+                status="error",
+                body={"code": error_codes.SEGMENT_SMUGGLING, "message": _smuggled_message(smuggled[0])},
+            )
+            continue
 
         if isinstance(segment, FinalSegment):
             break
@@ -116,8 +161,8 @@ def run_agent_loop(
             _handle_tool_call(segment, trajectory, tool_registry, sandbox, seen_calls)
             continue
 
-        # None ou tipo inesperado (ex.: tool_result vindo do modelo sem ser pego pela
-        # checagem de fabricação por algum motivo) — nunca deveria ocorrer, mas não trava o loop.
+        # Tipo inesperado (ex.: tool_result vindo do modelo sem ser pego pela checagem de
+        # fabricação por algum motivo) — nunca deveria ocorrer, mas não trava o loop.
         trajectory.append_tool_result(
             name="unknown",
             status="error",

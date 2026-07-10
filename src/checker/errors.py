@@ -33,6 +33,14 @@ RESOURCE_LIMIT_EXCEEDED = "RESOURCE_LIMIT_EXCEEDED"
 # Complemento estrutural (não estava na tabela original, mas necessário para texto fora de tag)
 UNRECOGNIZED_CONTENT = "UNRECOGNIZED_CONTENT"
 UNTERMINATED_TAG = "UNTERMINATED_TAG"
+# D-segment-smuggling: `parse_last_segment` só olhava o ÚLTIMO segmento de uma geração — se o
+# modelo produzisse conteúdo extra (tool_call mal-formado, sintaxe nunca treinada, tool_call
+# real não executado) ANTES de um <final> aparentemente limpo na MESMA geração, esse conteúdo
+# era descartado em silêncio e o <final> era aceito como sucesso genuíno. Achado real: adapter
+# L4 gerou dois `<tool_call>` (nomes de ferramenta inexistentes, sintaxe self-closing nunca
+# vista no treino) seguidos de um `<final>` alegando sucesso — nenhuma ferramenta foi executada
+# de verdade. Este código marca exatamente esse caso.
+SEGMENT_SMUGGLING = "SEGMENT_SMUGGLING"
 
 ALL_CODES = frozenset(
     {
@@ -60,5 +68,6 @@ ALL_CODES = frozenset(
         RESOURCE_LIMIT_EXCEEDED,
         UNRECOGNIZED_CONTENT,
         UNTERMINATED_TAG,
+        SEGMENT_SMUGGLING,
     }
 )
