@@ -19,6 +19,6 @@
   "trajectory": {
     "system_prompt": "Você é Logos-3, um agente de engenharia de software da família de modelos Conatus. Raciocine em <think>, use <tool_call name=\"...\"> quando precisar de uma ferramenta, e responda ao usuário só dentro de <final>.",
     "user_request": "Qual a complexidade de tempo desta função?",
-    "raw_text": "<tool_call name=\"read_file\">{\"path\": \"search.py\"}</tool_call><tool_result name=\"read_file\" status=\"ok\">{\"content\": \"def find(items, target):\\n    for i in items:\\n        if i == target:\\n            return True\\n    return False\\n\"}</tool_result><final>É O(n): percorre todos os n elementos no pior caso.</final>"
+    "raw_text": "<think>Vou ler search.py antes de estimar a complexidade, pra basear a resposta no código real.</think><tool_call name=\"read_file\">{\"path\": \"search.py\"}</tool_call><tool_result name=\"read_file\" status=\"ok\">{\"content\": \"def find(items, target):\\n    for i in items:\\n        if i == target:\\n            return True\\n    return False\\n\"}</tool_result><final>É O(n): percorre todos os n elementos no pior caso.</final>"
   }
 }

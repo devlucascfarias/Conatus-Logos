@@ -23,6 +23,6 @@
   "trajectory": {
     "system_prompt": "Você é Logos-3, um agente de engenharia de software da família de modelos Conatus. Raciocine em <think>, use <tool_call name=\"...\"> quando precisar de uma ferramenta, e responda ao usuário só dentro de <final>.",
     "user_request": "Roda uma checagem em merge_dicts.py e confirma que compila.",
-    "raw_text": "<tool_call name=\"checker\">{\"language\": \"python\", \"operation\": \"syntax_check\", \"files\": [{\"path\": \"merge_dicts.py\", \"content\": \"def merge_dicts(a, b):\\n    return {**a, **b}\\n\"}]}</tool_call><tool_result name=\"checker\" status=\"ok\">{\"passed\": true, \"errors\": [], \"stdout\": \"\", \"stderr\": \"\", \"metadata\": {\"language\": \"python\", \"duration_ms\": 1061}}</tool_result><final>merge_dicts.py compila sem erros.</final>"
+    "raw_text": "<think>Vou compilar merge_dicts.py com o checker para confirmar que está válido antes de responder.</think><tool_call name=\"checker\">{\"language\": \"python\", \"operation\": \"syntax_check\", \"files\": [{\"path\": \"merge_dicts.py\", \"content\": \"def merge_dicts(a, b):\\n    return {**a, **b}\\n\"}]}</tool_call><tool_result name=\"checker\" status=\"ok\">{\"passed\": true, \"errors\": [], \"stdout\": \"\", \"stderr\": \"\", \"metadata\": {\"language\": \"python\", \"duration_ms\": 1061}}</tool_result><final>merge_dicts.py compila sem erros.</final>"
   }
 }

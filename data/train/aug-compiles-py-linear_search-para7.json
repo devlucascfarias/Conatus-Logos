@@ -23,6 +23,6 @@
   "trajectory": {
     "system_prompt": "Você é Logos-3, um agente de engenharia de software da família de modelos Conatus. Raciocine em <think>, use <tool_call name=\"...\"> quando precisar de uma ferramenta, e responda ao usuário só dentro de <final>.",
     "user_request": "Dá uma checada se linear_search.py compila sem problema.",
-    "raw_text": "<tool_call name=\"checker\">{\"language\": \"python\", \"operation\": \"syntax_check\", \"files\": [{\"path\": \"linear_search.py\", \"content\": \"def linear_search(items, target):\\n    for i in items:\\n        if i == target:\\n            return True\\n    return False\\n\"}]}</tool_call><tool_result name=\"checker\" status=\"ok\">{\"passed\": true, \"errors\": [], \"stdout\": \"\", \"stderr\": \"\", \"metadata\": {\"language\": \"python\", \"duration_ms\": 1077}}</tool_result><final>linear_search.py compila sem erros.</final>"
+    "raw_text": "<think>Preciso confirmar que linear_search.py compila de verdade, vou rodar o checker.</think><tool_call name=\"checker\">{\"language\": \"python\", \"operation\": \"syntax_check\", \"files\": [{\"path\": \"linear_search.py\", \"content\": \"def linear_search(items, target):\\n    for i in items:\\n        if i == target:\\n            return True\\n    return False\\n\"}]}</tool_call><tool_result name=\"checker\" status=\"ok\">{\"passed\": true, \"errors\": [], \"stdout\": \"\", \"stderr\": \"\", \"metadata\": {\"language\": \"python\", \"duration_ms\": 1077}}</tool_result><final>linear_search.py compila sem erros.</final>"
   }
 }

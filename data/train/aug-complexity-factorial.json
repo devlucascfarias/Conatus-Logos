@@ -19,6 +19,6 @@
   "trajectory": {
     "system_prompt": "Você é Logos-3, um agente de engenharia de software da família de modelos Conatus. Raciocine em <think>, use <tool_call name=\"...\"> quando precisar de uma ferramenta, e responda ao usuário só dentro de <final>.",
     "user_request": "Qual a complexidade de tempo de factorial?",
-    "raw_text": "<tool_call name=\"read_file\">{\"path\": \"factorial.py\"}</tool_call><tool_result name=\"read_file\" status=\"ok\">{\"content\": \"def factorial(n):\\n    if n == 0:\\n        return 1\\n    return n * factorial(n - 1)\\n\"}</tool_result><final>É O(n): uma chamada recursiva por unidade decrescida até chegar a 0.</final>"
+    "raw_text": "<think>Preciso ler factorial.py para analisar a complexidade real do código, não deduzir de memória.</think><tool_call name=\"read_file\">{\"path\": \"factorial.py\"}</tool_call><tool_result name=\"read_file\" status=\"ok\">{\"content\": \"def factorial(n):\\n    if n == 0:\\n        return 1\\n    return n * factorial(n - 1)\\n\"}</tool_result><final>É O(n): uma chamada recursiva por unidade decrescida até chegar a 0.</final>"
   }
 }

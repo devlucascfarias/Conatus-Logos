@@ -8,6 +8,19 @@
 # disponível (a A2000 12GB penava com o 8B mesmo em sequence_length=1024). Apesar do nome da
 # decisão (cunhado durante um pivô de especialização em frontend que foi revertido depois — ver
 # docs/PLAN.md), a troca de modelo em si é independente disso e continua valendo.
+#
+# D-phi4mini-experiment-reverted (2026-07-11): cheguei a configurar microsoft/Phi-4-mini-instruct
+# como experimento de controle (isolar se os erros de tool_call eram específicos do Qwen3), mas
+# o usuário decidiu não seguir com a troca e manter Qwen3-4B-Instruct-2507. Revertido antes de
+# qualquer treino real rodar com o Phi. Achados técnicos ficam registrados aqui pra não perder o
+# trabalho, caso a troca volte a ser cogitada depois: Phi-4-mini-instruct usa a classe de
+# modelagem "Phi3ForCausalLM" (reaproveitada da família Phi-3 pela própria Microsoft, não é
+# engano — confirmado via config.json real do Hub), com q/k/v fundidos numa única `qkv_proj` e
+# gate/up fundidos em `gate_up_proj` (diferente de Qwen3/Llama, que têm essas projeções
+# separadas) — os target_modules atuais (v_proj/gate_proj/up_proj) não existem nessa arquitetura
+# e precisariam virar qkv_proj/gate_up_proj se a troca for retomada. Também confirmado que
+# Phi3Attention não tem QK-norm pós-projeção, então o problema de D-qwen3-qknorm-lora não se
+# aplicaria lá.
 
 version: 1
 
@@ -49,15 +62,19 @@ training:
   lr_scheduler_type: "cosine"
   warmup_ratio: 0.03
   num_train_epochs: 3
-  # D-maxsteps-v2: max_steps=-1 (sentinela do HF Trainer para "não sobrepor num_train_epochs").
-  # ERRO CONFIRMADO NO COLAB: um max_steps positivo SEMPRE sobrepõe num_train_epochs no HF
-  # Trainer — com max_steps=3000 fixo aqui antes, e um dataset de ~465 exemplos de treino
-  # (batch efetivo 16 -> ~30 passos/época), isso virava ~100 épocas em vez das 3 pretendidas
-  # (overfitting severo, e ~12h de treino em vez do esperado). A rede de segurança contra
-  # queda de sessão do Colab (seção 11.2) já vem de save_steps/resume_from_checkpoint, não
-  # precisa de um max_steps artificialmente alto — por isso -1 é o valor correto aqui, não
-  # um número grande "por via das dúvidas".
-  max_steps: -1
+  # D-maxsteps-v2 (histórico, ainda vale como lição): max_steps positivo SEMPRE sobrepõe
+  # num_train_epochs no HF Trainer — ERRO CONFIRMADO NO COLAB quando um valor "de segurança"
+  # alto (3000) virou ~100 épocas reais e ~12h de treino num dataset pequeno, sem essa intenção.
+  # D-maxsteps-cost-cap: aqui é diferente — corte INTENCIONAL, pedido explicitamente pelo
+  # usuário pra economizar créditos do Colab, sabendo que o treino vai parar antes das 3 épocas
+  # completas (462 passos totais nesta config, ~153/época). 270 foi escolhido de memória (sem
+  # trainer_state.json à mão) como aproximação de onde ficou o melhor checkpoint no treino
+  # anterior de verdade. Não cai exatamente num múltiplo de save_steps=76 (76/152/228/304) —
+  # o Trainer ainda salva ao FINAL do treino independente da cadência, então o último
+  # checkpoint real vai ser em 270, com 228 como o anterior mais próximo. Com
+  # load_best_model_at_end=True (D-bestcheckpoint), o adapter final ainda é escolhido pelo
+  # menor eval_loss dentre esses, não necessariamente o do passo 270 em si.
+  max_steps: 270
   optim: "paged_adamw_8bit"
   # D-l4-checkpointing-tradeoff: desligado por decisão explícita do usuário, ACEITANDO RISCO
   # calculado (não medido) de OOM. Cálculo com dados reais de pesquisa (não só extrapolação da

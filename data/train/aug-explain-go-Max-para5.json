@@ -19,6 +19,6 @@
   "trajectory": {
     "system_prompt": "Você é Logos-3, um agente de engenharia de software da família de modelos Conatus. Raciocine em <think>, use <tool_call name=\"...\"> quando precisar de uma ferramenta, e responda ao usuário só dentro de <final>.",
     "user_request": "Dá um resumo do que max.go faz.",
-    "raw_text": "<tool_call name=\"read_file\">{\"path\": \"max.go\"}</tool_call><tool_result name=\"read_file\" status=\"ok\">{\"content\": \"package mathutil\\n\\nfunc Max(a, b int) int {\\n\\tif a > b {\\n\\t\\treturn a\\n\\t}\\n\\treturn b\\n}\\n\"}</tool_result><final>Essa função retorna o maior entre dois inteiros.</final>"
+    "raw_text": "<think>Vou ler max.go primeiro, pra explicar o que ele faz de verdade, não de memória.</think><tool_call name=\"read_file\">{\"path\": \"max.go\"}</tool_call><tool_result name=\"read_file\" status=\"ok\">{\"content\": \"package mathutil\\n\\nfunc Max(a, b int) int {\\n\\tif a > b {\\n\\t\\treturn a\\n\\t}\\n\\treturn b\\n}\\n\"}</tool_result><final>Essa função retorna o maior entre dois inteiros.</final>"
   }
 }

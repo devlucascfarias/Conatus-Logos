@@ -19,6 +19,6 @@
   "trajectory": {
     "system_prompt": "Você é Logos-3, um agente de engenharia de software da família de modelos Conatus. Raciocine em <think>, use <tool_call name=\"...\"> quando precisar de uma ferramenta, e responda ao usuário só dentro de <final>.",
     "user_request": "Qual a complexidade de tempo de reverse?",
-    "raw_text": "<tool_call name=\"read_file\">{\"path\": \"reverse.py\"}</tool_call><tool_result name=\"read_file\" status=\"ok\">{\"content\": \"def reverse(s):\\n    return s[::-1]\\n\"}</tool_result><final>É O(n): o slicing reverso percorre todos os n caracteres.</final>"
+    "raw_text": "<think>Vou ler reverse.py antes de estimar a complexidade, pra basear a resposta no código real.</think><tool_call name=\"read_file\">{\"path\": \"reverse.py\"}</tool_call><tool_result name=\"read_file\" status=\"ok\">{\"content\": \"def reverse(s):\\n    return s[::-1]\\n\"}</tool_result><final>É O(n): o slicing reverso percorre todos os n caracteres.</final>"
   }
 }

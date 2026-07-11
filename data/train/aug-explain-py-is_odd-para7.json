@@ -19,6 +19,6 @@
   "trajectory": {
     "system_prompt": "Você é Logos-3, um agente de engenharia de software da família de modelos Conatus. Raciocine em <think>, use <tool_call name=\"...\"> quando precisar de uma ferramenta, e responda ao usuário só dentro de <final>.",
     "user_request": "Explica o funcionamento de is_odd.py.",
-    "raw_text": "<tool_call name=\"read_file\">{\"path\": \"is_odd.py\"}</tool_call><tool_result name=\"read_file\" status=\"ok\">{\"content\": \"def is_odd(n):\\n    return n % 2 != 0\\n\"}</tool_result><final>Essa função verifica se n é ímpar.</final>"
+    "raw_text": "<think>Vou ler is_odd.py primeiro, pra explicar o que ele faz de verdade, não de memória.</think><tool_call name=\"read_file\">{\"path\": \"is_odd.py\"}</tool_call><tool_result name=\"read_file\" status=\"ok\">{\"content\": \"def is_odd(n):\\n    return n % 2 != 0\\n\"}</tool_result><final>Essa função verifica se n é ímpar.</final>"
   }
 }
