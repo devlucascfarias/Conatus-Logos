@@ -17,6 +17,22 @@ from ._subprocess_utils import materialize_files, run_command
 
 _TRACEBACK_LOCATION_RE = re.compile(r'File "(?P<file>[^"]+)", line (?P<line>\d+)')
 
+# D-checker-pytest-plugin-warning-leak (achado real, não a mesma causa de D-checker-path-leak):
+# avisos de depreciação de PLUGINS instalados na máquina de dev (ex.: pytest-asyncio, que nem é
+# dependência declarada do projeto) vêm no formato padrão do módulo `warnings` do Python —
+# "<caminho absoluto do pacote instalado>:<linha>: <NomeDoWarning>: <mensagem>\n\n  <linha
+# fonte>\n" — e esse caminho aponta pro site-packages da máquina que rodou o checker (vaza nome
+# de usuário/SO), não pro código do usuário. Confirmado real rodando `compile_and_test` de
+# verdade num ambiente com pytest-asyncio instalado: aparece tanto quando os testes passam
+# quanto quando falham, sempre em `stderr`, nunca junto do relatório de verdade do pytest (que
+# fica inteiro em `stdout`) — então removê-lo nunca perde diagnóstico real, só ruído do
+# ambiente local.
+_PYTEST_WARNING_BLOCK_RE = re.compile(r"^\S+\.py:\d+: \w+Warning: .*?\n(?:.*\n)*?\n(?:  .*\n)?", re.MULTILINE)
+
+
+def _strip_plugin_warnings(text: str) -> str:
+    return _PYTEST_WARNING_BLOCK_RE.sub("", text)
+
 
 def _extract_location(stderr: str, base_dir: Path) -> tuple[Optional[str], Optional[int]]:
     matches = list(_TRACEBACK_LOCATION_RE.finditer(stderr))
@@ -80,17 +96,18 @@ def _syntax_check(base_dir: Path, files: list[CheckFile], timeout_ms: int) -> Ch
 def _run_pytest(base_dir: Path, timeout_ms: int) -> CheckResult:
     result = run_command([sys.executable, "-m", "pytest", "-q", "--no-header"], base_dir, timeout_ms)
     metadata = {"language": "python", "duration_ms": result.duration_ms}
+    stderr = _strip_plugin_warnings(result.stderr)
 
     if result.timed_out:
         return CheckResult(
             passed=False,
             errors=[CheckError(code=errors.TIMEOUT, message="timeout ao rodar pytest")],
             stdout=result.stdout,
-            stderr=result.stderr,
+            stderr=stderr,
             metadata=metadata,
         )
 
-    combined = result.stdout + result.stderr
+    combined = result.stdout + stderr
     passed = result.returncode == 0
     found_errors: list[CheckError] = []
     if not passed:
@@ -103,7 +120,7 @@ def _run_pytest(base_dir: Path, timeout_ms: int) -> CheckResult:
         found_errors.append(CheckError(code=code, message=combined.strip()[-2000:]))
 
     return CheckResult(
-        passed=passed, errors=found_errors, stdout=result.stdout, stderr=result.stderr, metadata=metadata
+        passed=passed, errors=found_errors, stdout=result.stdout, stderr=stderr, metadata=metadata
     )
 
 

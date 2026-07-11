@@ -1,6 +1,7 @@
 """Testes do backend Python do checker (PLAN.md seção 10, 19.1)."""
 
 from src.checker import check, errors
+from src.checker.backends.python_backend import _strip_plugin_warnings
 
 
 def test_syntax_check_passes_for_valid_code():
@@ -94,6 +95,31 @@ def test_run_without_entrypoint_is_incomplete_solution():
     result = check(language="python", operation="run", files=[{"path": "main.py", "content": "pass"}])
     assert not result.passed
     assert result.errors[0].code == errors.INCOMPLETE_SOLUTION
+
+
+def test_strip_plugin_warnings_removes_deprecation_warning_block():
+    """D-checker-pytest-plugin-warning-leak (achado real, diferente de D-checker-path-leak):
+    ao regenerar exemplos de dataset de verdade, um aviso de depreciação do plugin
+    pytest-asyncio (instalado só nesta máquina de dev, não é dependência do projeto) vazou o
+    caminho absoluto do pacote instalado (`.../site-packages/pytest_asyncio/plugin.py`) — texto
+    real capturado do `stderr` do pytest, reproduzido aqui como fixture pra não depender de
+    qual plugin está instalado em cada máquina/CI que rodar este teste."""
+    stderr = (
+        'C:\\Users\\devuser\\AppData\\Local\\Programs\\Python\\Python310\\lib\\site-packages'
+        '\\pytest_asyncio\\plugin.py:247: PytestDeprecationWarning: The configuration option '
+        '"asyncio_default_fixture_loop_scope" is unset.\n'
+        "The event loop scope for asynchronous fixtures will default to the fixture caching "
+        "scope.\n"
+        "\n"
+        "  warnings.warn(PytestDeprecationWarning(_DEFAULT_FIXTURE_LOOP_SCOPE_UNSET))\n"
+    )
+    cleaned = _strip_plugin_warnings(stderr)
+    assert cleaned == ""
+
+
+def test_strip_plugin_warnings_keeps_unrelated_text_untouched():
+    text = "1 passed in 0.02s\n"
+    assert _strip_plugin_warnings(text) == text
 
 
 def test_run_error_never_leaks_absolute_temp_dir_path():
