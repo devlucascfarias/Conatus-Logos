@@ -20,7 +20,7 @@ from typing import Any
 
 import jsonschema
 
-from .taxonomy import DIFFICULTIES, EXECUTION_CLASSIFICATIONS, MVP_LANGUAGES, TASK_TYPES
+from .taxonomy import DIFFICULTIES, EXECUTION_CLASSIFICATIONS, LANGUAGE_METADATA_VALUES, TASK_TYPES
 
 METADATA_SCHEMA: dict[str, Any] = {
     "$schema": "https://json-schema.org/draft/2020-12/schema",
@@ -41,7 +41,7 @@ METADATA_SCHEMA: dict[str, Any] = {
     "properties": {
         "id": {"type": "string", "minLength": 1},
         "domain": {"type": "string", "minLength": 1},
-        "language": {"enum": sorted(MVP_LANGUAGES)},
+        "language": {"enum": sorted(LANGUAGE_METADATA_VALUES)},
         "difficulty": {"enum": sorted(DIFFICULTIES)},
         "tools_used": {"type": "array", "items": {"type": "string"}},
         "num_steps": {"type": "integer", "minimum": 0},
