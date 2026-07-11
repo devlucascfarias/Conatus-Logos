@@ -11,21 +11,33 @@
 #
 # D-phi4mini-experiment-reverted (2026-07-11): cheguei a configurar microsoft/Phi-4-mini-instruct
 # como experimento de controle (isolar se os erros de tool_call eram específicos do Qwen3), mas
-# o usuário decidiu não seguir com a troca e manter Qwen3-4B-Instruct-2507. Revertido antes de
-# qualquer treino real rodar com o Phi. Achados técnicos ficam registrados aqui pra não perder o
-# trabalho, caso a troca volte a ser cogitada depois: Phi-4-mini-instruct usa a classe de
-# modelagem "Phi3ForCausalLM" (reaproveitada da família Phi-3 pela própria Microsoft, não é
-# engano — confirmado via config.json real do Hub), com q/k/v fundidos numa única `qkv_proj` e
-# gate/up fundidos em `gate_up_proj` (diferente de Qwen3/Llama, que têm essas projeções
-# separadas) — os target_modules atuais (v_proj/gate_proj/up_proj) não existem nessa arquitetura
-# e precisariam virar qkv_proj/gate_up_proj se a troca for retomada. Também confirmado que
-# Phi3Attention não tem QK-norm pós-projeção, então o problema de D-qwen3-qknorm-lora não se
-# aplicaria lá.
+# o usuário decidiu não seguir com a troca naquele momento. Achados técnicos ficam registrados
+# aqui pra não perder o trabalho, caso a troca volte a ser cogitada depois: Phi-4-mini-instruct
+# usa a classe de modelagem "Phi3ForCausalLM" (reaproveitada da família Phi-3 pela própria
+# Microsoft, não é engano — confirmado via config.json real do Hub), com q/k/v fundidos numa
+# única `qkv_proj` e gate/up fundidos em `gate_up_proj` (diferente de Qwen3/Llama, que têm essas
+# projeções separadas) — precisaria virar qkv_proj/gate_up_proj nos target_modules. Também
+# confirmado que Phi3Attention não tem QK-norm pós-projeção.
+#
+# D-granite-swap (2026-07-11): trocado de Qwen/Qwen3-4B-Instruct-2507 para
+# ibm-granite/granite-4.1-8b (o modelo ORIGINAL deste projeto, antes de D-frontend-pivot-model-
+# swap ter trocado pro Qwen3-4B por limitação de hardware da A2000 12GB — restrição que não se
+# aplica mais na L4 24GB). Motivo real, não especulativo: 3 treinos reais seguidos no Qwen3-4B
+# com o dataset atual mostraram o MESMO padrão de gramática malformada
+# (`<tool_call>` sem `name=`, fechado com tag errada) em checkpoints com quantidades de treino
+# muito diferentes (76, 304, 462 passos — o de mais treino foi o PIOR dos três, não o melhor,
+# incluindo fabricação de `<tool_result>` e degeneração real em texto alucinado/multilíngue) —
+# descartando "precisa de mais treino" como explicação e apontando pra uma questão do
+# modelo/config, não do tamanho do dataset. Verificado ANTES de configurar (não assumido):
+# `config.json` real do Hub confirma não-gated, Apache 2.0, sem thinking nativo, HumanEval
+# 85,37%/MBPP 87,30% (números oficiais do card, não estimativa) — comparado com Qwen3-8B (tem
+# thinking nativo ativado por padrão, desqualificado) e Qwen2.5-Coder-7B-Instruct (sem
+# benchmarks oficiais confirmados na página, e 7,61B não 8B).
 
 version: 1
 
 model:
-  base_model: "Qwen/Qwen3-4B-Instruct-2507"
+  base_model: "ibm-granite/granite-4.1-8b"
   load_in_4bit: true
   bnb_4bit_quant_type: "nf4"
   bnb_4bit_compute_dtype: "bfloat16"
@@ -35,14 +47,19 @@ lora:
   r: 16
   alpha: 32
   dropout: 0.05
-  # D-qwen3-qknorm-lora: Qwen3 aplica RMSNorm em q/k DEPOIS do reshape da projeção (QK-norm) —
-  # colocar adapter LoRA em q_proj/k_proj introduz tensores com shape incompatível nesse
-  # caminho de normalização, e isso já foi reportado travando com erro CUBLAS na primeira
-  # camada de atenção. Por isso o conjunto de target_modules aqui EXCLUI q_proj/k_proj,
-  # diferente do que era usado para o Granite. Ainda assim, confirme via
-  # model.named_modules() na primeira carga real (mesmo espírito da seção 17 do PLAN.md) —
-  # isso veio de pesquisa, não de execução real neste projeto ainda.
+  # D-granite-target-modules: verificado direto no código-fonte real (`modeling_granite.py` da
+  # transformers 5.10.2 instalada localmente, arquitetura `GraniteForCausalLM` confirmada via
+  # config.json do Hub) ANTES de configurar — diferente do Phi-4-mini e do Qwen3, o Granite usa
+  # projeções clássicas SEPARADAS (q_proj/k_proj/v_proj/o_proj/gate_proj/up_proj/down_proj, sem
+  # fusão) e `GraniteAttention.forward` NÃO aplica nenhuma normalização pós-projeção em q/k (sem
+  # QK-norm) — o problema que motivou excluir q_proj/k_proj no Qwen3 (D-qwen3-qknorm-lora) não
+  # se aplica aqui, dá pra incluir a atenção inteira sem risco de incompatibilidade de shape.
+  # Mesmo conjunto que já estava na config original deste projeto (nunca chegou a ser testada
+  # de verdade — trocado pro Qwen3 antes do primeiro treino real com o Granite), agora
+  # confirmado por leitura de código-fonte real, não só por ter sobrevivido de uma config antiga.
   target_modules:
+    - "q_proj"
+    - "k_proj"
     - "v_proj"
     - "o_proj"
     - "gate_proj"
@@ -52,7 +69,12 @@ lora:
 data:
   train_path: "data/train"
   validation_path: "data/validation"
-  sequence_length: 4096
+  # D-granite-vram-caution: reduzido de 4096 para 2048 como precaução — 8B é aproximadamente o
+  # dobro do footprint de VRAM do Qwen3-4B que já rodamos na L4 (que usava 18,8/22,5GB SEM
+  # gradient_checkpointing em sequence_length=4096); nunca medido de verdade com o Granite-8B
+  # nesta GPU. Ajustar depois do profiling real da primeira execução (célula de VRAM do
+  # notebook) — pode caber mais alto, isso é cautela, não medição.
+  sequence_length: 2048
   group_by_length: true    # D8 — sem sequence packing na v1
 
 training:
@@ -80,18 +102,13 @@ training:
   # épocas completas agora é a aposta mais segura, mesmo custando mais créditos numa rodada só.
   max_steps: -1
   optim: "paged_adamw_8bit"
-  # D-l4-checkpointing-tradeoff: desligado por decisão explícita do usuário, ACEITANDO RISCO
-  # calculado (não medido) de OOM. Cálculo com dados reais de pesquisa (não só extrapolação da
-  # T4): checkpointing tipicamente economiza ~20-30% de VRAM total, ponta a ponta (não os
-  # 70-80% às vezes citados pra ativações isoladas — essa fatia raramente domina o total).
-  # T4 usou 7,6GB com checkpointing=true em sequence_length=2048; sem checkpointing, no mesmo
-  # seq_len, estimativa ~7,6 / (1-0,25) ≈ 10GB; escalando pra sequence_length=4096 da L4
-  # (dobrar sequence_length tipicamente custa 1,5-2x de VRAM, não linear puro) dá uma faixa de
-  # ~15-20GB — a L4 tem 24GB (~22-23GB úteis), então PROVAVELMENTE cabe, mas com margem
-  # apertada, não folgada. Se estourar OOM de verdade, volte pra `true` — isso é decidido antes
-  # do treino começar (célula de configuração QLoRA do notebook), não durante, então não perde
-  # nada além de tempo até o próximo carregamento do modelo.
-  gradient_checkpointing: false
+  # D-granite-checkpointing-caution: religado pra `true` — o cálculo anterior (D-l4-
+  # checkpointing-tradeoff, histórico) era especificamente pro Qwen3-4B, que já tinha VRAM real
+  # medida na L4 (18,8/22,5GB sem checkpointing). Granite-4.1-8B nunca rodou nesta GPU — 8B é
+  # ~2x o footprint de parâmetros do 4B, e sem nenhuma medição real ainda, manter checkpointing
+  # ligado (custa tempo, não corretude) é a escolha mais segura até o primeiro profiling real
+  # confirmar se dá pra desligar de novo.
+  gradient_checkpointing: true
   seed: 42
 
 evaluation:

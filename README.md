@@ -1,15 +1,16 @@
 # Praxis-SFT v2
 
 Modelo especializado em engenharia de software, derivado via **QLoRA** de
-`Qwen/Qwen3-4B-Instruct-2507`, treinado para raciocinar, chamar ferramentas estruturadas,
-interpretar retornos reais dessas ferramentas, verificar sua própria solução e emitir uma
-resposta pública limpa. Treino em NVIDIA L4 (Google Colab, `configs/train_l4.yaml`), GPUs
-menores (RTX A2000 12GB local, `configs/train_a2000.yaml`) ou GPU gratuita do Kaggle (P100/T4
-16GB, `configs/train_kaggle.yaml`, `D-kaggle-training-support`) — o modelo de 4B
-(`D-frontend-pivot-model-swap`, ver `docs/PLAN.md`) foi escolhido por caber com folga em
-hardware mais modesto que o 8B generalista anterior (`ibm-granite/granite-4.1-8b`) e por não ter
-modo de "thinking" nativo, evitando conflito com a gramática `<think>`/`<tool_call>`/`<final>`
-treinada por cima.
+`ibm-granite/granite-4.1-8b` (`configs/train_l4.yaml`, D-granite-swap — ver `docs/PLAN.md`),
+treinado para raciocinar, chamar ferramentas estruturadas, interpretar retornos reais dessas
+ferramentas, verificar sua própria solução e emitir uma resposta pública limpa. Treino em NVIDIA
+L4 (Google Colab). Sem modo de "thinking" nativo, evitando conflito com a gramática
+`<think>`/`<tool_call>`/`<final>` treinada por cima; escolhido depois que 3 treinos reais no
+`Qwen/Qwen3-4B-Instruct-2507` (usado antes, `D-frontend-pivot-model-swap`) mostraram o mesmo
+padrão de gramática malformada independente da quantidade de passos de treino. GPUs menores
+(RTX A2000 12GB local, `configs/train_a2000.yaml`) e GPU gratuita do Kaggle (P100/T4 16GB,
+`configs/train_kaggle.yaml`, `D-kaggle-training-support`) ainda apontam pro Qwen3-4B — não
+foram migradas junto, ver `docs/PLAN.md` antes de rodar treino por um desses caminhos.
 
 O plano técnico completo — decisões arquiteturais, formato canônico de trajetória, schemas de
 ferramenta, desenho do harness/loop do agente, estratégia de segurança, dataset, treino,

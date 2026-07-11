@@ -14,18 +14,20 @@ def _char_level_offsets(text: str) -> list[tuple[int, int]]:
 
 
 def test_train_config_loads_from_default_yaml():
-    # D-frontend-pivot-model-swap: base trocada pra Qwen3-4B-Instruct-2507 (ver docs/PLAN.md).
-    # target_modules NÃO inclui q_proj/k_proj — QK-norm do Qwen3 é incompatível com LoRA nessas
-    # duas projeções (D-qwen3-qknorm-lora).
+    # D-granite-swap: base trocada pra ibm-granite/granite-4.1-8b (ver docs/PLAN.md) depois de
+    # 3 treinos reais no Qwen3-4B mostrarem o mesmo padrão de gramática malformada independente
+    # da quantidade de passos. target_modules inclui q_proj/k_proj — Granite não tem QK-norm
+    # pós-projeção (diferente do Qwen3, D-qwen3-qknorm-lora), confirmado lendo
+    # modeling_granite.py real antes de configurar (D-granite-target-modules).
     config = TrainConfig.load()
-    assert config.base_model == "Qwen/Qwen3-4B-Instruct-2507"
+    assert config.base_model == "ibm-granite/granite-4.1-8b"
     assert config.load_in_4bit is True
     assert config.lora_r == 16
     assert config.lora_alpha == 32
-    assert "q_proj" not in config.lora_target_modules
-    assert "k_proj" not in config.lora_target_modules
+    assert "q_proj" in config.lora_target_modules
+    assert "k_proj" in config.lora_target_modules
     assert "v_proj" in config.lora_target_modules
-    assert config.sequence_length == 4096
+    assert config.sequence_length == 2048
     assert config.optim == "paged_adamw_8bit"
     assert config.require_gpu_name_contains == "L4"
 
