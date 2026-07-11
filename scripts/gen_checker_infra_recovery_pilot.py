@@ -93,7 +93,10 @@ def build_example(
             "validation_status": "validated",
             "execution_performed": True,
             "split": "train",
-            "checker_used": None,
+            # D-checker-used-null-fix (docs/PLAN.md): campo OMITIDO (nunca `null`) quando não
+            # se aplica — mesma convenção de `scripts/generate_dataset.py`'s `_example()`. Aqui
+            # nenhum checker rodou com sucesso de verdade (é literalmente o ponto do exemplo:
+            # UNSUPPORTED_LANGUAGE), então não existe versão de checker pra reportar.
             "expected_result": {"passed": False},
             "execution_classification": "tested",
         },

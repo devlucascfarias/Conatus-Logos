@@ -16,7 +16,6 @@
     "validation_status": "validated",
     "execution_performed": true,
     "split": "train",
-    "checker_used": null,
     "expected_result": {
       "passed": true
     },

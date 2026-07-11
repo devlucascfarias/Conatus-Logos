@@ -97,7 +97,8 @@ def build_example(id_, domain, difficulty, user_request, setup, steps, final_tex
             "validation_status": "validated",
             "execution_performed": True,
             "split": "train",
-            "checker_used": None,
+            # D-checker-used-null-fix (docs/PLAN.md): omitido, não `null` — comandos de shell
+            # não passam pelo `checker`, não existe versão de checker pra reportar aqui.
             "expected_result": {"passed": True},
             "execution_classification": "tested",
         },

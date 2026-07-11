@@ -48,7 +48,8 @@ def build_example(id_, domain, difficulty, user_request, think_text, final_text)
             "validation_status": "validated",
             "execution_performed": False,
             "split": "train",
-            "checker_used": None,
+            # D-checker-used-null-fix (docs/PLAN.md): omitido, não `null` — resposta direta,
+            # nenhuma ferramenta usada, não existe checker pra reportar.
             "expected_result": {"passed": None},
             "execution_classification": "static_only",
         },

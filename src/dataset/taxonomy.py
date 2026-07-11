@@ -27,6 +27,26 @@ TASK_TYPES = frozenset(
         "language_migration",
         "project_configuration",
         "documentation_usage",
+        # D-taxonomy-backfill-gaps (achado real, docs/PLAN.md): estes 11 valores já eram usados
+        # por 760 exemplos reais (com scripts geradores dedicados e propósito comportamental
+        # documentado em docs/PLAN.md — Gaps 2b/4/5/6, expansão OOP/erro/padrões/módulos/shell)
+        # desde 2026-07-08, mas nunca tinham sido adicionados a este enum fechado — cada um
+        # cunhado numa leva de expansão sem atualizar a taxonomia junto, então `structural_validate`
+        # rejeitava esses exemplos silenciosamente até serem tocados por outro trabalho e o gap
+        # ser notado. Nenhum é sinônimo de um valor já existente (confirmado lendo o histórico
+        # de cada um em docs/PLAN.md antes de decidir) — cada um cobre um comportamento
+        # genuinamente distinto dos demais.
+        "class_implementation",
+        "error_handling",
+        "python_pattern",
+        "realistic_module",
+        "shell_command",
+        "checker_infra_unavailable",
+        "tool_call_json_recovery",
+        "multi_file_root_cause_diagnosis",
+        "hypothesis_revision_after_failure",
+        "no_bug_found_report",
+        "own_bug_diagnosis",
     }
 )
 
