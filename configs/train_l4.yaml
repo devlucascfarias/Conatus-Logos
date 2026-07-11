@@ -65,19 +65,20 @@ training:
   # D-maxsteps-v2 (histórico, ainda vale como lição): max_steps positivo SEMPRE sobrepõe
   # num_train_epochs no HF Trainer — ERRO CONFIRMADO NO COLAB quando um valor "de segurança"
   # alto (3000) virou ~100 épocas reais e ~12h de treino num dataset pequeno, sem essa intenção.
-  # D-maxsteps-cost-cap: corte INTENCIONAL, pedido explicitamente pelo usuário pra economizar
-  # créditos do Colab, sabendo que o treino vai parar antes das 3 épocas completas (462 passos
-  # totais nesta config, ~153/época). Primeira tentativa foi 270 (de memória, sem
-  # trainer_state.json à mão, aproximando o melhor checkpoint do treino anterior) — revisado pra
-  # 304 (= 4 × save_steps=76) por dois motivos: (1) 270 não caía num múltiplo de save_steps, e o
-  # "melhor checkpoint por volta de 270" era do treino ANTERIOR, com dataset diferente (antes de
-  # D-think-discipline-frente-b injetar `<think>` em 38,5% dos exemplos) — não há garantia de
-  # que o vale de eval_loss caia no mesmo lugar agora; (2) parar exatamente em 270 não dava
-  # nenhum ponto de confirmação DEPOIS do checkpoint 228 — sem isso, não dá pra saber se a perda
-  # ainda estava caindo ou já tinha começado a subir (sinal de overfitting) ali perto. 304 custa
-  # só +34 passos (~12,6% a mais) e dá um checkpoint extra de confirmação (76/152/228/304) antes
-  # do `load_best_model_at_end` (D-bestcheckpoint) escolher pelo menor eval_loss real entre eles.
-  max_steps: 304
+  # D-maxsteps-cost-cap-reverted: os dois cortes tentados (270, depois 304) foram testados de
+  # verdade contra os 8 probes reais e os dois deram o MESMO padrão de falha grave — 7/8 FAIL,
+  # loop nunca fecha `<final>` genuíno, `MAX_STEPS_EXCEEDED` até em "quanto é 2+2?" (achado real,
+  # transcrição em modo dev confirmou o modelo gerando gramática malformada — `<tool_call>` sem
+  # `name=`, fechado com `</think>` errado — e depois espiralando em texto alucinado/degenerado
+  # após rejeição por `SEGMENT_SMUGGLING`). Como 304 (quase 4x mais passos que 76) não mostrou
+  # melhora nenhuma sobre 76, a comparação certa não era "76 vs 304" — era "304 vs o treino
+  # anterior que COMPLETOU as 3 épocas (~462 passos) e tinha esses mesmos 3 probes passando de
+  # forma consistente". Ou seja: o dataset novo (D-think-discipline-frente-b, `<think>` em 38,5%
+  # a mais dos exemplos) pode precisar do treino completo pra estabilizar essa distribuição
+  # nova, não só de mais alguns passos. Voltando pra -1 (sentinela do HF Trainer, D-maxsteps-v2)
+  # — os dois cortes já gastaram 2 treinos sem chegar a um resultado usável, então terminar as 3
+  # épocas completas agora é a aposta mais segura, mesmo custando mais créditos numa rodada só.
+  max_steps: -1
   optim: "paged_adamw_8bit"
   # D-l4-checkpointing-tradeoff: desligado por decisão explícita do usuário, ACEITANDO RISCO
   # calculado (não medido) de OOM. Cálculo com dados reais de pesquisa (não só extrapolação da
