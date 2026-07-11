@@ -115,6 +115,32 @@ def test_run_executes_entrypoint_successfully():
 
 
 @_requires_go
+def test_run_error_never_leaks_absolute_temp_dir_path():
+    """D-checker-path-leak-go-slash (achado real, docs/PLAN.md): o panic runtime do Go imprime
+    o caminho com barra normal (`/`) mesmo no Windows (`C:/Users/<usuário>/AppData/Local/Temp/
+    praxis_checker_go_<hash>/main.go:5`), diferente da barra invertida nativa do SO — o
+    sanitizador em `_subprocess_utils.py` precisa cobrir as duas formas. `errors[0].message`
+    precisa conter só o path RELATIVO (`main.go`), nunca o diretório temporário completo."""
+    result = check(
+        language="go",
+        operation="run",
+        files=[
+            {
+                "path": "main.go",
+                "content": (
+                    'package main\n\nfunc main() {\n\tvar m map[string]int\n\tm["x"] = 1\n\tprintln(m["x"])\n}\n'
+                ),
+            }
+        ],
+        entrypoint="main.go",
+    )
+    assert not result.passed
+    assert "main.go:" in result.errors[0].message
+    assert "praxis_checker_go_" not in result.errors[0].message
+    assert "praxis_checker_go_" not in result.stderr
+
+
+@_requires_go
 def test_timeout_is_reported_as_timeout_code():
     result = check(
         language="go",

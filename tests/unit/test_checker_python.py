@@ -96,6 +96,29 @@ def test_run_without_entrypoint_is_incomplete_solution():
     assert result.errors[0].code == errors.INCOMPLETE_SOLUTION
 
 
+def test_run_error_never_leaks_absolute_temp_dir_path():
+    """D-checker-path-leak (achado real, docs/PLAN.md): 20 exemplos do dataset (`aug-debug-*`)
+    tinham o caminho absoluto da máquina de geração (`C:\\Users\\<usuário>\\AppData\\Local\\Temp\\
+    praxis_checker_py_<hash>\\main.py`) vazado dentro do traceback devolvido pelo checker,
+    porque o backend nunca sanitizava stdout/stderr antes de retornar. O `<final>` do exemplo
+    reproduzia esse traceback verbatim — ou seja, o modelo aprenderia a ecoar o path local de
+    quem gerou o dataset. `errors[0].message`/`stderr` precisam conter só o path RELATIVO
+    (`main.py`), nunca o diretório temporário completo."""
+    result = check(
+        language="python",
+        operation="run",
+        files=[{"path": "main.py", "content": "x = 1.0\ny = 0.0\nprint(x / y)\n"}],
+        entrypoint="main.py",
+    )
+    assert not result.passed
+    assert 'File "main.py"' in result.errors[0].message
+    # "praxis_checker_py_" é o prefixo literal do próprio backend (src/checker/backends/
+    # python_backend.py) para o TemporaryDirectory — presente em qualquer SO, ao contrário de
+    # nomes de pasta específicos de plataforma (AppData é só Windows).
+    assert "praxis_checker_py_" not in result.errors[0].message
+    assert "praxis_checker_py_" not in result.stderr
+
+
 def test_timeout_is_reported_as_timeout_code():
     result = check(
         language="python",
