@@ -65,16 +65,19 @@ training:
   # D-maxsteps-v2 (histórico, ainda vale como lição): max_steps positivo SEMPRE sobrepõe
   # num_train_epochs no HF Trainer — ERRO CONFIRMADO NO COLAB quando um valor "de segurança"
   # alto (3000) virou ~100 épocas reais e ~12h de treino num dataset pequeno, sem essa intenção.
-  # D-maxsteps-cost-cap: aqui é diferente — corte INTENCIONAL, pedido explicitamente pelo
-  # usuário pra economizar créditos do Colab, sabendo que o treino vai parar antes das 3 épocas
-  # completas (462 passos totais nesta config, ~153/época). 270 foi escolhido de memória (sem
-  # trainer_state.json à mão) como aproximação de onde ficou o melhor checkpoint no treino
-  # anterior de verdade. Não cai exatamente num múltiplo de save_steps=76 (76/152/228/304) —
-  # o Trainer ainda salva ao FINAL do treino independente da cadência, então o último
-  # checkpoint real vai ser em 270, com 228 como o anterior mais próximo. Com
-  # load_best_model_at_end=True (D-bestcheckpoint), o adapter final ainda é escolhido pelo
-  # menor eval_loss dentre esses, não necessariamente o do passo 270 em si.
-  max_steps: 270
+  # D-maxsteps-cost-cap: corte INTENCIONAL, pedido explicitamente pelo usuário pra economizar
+  # créditos do Colab, sabendo que o treino vai parar antes das 3 épocas completas (462 passos
+  # totais nesta config, ~153/época). Primeira tentativa foi 270 (de memória, sem
+  # trainer_state.json à mão, aproximando o melhor checkpoint do treino anterior) — revisado pra
+  # 304 (= 4 × save_steps=76) por dois motivos: (1) 270 não caía num múltiplo de save_steps, e o
+  # "melhor checkpoint por volta de 270" era do treino ANTERIOR, com dataset diferente (antes de
+  # D-think-discipline-frente-b injetar `<think>` em 38,5% dos exemplos) — não há garantia de
+  # que o vale de eval_loss caia no mesmo lugar agora; (2) parar exatamente em 270 não dava
+  # nenhum ponto de confirmação DEPOIS do checkpoint 228 — sem isso, não dá pra saber se a perda
+  # ainda estava caindo ou já tinha começado a subir (sinal de overfitting) ali perto. 304 custa
+  # só +34 passos (~12,6% a mais) e dá um checkpoint extra de confirmação (76/152/228/304) antes
+  # do `load_best_model_at_end` (D-bestcheckpoint) escolher pelo menor eval_loss real entre eles.
+  max_steps: 304
   optim: "paged_adamw_8bit"
   # D-l4-checkpointing-tradeoff: desligado por decisão explícita do usuário, ACEITANDO RISCO
   # calculado (não medido) de OOM. Cálculo com dados reais de pesquisa (não só extrapolação da
