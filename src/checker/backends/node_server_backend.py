@@ -37,7 +37,27 @@ def _unavailable(reason: str) -> CheckResult:
 def _syntax_check(base_dir: Path, files: list[CheckFile], timeout_ms: int) -> CheckResult:
     has_ts = any(f.path.endswith((".ts", ".tsx")) for f in files)
     if has_ts:
-        result = run_command([str(_bin_path(base_dir, "tsc")), "--noEmit", "--allowJs"], base_dir, timeout_ms)
+        # Sem tsconfig.json (server-side não usa o do template, orientado a React/Vite) e sem
+        # arquivos passados explicitamente, `tsc` não sabe o que compilar e imprime a TELA DE
+        # AJUDA (saindo com código 1) em vez de um erro real — achado real ao testar, não
+        # hipótese. Corrigido passando os .ts/.tsx explicitamente na linha de comando.
+        ts_files = [f.path for f in files if f.path.endswith((".ts", ".tsx"))]
+        result = run_command(
+            [
+                str(_bin_path(base_dir, "tsc")), "--noEmit", "--allowJs",
+                "--moduleResolution", "bundler", "--module", "esnext", "--target", "es2020",
+                "--allowImportingTsExtensions",  # permite `import ... from './x.ts'` (ESM real)
+                # Sem --strict (desligado por padrão sem tsconfig), o estreitamento de tipo por
+                # NEGAÇÃO booleana (`if (!result.ok)`) numa union discriminada não funciona
+                # corretamente — só `=== false` estreitava; achado real testando, reproduzido
+                # isoladamente antes de decidir a flag. --strict bate com o tsconfig do template
+                # (D-checker-node-backend) de qualquer forma, é o padrão profissional.
+                "--strict",
+                *ts_files,
+            ],
+            base_dir,
+            timeout_ms,
+        )
     else:
         node_bin = "node"
         import shutil
