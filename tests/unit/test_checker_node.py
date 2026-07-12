@@ -130,3 +130,29 @@ def test_javascript_and_typescript_both_resolve_to_the_node_backend():
     langs = registered_languages()
     assert "javascript" in langs
     assert "typescript" in langs
+
+
+@_requires_node
+def test_lint_catches_real_assignment_in_condition():
+    # no-undef é desligado pelo typescript-eslint em .ts/.tsx de propósito (tsc já cobre isso,
+    # via a operação "compile" — não é um gap deste backend). Testamos uma regra que o eslint
+    # de fato cobre em TS: atribuição dentro de condicional (bug clássico de = em vez de ==).
+    result = check(
+        language="typescript",
+        operation="lint",
+        files=[{"path": "src/bad.ts", "content": "function check(a: number) {\n  if (a = 5) { console.log(a); }\n}\n"}],
+        timeout_ms=30000,
+    )
+    assert not result.passed
+    assert any("no-cond-assign" in e.message for e in result.errors)
+
+
+@_requires_node
+def test_lint_no_false_positive_on_console_global():
+    result = check(
+        language="typescript",
+        operation="lint",
+        files=[{"path": "src/good.ts", "content": "function greet(name: string) {\n  console.log('Ola, ' + name);\n}\ngreet('mundo');\n"}],
+        timeout_ms=30000,
+    )
+    assert result.passed, result.to_json()

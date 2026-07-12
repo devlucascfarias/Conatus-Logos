@@ -58,11 +58,17 @@ TASK_TYPES = frozenset(
 # verdade e renderiza num Chromium headless (WebGL incluso). "scss" entrou depois
 # (D-checker-scss-backend) — backend real que compila `.scss → .css` com dart-sass e renderiza o
 # CSS resultante no MESMO Chromium do backend `html` (CSS e SCSS compartilham o oráculo visual;
-# CSS puro valida direto via `language: "html"`). Outras linguagens do enum do checker (seção
-# 4.1) continuam sem backend, não devem CLAIMAR suporte real do checker no dataset — continua
-# valendo, ver `LANGUAGE_METADATA_VALUES` abaixo pra por que isso não é a mesma coisa que "quais
-# valores metadata.language pode ter".
-MVP_LANGUAGES = frozenset({"python", "go", "html", "javascript", "typescript", "scss"})
+# CSS puro valida direto via `language: "html"`). "node" entrou depois
+# (D-checker-node-server-backend) — backend real distinto de "javascript"/"typescript" (que são
+# orientados a React/Vite/browser), pra scripts Node.js server-side/CLI:
+# `operation="run"` executa via `node` de verdade (captura stdout/stderr/exit code reais),
+# `compile_and_test` roda testes reais via `vitest` (inclui servidores Express testados com
+# `supertest`, que despacha requisições HTTP reais pelo app, sem mock). `lint` (eslint real, flat
+# config) agora existe pros três (`javascript`/`typescript`/`node`). Outras linguagens do enum do
+# checker (seção 4.1) continuam sem backend, não devem CLAIMAR suporte real do checker no
+# dataset — continua valendo, ver `LANGUAGE_METADATA_VALUES` abaixo pra por que isso não é a
+# mesma coisa que "quais valores metadata.language pode ter".
+MVP_LANGUAGES = frozenset({"python", "go", "html", "javascript", "typescript", "scss", "node"})
 
 # D-language-metadata-widen (achado real, docs/PLAN.md): `metadata.language` só é consumido por
 # `stats_report` (`src/dataset/pipeline.py`, bucket `by_language`, puro relatório) — NUNCA decide

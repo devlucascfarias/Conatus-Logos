@@ -6,7 +6,7 @@
   "required": ["language", "operation", "files"],
   "properties": {
     "language": {
-      "enum": ["python", "go", "javascript", "typescript", "sql", "shell", "html", "scss"]
+      "enum": ["python", "go", "javascript", "typescript", "sql", "shell", "html", "scss", "node"]
     },
     "operation": {
       "enum": ["syntax_check", "compile", "compile_and_test", "run", "lint"]

@@ -74,6 +74,8 @@ def run_command(cmd: list[str], cwd: Path, timeout_ms: int) -> CommandResult:
             cwd=str(cwd),
             capture_output=True,
             text=True,
+            encoding="utf-8",
+            errors="replace",
             timeout=timeout_ms / 1000,
         )
         duration_ms = int((time.monotonic() - start) * 1000)

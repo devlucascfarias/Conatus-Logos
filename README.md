@@ -66,6 +66,14 @@ compilado no MESMO Chromium do backend `html`. CSS puro NÃO precisa deste backe
 via `language: "html"` (um `.css` + um `.html` que o linke); SCSS e CSS compartilham o oráculo
 visual.
 
+O backend `node` (`src/checker/backends/node_server_backend.py`, D-checker-node-server-backend) é
+pra scripts Node.js server-side/CLI — distinto de `javascript`/`typescript` (orientados a React/
+Vite/browser). `run` executa o script via `node` de verdade (stdout/stderr/exit code reais, útil
+pra CLIs); `compile_and_test` roda `vitest` de verdade, incluindo servidores Express testados com
+`supertest` (requisições HTTP reais pelo app, sem mock — não precisa abrir porta nem subprocess
+separado). `lint` (JS/TS/Node, `src/checker/backends/node_backend.py::lint`) roda `eslint` real
+(flat config do template, `eslint.config.js`, com globals de Node/browser configurados).
+
 ## Rodar os testes
 
 ```bash

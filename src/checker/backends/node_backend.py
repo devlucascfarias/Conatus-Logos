@@ -8,8 +8,8 @@ manual uma vez) via junção de diretório NTFS (não exige admin no Windows) pr
 cada verificação — evita rodar `npm install` a cada chamada do checker, mesmo princípio do cache
 de módulo global que já torna `go build ./...` rápido no backend Go.
 
-D11: nunca finge validar o que não validou. `lint` (eslint) ainda não implementado, retorna
-`MISSING_DEPENDENCY` estruturado em vez de fingir sucesso."""
+D11: nunca finge validar o que não validou. `lint` roda `eslint` de verdade (flat config do
+template, D-checker-node-server-backend)."""
 
 from __future__ import annotations
 
@@ -36,6 +36,7 @@ _CONFIG_SCAFFOLD = ("vite.config.ts", "tsconfig.json", "package.json")
 _BOOTSTRAP_SCAFFOLD = ("index.html", "src/main.tsx")
 _ENTRY_MARKERS = ("index.html", "src/main.ts", "src/main.tsx", "src/main.jsx", "src/main.js")
 _TEST_SUFFIXES = (".test.ts", ".test.tsx", ".spec.ts", ".spec.tsx")
+_LINTABLE_SUFFIXES = (".js", ".jsx", ".ts", ".tsx")
 
 
 def _node_available() -> bool:
@@ -243,6 +244,70 @@ def _run(base_dir: Path, entrypoint: Optional[str], timeout_ms: int) -> CheckRes
     )
 
 
+def lint(base_dir: Path, files: list[CheckFile], timeout_ms: int, language: str = "typescript") -> CheckResult:
+    """`lint` real via eslint (flat config do template, ESLint 9+) — regras de correção
+    (`eslint:recommended` + `typescript-eslint` recommended), não de estilo/formatação. Usada
+    tanto por `node_backend` (JS/TS) quanto por `node_server_backend` (scripts Node)."""
+    metadata = {"language": language, "duration_ms": 0}
+    provided = {f.path for f in files}
+    # package.json precisa estar no sandbox (não só eslint.config.js) — sem ele, o Node não acha
+    # "type":"module" localmente e sobe a árvore de diretórios REAL da máquina procurando um,
+    # até achar o package.json de outra pasta qualquer e vazar esse path num aviso (achado real).
+    for name in ("eslint.config.js", "package.json"):
+        if name not in provided and (TEMPLATE_DIR / name).exists():
+            (base_dir / name).write_text((TEMPLATE_DIR / name).read_text(encoding="utf-8"), encoding="utf-8")
+    targets = [f.path for f in files if f.path.endswith(_LINTABLE_SUFFIXES)]
+    if not targets:
+        return CheckResult(
+            passed=False,
+            errors=[CheckError(code=errors.UNSUPPORTED_LANGUAGE, message="nenhum arquivo .js/.jsx/.ts/.tsx em 'files' pra lintar")],
+            stdout="",
+            stderr="",
+            metadata=metadata,
+        )
+    # Escreve o relatório num arquivo em vez de ler do stdout: `run_command` sanitiza o path
+    # absoluto do temp dir de QUALQUER stdout/stderr (D-checker-path-leak) removendo a string —
+    # isso deixa uma barra invertida solta dentro do valor JSON de "filePath" (Windows), o que
+    # corrompe o JSON inteiro (achado real, D-checker-node-server-backend). Ler o arquivo direto
+    # do disco evita esse pipeline por completo.
+    report_path = base_dir / "eslint-report.json"
+    result = run_command(
+        [str(_bin_path(base_dir, "eslint")), "--format", "json", "--output-file", "eslint-report.json", *targets],
+        base_dir,
+        timeout_ms,
+    )
+    metadata["duration_ms"] = result.duration_ms
+    if result.timed_out:
+        return CheckResult(passed=False, errors=[CheckError(code=errors.TIMEOUT, message="timeout ao rodar eslint")], stdout=result.stdout, stderr=result.stderr, metadata=metadata)
+
+    import json as _json
+
+    raw = report_path.read_text(encoding="utf-8") if report_path.exists() else "[]"
+    try:
+        reports = _json.loads(raw)
+    except ValueError:
+        combined = (result.stdout + result.stderr).strip()
+        return CheckResult(passed=False, errors=[CheckError(code=errors.INVALID_OUTPUT_FORMAT, message=f"saída do eslint não é JSON válido: {combined[-2000:]}")], stdout=result.stdout, stderr=result.stderr, metadata=metadata)
+
+    # Mapeia cada relatório de volta pro path RELATIVO original (ordem preservada pelo eslint) —
+    # nunca expõe o filePath absoluto do eslint, evitando o vazamento na origem, não só filtrando.
+    found_errors: list[CheckError] = []
+    for target_path, report in zip(targets, reports):
+        for msg in report.get("messages", []):
+            if msg.get("severity") != 2:  # 2 = error; 1 = warning não bloqueia
+                continue
+            found_errors.append(
+                CheckError(
+                    code=errors.SYNTAX_ERROR,
+                    message=f"{target_path}:{msg.get('line')}: {msg.get('message')} ({msg.get('ruleId')})",
+                    file=target_path,
+                    line=msg.get("line"),
+                )
+            )
+    passed = len(found_errors) == 0 and result.returncode in (0, 1)  # eslint sai 1 quando acha lint errors, não é falha de execução
+    return CheckResult(passed=passed, errors=found_errors, stdout=result.stdout, stderr=result.stderr, metadata=metadata)
+
+
 def check_node(operation: str, files: list[CheckFile], entrypoint: Optional[str], timeout_ms: int) -> CheckResult:
     if not _node_available():
         return _unavailable_result("toolchain 'node'/'npm' não disponível no ambiente")
@@ -269,7 +334,7 @@ def check_node(operation: str, files: list[CheckFile], entrypoint: Optional[str]
         if operation == "run":
             return _run(base_dir, entrypoint, timeout_ms)
         if operation == "lint":
-            return _unavailable_result("lint (eslint) ainda não implementado para javascript/typescript")
+            return lint(base_dir, files, timeout_ms, language="typescript")
 
         return CheckResult(
             passed=False,
