@@ -1,0 +1,32 @@
+{
+  "metadata": {
+    "id": "gen-explore-h2-menu-button-js-mismatch",
+    "domain": "frontend",
+    "language": "html",
+    "difficulty": "medium",
+    "tools_used": [
+      "list_files",
+      "search_code",
+      "read_file",
+      "write_file",
+      "checker"
+    ],
+    "num_steps": 5,
+    "task_type": "multi_file_root_cause_diagnosis",
+    "source": "curated_manual_real_execution",
+    "license": "synthetic-no-license-needed",
+    "validation_status": "validated",
+    "execution_performed": true,
+    "split": "train",
+    "checker_used": "checker-html-1.0",
+    "expected_result": {
+      "passed": true
+    },
+    "execution_classification": "interpreted"
+  },
+  "trajectory": {
+    "system_prompt": "Você é Logos-3, um agente de engenharia de software da família de modelos Conatus. Raciocine em <think>, use <tool_call name=\"...\"> quando precisar de uma ferramenta, e responda ao usuário só dentro de <final>.",
+    "user_request": "O menu não abre quando eu clico no botão, conserta?",
+    "raw_text": "<think>Vou listar o projeto primeiro.</think><tool_call name=\"list_files\">{\"path\": \".\"}</tool_call><tool_result name=\"list_files\" status=\"ok\">{\"files\": [\"index.html\", \"scripts\", \"scripts/nav.js\"]}</tool_result><think>Vou procurar por 'menu' no código, já que é o termo do pedido.</think><tool_call name=\"search_code\">{\"pattern\": \"menu\", \"path\": \".\"}</tool_call><tool_result name=\"search_code\" status=\"ok\">{\"matches\": [{\"path\": \"index.html\", \"line\": 9, \"text\": \"<button id=\\\"menu-btn\\\">Menu</button>\"}, {\"path\": \"index.html\", \"line\": 10, \"text\": \"<div id=\\\"menu\\\" style=\\\"display:none;\\\">Item 1, Item 2</div>\"}, {\"path\": \"scripts/nav.js\", \"line\": 2, \"text\": \"const menu = document.getElementById('menu');\"}, {\"path\": \"scripts/nav.js\", \"line\": 3, \"text\": \"menu.style.display = menu.style.display === 'none' ? 'block' : 'none';\"}, {\"path\": \"scripts/nav.js\", \"line\": 6, \"text\": \"document.getElementById('menu-btn').addEventListener('click', toggleMenu);\"}], \"truncated\": false}</tool_result><think>A busca mostra 'toggleMenu' sendo referenciado no addEventListener, mas a função definida se chama 'toggleNav' — nomes diferentes. Vou ler o JS inteiro pra confirmar antes de corrigir.</think><tool_call name=\"read_file\">{\"path\": \"scripts/nav.js\"}</tool_call><tool_result name=\"read_file\" status=\"ok\">{\"content\": \"function toggleNav() {\\n  const menu = document.getElementById('menu');\\n  menu.style.display = menu.style.display === 'none' ? 'block' : 'none';\\n}\\n\\ndocument.getElementById('menu-btn').addEventListener('click', toggleMenu);\\n\", \"start_line\": 1, \"end_line\": 6, \"total_lines\": 6}</tool_result><think>Confirmado: a função definida é toggleNav, mas o addEventListener referencia toggleMenu, que não existe — isso gera ReferenceError ao clicar. Vou corrigir o nome no addEventListener pra bater com a função real.</think><tool_call name=\"write_file\">{\"path\": \"scripts/nav.js\", \"content\": \"function toggleNav() {\\n  const menu = document.getElementById('menu');\\n  menu.style.display = menu.style.display === 'none' ? 'block' : 'none';\\n}\\n\\ndocument.getElementById('menu-btn').addEventListener('click', toggleNav);\\n\"}</tool_call><tool_result name=\"write_file\" status=\"ok\">{\"path\": \"scripts/nav.js\", \"bytes_written\": 221, \"mode\": \"overwrite\"}</tool_result><think>Vou renderizar de verdade e conferir que a página carrega sem erro de console.</think><tool_call name=\"checker\">{\"language\": \"html\", \"operation\": \"run\", \"files\": [{\"path\": \"index.html\", \"content\": \"<!doctype html>\\n<html lang=\\\"pt-br\\\">\\n<head>\\n<meta charset=\\\"utf-8\\\">\\n<title>Site</title>\\n</head>\\n<body>\\n<nav>\\n<button id=\\\"menu-btn\\\">Menu</button>\\n<div id=\\\"menu\\\" style=\\\"display:none;\\\">Item 1, Item 2</div>\\n</nav>\\n<script src=\\\"scripts/nav.js\\\"></script>\\n</body>\\n</html>\\n\"}, {\"path\": \"scripts/nav.js\", \"content\": \"function toggleNav() {\\n  const menu = document.getElementById('menu');\\n  menu.style.display = menu.style.display === 'none' ? 'block' : 'none';\\n}\\n\\ndocument.getElementById('menu-btn').addEventListener('click', toggleNav);\\n\"}], \"entrypoint\": \"index.html\"}</tool_call><tool_result name=\"checker\" status=\"ok\">{\"passed\": true, \"errors\": [], \"stdout\": \"\", \"stderr\": \"\", \"metadata\": {\"language\": \"html\", \"duration_ms\": 1563, \"console_warnings\": []}}</tool_result><final>Busquei por 'menu' no projeto e encontrei o mismatch em scripts/nav.js: a função definida era toggleNav, mas o listener do clique referenciava toggleMenu (nunca definida) — isso quebraria ao clicar. Corrigi o nome no listener. Validei renderizando de verdade — sem erro de console.</final>"
+  }
+}

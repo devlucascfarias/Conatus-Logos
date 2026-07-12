@@ -1,0 +1,32 @@
+{
+  "metadata": {
+    "id": "gen-explore-b2-timeout-default",
+    "domain": "tool_calling",
+    "language": "python",
+    "difficulty": "medium",
+    "tools_used": [
+      "list_files",
+      "search_code",
+      "read_file",
+      "write_file",
+      "checker"
+    ],
+    "num_steps": 5,
+    "task_type": "multi_file_read_and_edit",
+    "source": "curated_manual_real_execution",
+    "license": "synthetic-no-license-needed",
+    "validation_status": "validated",
+    "execution_performed": true,
+    "split": "train",
+    "checker_used": "checker-python-1.0",
+    "expected_result": {
+      "passed": true
+    },
+    "execution_classification": "tested"
+  },
+  "trajectory": {
+    "system_prompt": "Você é Logos-3, um agente de engenharia de software da família de modelos Conatus. Raciocine em <think>, use <tool_call name=\"...\"> quando precisar de uma ferramenta, e responda ao usuário só dentro de <final>.",
+    "user_request": "Aumenta o tempo limite padrão pra 60 segundos.",
+    "raw_text": "<think>O pedido não nomeia o arquivo de config — vou listar o projeto primeiro.</think><tool_call name=\"list_files\">{\"path\": \".\"}</tool_call><tool_result name=\"list_files\" status=\"ok\">{\"files\": [\"src\", \"src/config\", \"src/config/defaults.py\", \"src/config/env.py\", \"src/server\", \"src/server/app.py\"]}</tool_result><think>Vou procurar por TIMEOUT direto no código em vez de abrir cada arquivo de config.</think><tool_call name=\"search_code\">{\"pattern\": \"TIMEOUT\", \"path\": \"src\"}</tool_call><tool_result name=\"search_code\" status=\"ok\">{\"matches\": [{\"path\": \"src/config/defaults.py\", \"line\": 2, \"text\": \"TIMEOUT = 30\"}, {\"path\": \"src/server/app.py\", \"line\": 1, \"text\": \"from config.defaults import TIMEOUT\"}, {\"path\": \"src/server/app.py\", \"line\": 5, \"text\": \"return TIMEOUT\"}], \"truncated\": false}</tool_result><think>A busca achou a definição em defaults.py e o uso em app.py. Vou ler defaults.py pra confirmar o contexto antes de editar.</think><tool_call name=\"read_file\">{\"path\": \"src/config/defaults.py\"}</tool_call><tool_result name=\"read_file\" status=\"ok\">{\"content\": \"# tempo limite padrao de requisicoes, em segundos\\nTIMEOUT = 30\\nRETRIES = 3\\n\", \"start_line\": 1, \"end_line\": 3, \"total_lines\": 3}</tool_result><think>Confirmado, é a constante certa. Vou atualizar só o valor, mantendo o comentário e RETRIES intactos.</think><tool_call name=\"write_file\">{\"path\": \"src/config/defaults.py\", \"content\": \"# tempo limite padrao de requisicoes, em segundos\\nTIMEOUT = 60\\nRETRIES = 3\\n\"}</tool_call><tool_result name=\"write_file\" status=\"ok\">{\"path\": \"src/config/defaults.py\", \"bytes_written\": 75, \"mode\": \"overwrite\"}</tool_result><think>Vou validar que o valor novo é lido corretamente por quem usa a constante.</think><tool_call name=\"checker\">{\"language\": \"python\", \"operation\": \"compile_and_test\", \"files\": [{\"path\": \"src/config/defaults.py\", \"content\": \"# tempo limite padrao de requisicoes, em segundos\\nTIMEOUT = 60\\nRETRIES = 3\\n\"}, {\"path\": \"test_defaults.py\", \"content\": \"from src.config.defaults import TIMEOUT\\n\\n\\ndef test_timeout_updated():\\n    assert TIMEOUT == 60\\n\"}]}</tool_call><tool_result name=\"checker\" status=\"ok\">{\"passed\": true, \"errors\": [], \"stdout\": \".                                                                        [100%]\\n1 passed in 0.02s\\n\", \"stderr\": \"\", \"metadata\": {\"language\": \"python\", \"duration_ms\": 4234}}</tool_result><final>Achei TIMEOUT em src/config/defaults.py via busca no código (não abri cada arquivo de config às cegas) e atualizei de 30 pra 60 segundos, mantendo o resto do arquivo intacto. Validei com o checker — passa.</final>"
+  }
+}

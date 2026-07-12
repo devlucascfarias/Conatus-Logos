@@ -1,0 +1,32 @@
+{
+  "metadata": {
+    "id": "gen-explore-g1-go-calc-average",
+    "domain": "debugging",
+    "language": "go",
+    "difficulty": "medium",
+    "tools_used": [
+      "list_files",
+      "search_code",
+      "read_file",
+      "write_file",
+      "checker"
+    ],
+    "num_steps": 5,
+    "task_type": "multi_file_root_cause_diagnosis",
+    "source": "curated_manual_real_execution",
+    "license": "synthetic-no-license-needed",
+    "validation_status": "validated",
+    "execution_performed": true,
+    "split": "train",
+    "checker_used": "checker-go-1.0",
+    "expected_result": {
+      "passed": true
+    },
+    "execution_classification": "tested"
+  },
+  "trajectory": {
+    "system_prompt": "Você é Logos-3, um agente de engenharia de software da família de modelos Conatus. Raciocine em <think>, use <tool_call name=\"...\"> quando precisar de uma ferramenta, e responda ao usuário só dentro de <final>.",
+    "user_request": "Tem um bug de cálculo em algum lugar desse projeto Go, acha pra mim?",
+    "raw_text": "<think>Vou listar o projeto primeiro pra ver as pastas.</think><tool_call name=\"list_files\">{\"path\": \".\"}</tool_call><tool_result name=\"list_files\" status=\"ok\">{\"files\": [\"pkg\", \"pkg/calc\", \"pkg/calc/calc.go\", \"pkg/textutil\", \"pkg/textutil/format.go\"]}</tool_result><think>Tem pkg/calc e pkg/textutil — vou procurar direto por funções em vez de abrir cada arquivo.</think><tool_call name=\"search_code\">{\"pattern\": \"func \", \"path\": \"pkg\"}</tool_call><tool_result name=\"search_code\" status=\"ok\">{\"matches\": [{\"path\": \"pkg/calc/calc.go\", \"line\": 3, \"text\": \"func Average(nums []float64) float64 {\"}, {\"path\": \"pkg/textutil/format.go\", \"line\": 5, \"text\": \"func Trim(s string) string {\"}], \"truncated\": false}</tool_result><think>Achei Average em pkg/calc/calc.go e Trim em pkg/textutil/format.go. 'cálculo' bate com Average — vou ler esse arquivo primeiro.</think><tool_call name=\"read_file\">{\"path\": \"pkg/calc/calc.go\"}</tool_call><tool_result name=\"read_file\" status=\"ok\">{\"content\": \"package calc\\n\\nfunc Average(nums []float64) float64 {\\n\\tsum := 0.0\\n\\tfor _, n := range nums {\\n\\t\\tsum += n\\n\\t}\\n\\treturn sum / float64(len(nums)+1)\\n}\\n\", \"start_line\": 1, \"end_line\": 9, \"total_lines\": 9}</tool_result><think>Confirmado: Average divide por len(nums)+1 em vez de len(nums) — um off-by-one real no denominador. Vou corrigir.</think><tool_call name=\"write_file\">{\"path\": \"pkg/calc/calc.go\", \"content\": \"package calc\\n\\nfunc Average(nums []float64) float64 {\\n\\tsum := 0.0\\n\\tfor _, n := range nums {\\n\\t\\tsum += n\\n\\t}\\n\\treturn sum / float64(len(nums))\\n}\\n\"}</tool_call><tool_result name=\"write_file\" status=\"ok\">{\"path\": \"pkg/calc/calc.go\", \"bytes_written\": 140, \"mode\": \"overwrite\"}</tool_result><think>Vou validar com um teste real de Go cobrindo a média correta.</think><tool_call name=\"checker\">{\"language\": \"go\", \"operation\": \"compile_and_test\", \"files\": [{\"path\": \"pkg/calc/calc.go\", \"content\": \"package calc\\n\\nfunc Average(nums []float64) float64 {\\n\\tsum := 0.0\\n\\tfor _, n := range nums {\\n\\t\\tsum += n\\n\\t}\\n\\treturn sum / float64(len(nums))\\n}\\n\"}, {\"path\": \"pkg/calc/calc_test.go\", \"content\": \"package calc\\n\\nimport \\\"testing\\\"\\n\\nfunc TestAverage(t *testing.T) {\\n\\tgot := Average([]float64{2, 4, 6})\\n\\tif got != 4.0 {\\n\\t\\tt.Fatalf(\\\"esperava 4.0, veio %v\\\", got)\\n\\t}\\n}\\n\"}]}</tool_call><tool_result name=\"checker\" status=\"ok\">{\"passed\": true, \"errors\": [], \"stdout\": \"ok  \\tpraxis_check/pkg/calc\\t0.365s\\n\", \"stderr\": \"\", \"metadata\": {\"language\": \"go\", \"duration_ms\": 1796}}</tool_result><final>Encontrei o bug em pkg/calc/calc.go: Average dividia por len(nums)+1 em vez de len(nums), um off-by-one no denominador. Corrigi e validei com o checker — passa.</final>"
+  }
+}

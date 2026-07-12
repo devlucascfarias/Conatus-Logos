@@ -1,0 +1,32 @@
+{
+  "metadata": {
+    "id": "gen-explore-d2-formatter-report",
+    "domain": "debugging",
+    "language": "python",
+    "difficulty": "hard",
+    "tools_used": [
+      "list_files",
+      "search_code",
+      "read_file",
+      "write_file",
+      "checker"
+    ],
+    "num_steps": 5,
+    "task_type": "hypothesis_revision_after_failure",
+    "source": "curated_manual_real_execution",
+    "license": "synthetic-no-license-needed",
+    "validation_status": "validated",
+    "execution_performed": true,
+    "split": "train",
+    "checker_used": "checker-python-1.0",
+    "expected_result": {
+      "passed": true
+    },
+    "execution_classification": "tested"
+  },
+  "trajectory": {
+    "system_prompt": "Você é Logos-3, um agente de engenharia de software da família de modelos Conatus. Raciocine em <think>, use <tool_call name=\"...\"> quando precisar de uma ferramenta, e responda ao usuário só dentro de <final>.",
+    "user_request": "O relatório está saindo com o valor total sem casas decimais, deveria mostrar duas. Corrige.",
+    "raw_text": "<think>O pedido fala em 'relatório' mas não nomeia o arquivo — vou listar o projeto.</think><tool_call name=\"list_files\">{\"path\": \".\"}</tool_call><tool_result name=\"list_files\" status=\"ok\">{\"files\": [\"src\", \"src/emails\", \"src/emails/__init__.py\", \"src/emails/formatter.py\", \"src/reports\", \"src/reports/__init__.py\", \"src/reports/formatter.py\"]}</tool_result><think>Vou procurar por 'format_value' pra achar onde a formatação de valor acontece.</think><tool_call name=\"search_code\">{\"pattern\": \"def format_value\", \"path\": \"src\"}</tool_call><tool_result name=\"search_code\" status=\"ok\">{\"matches\": [{\"path\": \"src/emails/formatter.py\", \"line\": 1, \"text\": \"def format_value(value):\"}, {\"path\": \"src/reports/formatter.py\", \"line\": 1, \"text\": \"def format_value(value):\"}], \"truncated\": false}</tool_result><think>A busca achou format_value em DOIS lugares: src/reports/formatter.py e src/emails/formatter.py. Vou ler o de reports primeiro, já que o pedido menciona relatório.</think><tool_call name=\"read_file\">{\"path\": \"src/reports/formatter.py\"}</tool_call><tool_result name=\"read_file\" status=\"ok\">{\"content\": \"def format_value(value):\\n    return str(int(value))\\n\", \"start_line\": 1, \"end_line\": 2, \"total_lines\": 2}</tool_result><think>Confirmado: essa é a função certa — format_value(value) faz str(int(value)), que descarta qualquer casa decimal. Não preciso olhar a de emails, já que essa já bate com o sintoma descrito e faz sentido semanticamente (relatório, não e-mail).</think><tool_call name=\"write_file\">{\"path\": \"src/reports/formatter.py\", \"content\": \"def format_value(value):\\n    return f'{value:.2f}'\\n\"}</tool_call><tool_result name=\"write_file\" status=\"ok\">{\"path\": \"src/reports/formatter.py\", \"bytes_written\": 51, \"mode\": \"overwrite\"}</tool_result><think>Vou validar com um teste real cobrindo duas casas decimais.</think><tool_call name=\"checker\">{\"language\": \"python\", \"operation\": \"compile_and_test\", \"files\": [{\"path\": \"src/reports/__init__.py\", \"content\": \"\"}, {\"path\": \"src/reports/formatter.py\", \"content\": \"def format_value(value):\\n    return f'{value:.2f}'\\n\"}, {\"path\": \"src/reports/test_formatter.py\", \"content\": \"from src.reports.formatter import format_value\\n\\n\\ndef test_format_value_two_decimals():\\n    assert format_value(42) == '42.00'\\n    assert format_value(3.14159) == '3.14'\\n\"}]}</tool_call><tool_result name=\"checker\" status=\"ok\">{\"passed\": true, \"errors\": [], \"stdout\": \".                                                                        [100%]\\n1 passed in 0.02s\\n\", \"stderr\": \"\", \"metadata\": {\"language\": \"python\", \"duration_ms\": 3390}}</tool_result><final>Havia duas funções format_value (src/reports e src/emails, nomes de arquivo idênticos) — li a de reports primeiro por bater com o pedido, confirmei pelo sintoma (descartava casas decimais) e não precisei abrir a de emails. Corrigi e validei com o checker — passa.</final>"
+  }
+}

@@ -1,0 +1,32 @@
+{
+  "metadata": {
+    "id": "gen-explore-g3-go-queue-dequeue",
+    "domain": "debugging",
+    "language": "go",
+    "difficulty": "medium",
+    "tools_used": [
+      "list_files",
+      "search_code",
+      "read_file",
+      "write_file",
+      "checker"
+    ],
+    "num_steps": 5,
+    "task_type": "multi_file_root_cause_diagnosis",
+    "source": "curated_manual_real_execution",
+    "license": "synthetic-no-license-needed",
+    "validation_status": "validated",
+    "execution_performed": true,
+    "split": "train",
+    "checker_used": "checker-go-1.0",
+    "expected_result": {
+      "passed": true
+    },
+    "execution_classification": "tested"
+  },
+  "trajectory": {
+    "system_prompt": "Você é Logos-3, um agente de engenharia de software da família de modelos Conatus. Raciocine em <think>, use <tool_call name=\"...\"> quando precisar de uma ferramenta, e responda ao usuário só dentro de <final>.",
+    "user_request": "Uma estrutura de dados desse projeto Go parece estar com bug, dá uma olhada?",
+    "raw_text": "<think>Vou listar o projeto primeiro.</think><tool_call name=\"list_files\">{\"path\": \".\"}</tool_call><tool_result name=\"list_files\" status=\"ok\">{\"files\": [\"pkg\", \"pkg/config\", \"pkg/config/config.go\", \"pkg/queue\", \"pkg/queue/queue.go\"]}</tool_result><think>Vou procurar por 'type ' pra ver as estruturas de dados existentes.</think><tool_call name=\"search_code\">{\"pattern\": \"type \", \"path\": \"pkg\"}</tool_call><tool_result name=\"search_code\" status=\"ok\">{\"matches\": [{\"path\": \"pkg/config/config.go\", \"line\": 3, \"text\": \"type Config struct {\"}, {\"path\": \"pkg/queue/queue.go\", \"line\": 3, \"text\": \"type Queue struct {\"}], \"truncated\": false}</tool_result><think>Achei Queue em pkg/queue/queue.go e Config em pkg/config/config.go — 'estrutura de dados' bate melhor com Queue. Vou ler esse arquivo.</think><tool_call name=\"read_file\">{\"path\": \"pkg/queue/queue.go\"}</tool_call><tool_result name=\"read_file\" status=\"ok\">{\"content\": \"package queue\\n\\ntype Queue struct {\\n\\titems []int\\n}\\n\\nfunc (q *Queue) Enqueue(item int) {\\n\\tq.items = append(q.items, item)\\n}\\n\\nfunc (q *Queue) Dequeue() int {\\n\\titem := q.items[len(q.items)-1]\\n\\tq.items = q.items[:len(q.items)-1]\\n\\treturn item\\n}\\n\", \"start_line\": 1, \"end_line\": 15, \"total_lines\": 15}</tool_result><think>Confirmado: Dequeue() pega o ÚLTIMO item (len(q.items)-1), isso é comportamento de pilha (LIFO), não de fila (FIFO) — uma Queue deveria tirar o PRIMEIRO item que entrou. Vou corrigir pra pegar o item no índice 0.</think><tool_call name=\"write_file\">{\"path\": \"pkg/queue/queue.go\", \"content\": \"package queue\\n\\ntype Queue struct {\\n\\titems []int\\n}\\n\\nfunc (q *Queue) Enqueue(item int) {\\n\\tq.items = append(q.items, item)\\n}\\n\\nfunc (q *Queue) Dequeue() int {\\n\\titem := q.items[0]\\n\\tq.items = q.items[1:]\\n\\treturn item\\n}\\n\"}</tool_call><tool_result name=\"write_file\" status=\"ok\">{\"path\": \"pkg/queue/queue.go\", \"bytes_written\": 213, \"mode\": \"overwrite\"}</tool_result><think>Vou validar com um teste real de Go cobrindo ordem FIFO.</think><tool_call name=\"checker\">{\"language\": \"go\", \"operation\": \"compile_and_test\", \"files\": [{\"path\": \"pkg/queue/queue.go\", \"content\": \"package queue\\n\\ntype Queue struct {\\n\\titems []int\\n}\\n\\nfunc (q *Queue) Enqueue(item int) {\\n\\tq.items = append(q.items, item)\\n}\\n\\nfunc (q *Queue) Dequeue() int {\\n\\titem := q.items[0]\\n\\tq.items = q.items[1:]\\n\\treturn item\\n}\\n\"}, {\"path\": \"pkg/queue/queue_test.go\", \"content\": \"package queue\\n\\nimport \\\"testing\\\"\\n\\nfunc TestDequeueIsFIFO(t *testing.T) {\\n\\tq := &Queue{}\\n\\tq.Enqueue(1)\\n\\tq.Enqueue(2)\\n\\tq.Enqueue(3)\\n\\tgot := q.Dequeue()\\n\\tif got != 1 {\\n\\t\\tt.Fatalf(\\\"esperava 1 (FIFO), veio %d\\\", got)\\n\\t}\\n}\\n\"}]}</tool_call><tool_result name=\"checker\" status=\"ok\">{\"passed\": true, \"errors\": [], \"stdout\": \"ok  \\tpraxis_check/pkg/queue\\t0.358s\\n\", \"stderr\": \"\", \"metadata\": {\"language\": \"go\", \"duration_ms\": 1469}}</tool_result><final>Encontrei o bug em pkg/queue/queue.go: Dequeue() tirava o último item (comportamento de pilha), não o primeiro — uma Queue deveria ser FIFO. Corrigi e validei com o checker — passa.</final>"
+  }
+}

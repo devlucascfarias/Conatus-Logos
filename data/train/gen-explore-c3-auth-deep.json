@@ -1,0 +1,32 @@
+{
+  "metadata": {
+    "id": "gen-explore-c3-auth-deep",
+    "domain": "debugging",
+    "language": "python",
+    "difficulty": "medium",
+    "tools_used": [
+      "list_files",
+      "search_code",
+      "read_file",
+      "write_file",
+      "checker"
+    ],
+    "num_steps": 5,
+    "task_type": "multi_file_root_cause_diagnosis",
+    "source": "curated_manual_real_execution",
+    "license": "synthetic-no-license-needed",
+    "validation_status": "validated",
+    "execution_performed": true,
+    "split": "train",
+    "checker_used": "checker-python-1.0",
+    "expected_result": {
+      "passed": true
+    },
+    "execution_classification": "tested"
+  },
+  "trajectory": {
+    "system_prompt": "Você é Logos-3, um agente de engenharia de software da família de modelos Conatus. Raciocine em <think>, use <tool_call name=\"...\"> quando precisar de uma ferramenta, e responda ao usuário só dentro de <final>.",
+    "user_request": "A parte de autenticação desse app tá com bug em algum lugar, dá uma olhada?",
+    "raw_text": "<think>Vou listar a raiz primeiro.</think><tool_call name=\"list_files\">{\"path\": \".\"}</tool_call><tool_result name=\"list_files\" status=\"ok\">{\"files\": [\"app\", \"app/__init__.py\", \"app/features\", \"app/features/__init__.py\", \"app/features/auth\", \"app/main.py\"]}</tool_result><think>Tem uma pasta app/features com subpastas — vou usar search_code pra ir direto no código de autenticação, sem listar nível por nível.</think><tool_call name=\"search_code\">{\"pattern\": \"def \", \"path\": \"app/features\"}</tool_call><tool_result name=\"search_code\" status=\"ok\">{\"matches\": [{\"path\": \"app/features/auth/session.py\", \"line\": 1, \"text\": \"def is_session_valid(session, max_age_minutes):\"}], \"truncated\": false}</tool_result><think>Achei is_session_valid em app/features/auth/session.py — vou ler antes de mexer.</think><tool_call name=\"read_file\">{\"path\": \"app/features/auth/session.py\"}</tool_call><tool_result name=\"read_file\" status=\"ok\">{\"content\": \"def is_session_valid(session, max_age_minutes):\\n    return session['age_minutes'] <= max_age_minutes + 1\\n\", \"start_line\": 1, \"end_line\": 2, \"total_lines\": 2}</tool_result><think>O `+ 1` no comparador é suspeito: uma sessão com age_minutes igual a max_age_minutes+1 ainda seria considerada válida, um minuto além do limite. Vou remover essa margem indevida.</think><tool_call name=\"write_file\">{\"path\": \"app/features/auth/session.py\", \"content\": \"def is_session_valid(session, max_age_minutes):\\n    return session['age_minutes'] <= max_age_minutes\\n\"}</tool_call><tool_result name=\"write_file\" status=\"ok\">{\"path\": \"app/features/auth/session.py\", \"bytes_written\": 101, \"mode\": \"overwrite\"}</tool_result><think>Vou validar com um teste real no limite exato da expiração.</think><tool_call name=\"checker\">{\"language\": \"python\", \"operation\": \"compile_and_test\", \"files\": [{\"path\": \"app/features/auth/__init__.py\", \"content\": \"\"}, {\"path\": \"app/features/auth/session.py\", \"content\": \"def is_session_valid(session, max_age_minutes):\\n    return session['age_minutes'] <= max_age_minutes\\n\"}, {\"path\": \"app/features/auth/test_session.py\", \"content\": \"from app.features.auth.session import is_session_valid\\n\\n\\ndef test_session_expires_exactly_at_limit():\\n    assert is_session_valid({'age_minutes': 30}, 30) is True\\n    assert is_session_valid({'age_minutes': 31}, 30) is False\\n\"}]}</tool_call><tool_result name=\"checker\" status=\"ok\">{\"passed\": true, \"errors\": [], \"stdout\": \".                                                                        [100%]\\n1 passed in 0.03s\\n\", \"stderr\": \"\", \"metadata\": {\"language\": \"python\", \"duration_ms\": 3358}}</tool_result><final>Encontrei o bug em app/features/auth/session.py, achado via busca recursiva em vez de listar pasta por pasta: is_session_valid tinha uma margem de +1 minuto indevida no limite de expiração. Corrigi e validei com o checker — passa.</final>"
+  }
+}

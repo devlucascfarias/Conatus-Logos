@@ -1,0 +1,31 @@
+{
+  "metadata": {
+    "id": "gen-explore-f5-wrong-status-code",
+    "domain": "debugging",
+    "language": "python",
+    "difficulty": "medium",
+    "tools_used": [
+      "search_code",
+      "read_file",
+      "write_file",
+      "checker"
+    ],
+    "num_steps": 4,
+    "task_type": "multi_file_root_cause_diagnosis",
+    "source": "curated_manual_real_execution",
+    "license": "synthetic-no-license-needed",
+    "validation_status": "validated",
+    "execution_performed": true,
+    "split": "train",
+    "checker_used": "checker-python-1.0",
+    "expected_result": {
+      "passed": true
+    },
+    "execution_classification": "tested"
+  },
+  "trajectory": {
+    "system_prompt": "Você é Logos-3, um agente de engenharia de software da família de modelos Conatus. Raciocine em <think>, use <tool_call name=\"...\"> quando precisar de uma ferramenta, e responda ao usuário só dentro de <final>.",
+    "user_request": "Uma das rotas está retornando o código de status errado pra recurso não encontrado.",
+    "raw_text": "<think>Vou procurar direto por '404' no código, já que é o código de status esperado pra recurso não encontrado — se algum lugar não usa 404 onde deveria, a busca ajuda a comparar.</think><tool_call name=\"search_code\">{\"pattern\": \"not found\", \"path\": \"src\"}</tool_call><tool_result name=\"search_code\" status=\"ok\">{\"matches\": [{\"path\": \"src/api/orders_route.py\", \"line\": 4, \"text\": \"return {'status': 404, 'error': 'not found'}\"}, {\"path\": \"src/api/users_route.py\", \"line\": 4, \"text\": \"return {'status': 500, 'error': 'not found'}\"}], \"truncated\": false}</tool_result><think>A busca achou duas rotas com 'not found': users_route.py usa status 500, orders_route.py usa 404. 500 é claramente errado pra 'não encontrado' (é erro de servidor, não de recurso ausente) — vou ler o arquivo pra confirmar.</think><tool_call name=\"read_file\">{\"path\": \"src/api/users_route.py\"}</tool_call><tool_result name=\"read_file\" status=\"ok\">{\"content\": \"def get_user(user_id, users):\\n    user = users.get(user_id)\\n    if user is None:\\n        return {'status': 500, 'error': 'not found'}\\n    return {'status': 200, 'data': user}\\n\", \"start_line\": 1, \"end_line\": 5, \"total_lines\": 5}</tool_result><think>Confirmado: get_user retorna status 500 quando o usuário não existe, deveria ser 404. Vou corrigir.</think><tool_call name=\"write_file\">{\"path\": \"src/api/users_route.py\", \"content\": \"def get_user(user_id, users):\\n    user = users.get(user_id)\\n    if user is None:\\n        return {'status': 404, 'error': 'not found'}\\n    return {'status': 200, 'data': user}\\n\"}</tool_call><tool_result name=\"write_file\" status=\"ok\">{\"path\": \"src/api/users_route.py\", \"bytes_written\": 175, \"mode\": \"overwrite\"}</tool_result><think>Vou validar com um teste real cobrindo o status correto.</think><tool_call name=\"checker\">{\"language\": \"python\", \"operation\": \"compile_and_test\", \"files\": [{\"path\": \"src/api/users_route.py\", \"content\": \"def get_user(user_id, users):\\n    user = users.get(user_id)\\n    if user is None:\\n        return {'status': 404, 'error': 'not found'}\\n    return {'status': 200, 'data': user}\\n\"}, {\"path\": \"test_users_route.py\", \"content\": \"from src.api.users_route import get_user\\n\\n\\ndef test_get_user_not_found_returns_404():\\n    result = get_user('missing', {})\\n    assert result['status'] == 404\\n\"}]}</tool_call><tool_result name=\"checker\" status=\"ok\">{\"passed\": true, \"errors\": [], \"stdout\": \".                                                                        [100%]\\n1 passed in 0.02s\\n\", \"stderr\": \"\", \"metadata\": {\"language\": \"python\", \"duration_ms\": 3922}}</tool_result><final>Busquei por 'not found' no código e comparei as duas rotas encontradas — orders_route.py já usava 404 corretamente, users_route.py usava 500 por engano. Corrigi e validei com o checker — passa.</final>"
+  }
+}

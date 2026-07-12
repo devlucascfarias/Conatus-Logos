@@ -1,0 +1,32 @@
+{
+  "metadata": {
+    "id": "gen-explore-c1-billing-deep",
+    "domain": "debugging",
+    "language": "python",
+    "difficulty": "medium",
+    "tools_used": [
+      "list_files",
+      "search_code",
+      "read_file",
+      "write_file",
+      "checker"
+    ],
+    "num_steps": 5,
+    "task_type": "multi_file_root_cause_diagnosis",
+    "source": "curated_manual_real_execution",
+    "license": "synthetic-no-license-needed",
+    "validation_status": "validated",
+    "execution_performed": true,
+    "split": "train",
+    "checker_used": "checker-python-1.0",
+    "expected_result": {
+      "passed": true
+    },
+    "execution_classification": "tested"
+  },
+  "trajectory": {
+    "system_prompt": "Você é Logos-3, um agente de engenharia de software da família de modelos Conatus. Raciocine em <think>, use <tool_call name=\"...\"> quando precisar de uma ferramenta, e responda ao usuário só dentro de <final>.",
+    "user_request": "Tem um bug na parte de faturamento desse app, acha pra mim?",
+    "raw_text": "<think>Vou listar a raiz primeiro pra entender o formato geral do projeto.</think><tool_call name=\"list_files\">{\"path\": \".\"}</tool_call><tool_result name=\"list_files\" status=\"ok\">{\"files\": [\"app\", \"app/__init__.py\", \"app/core\", \"app/core/db.py\", \"app/main.py\", \"app/modules\", \"app/modules/__init__.py\", \"app/modules/billing\"]}</tool_result><think>Existe uma pasta app/ com vários níveis (core, modules, etc.). Em vez de listar pasta por pasta manualmente, vou usar search_code pra ir direto no código de faturamento — ele busca recursivamente em qualquer profundidade.</think><tool_call name=\"search_code\">{\"pattern\": \"def \", \"path\": \"app/modules\"}</tool_call><tool_result name=\"search_code\" status=\"ok\">{\"matches\": [{\"path\": \"app/modules/billing/invoices.py\", \"line\": 1, \"text\": \"def calculate_total(items, discount_pct):\"}], \"truncated\": false}</tool_result><think>Achei calculate_total em app/modules/billing/invoices.py, 3 níveis abaixo da raiz — vou ler o arquivo inteiro antes de mexer.</think><tool_call name=\"read_file\">{\"path\": \"app/modules/billing/invoices.py\"}</tool_call><tool_result name=\"read_file\" status=\"ok\">{\"content\": \"def calculate_total(items, discount_pct):\\n    subtotal = sum(item['price'] for item in items)\\n    return subtotal - discount_pct\\n\", \"start_line\": 1, \"end_line\": 3, \"total_lines\": 3}</tool_result><think>Confirmado: calculate_total subtrai discount_pct (uma porcentagem, ex.: 10) direto do subtotal em vez de aplicar a porcentagem — bug real de cálculo, não só nome de variável confuso. Vou corrigir pra aplicar o desconto proporcionalmente.</think><tool_call name=\"write_file\">{\"path\": \"app/modules/billing/invoices.py\", \"content\": \"def calculate_total(items, discount_pct):\\n    subtotal = sum(item['price'] for item in items)\\n    return subtotal * (1 - discount_pct / 100)\\n\"}</tool_call><tool_result name=\"write_file\" status=\"ok\">{\"path\": \"app/modules/billing/invoices.py\", \"bytes_written\": 141, \"mode\": \"overwrite\"}</tool_result><think>Vou validar com um teste real cobrindo desconto aplicado corretamente.</think><tool_call name=\"checker\">{\"language\": \"python\", \"operation\": \"compile_and_test\", \"files\": [{\"path\": \"app/modules/billing/__init__.py\", \"content\": \"\"}, {\"path\": \"app/modules/billing/invoices.py\", \"content\": \"def calculate_total(items, discount_pct):\\n    subtotal = sum(item['price'] for item in items)\\n    return subtotal * (1 - discount_pct / 100)\\n\"}, {\"path\": \"app/modules/billing/test_invoices.py\", \"content\": \"from app.modules.billing.invoices import calculate_total\\n\\n\\ndef test_calculate_total_applies_percent_discount():\\n    items = [{'price': 100}, {'price': 100}]\\n    assert calculate_total(items, 10) == 180.0\\n\"}]}</tool_call><tool_result name=\"checker\" status=\"ok\">{\"passed\": true, \"errors\": [], \"stdout\": \".                                                                        [100%]\\n1 passed in 0.03s\\n\", \"stderr\": \"\", \"metadata\": {\"language\": \"python\", \"duration_ms\": 3391}}</tool_result><final>Encontrei o bug em app/modules/billing/invoices.py (3 níveis dentro da estrutura do projeto, achado via busca recursiva em vez de listar pasta por pasta): calculate_total subtraía discount_pct direto do subtotal em vez de aplicar como porcentagem. Corrigi e validei com o checker — passa.</final>"
+  }
+}

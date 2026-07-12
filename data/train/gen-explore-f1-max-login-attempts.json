@@ -1,0 +1,31 @@
+{
+  "metadata": {
+    "id": "gen-explore-f1-max-login-attempts",
+    "domain": "tool_calling",
+    "language": "python",
+    "difficulty": "medium",
+    "tools_used": [
+      "search_code",
+      "read_file",
+      "write_file",
+      "checker"
+    ],
+    "num_steps": 4,
+    "task_type": "multi_file_read_and_edit",
+    "source": "curated_manual_real_execution",
+    "license": "synthetic-no-license-needed",
+    "validation_status": "validated",
+    "execution_performed": true,
+    "split": "train",
+    "checker_used": "checker-python-1.0",
+    "expected_result": {
+      "passed": true
+    },
+    "execution_classification": "tested"
+  },
+  "trajectory": {
+    "system_prompt": "Você é Logos-3, um agente de engenharia de software da família de modelos Conatus. Raciocine em <think>, use <tool_call name=\"...\"> quando precisar de uma ferramenta, e responda ao usuário só dentro de <final>.",
+    "user_request": "Muda o limite máximo de tentativas de login pra 5.",
+    "raw_text": "<think>Cinco arquivos no projeto, o pedido não diz onde está o limite — em vez de abrir cada um, vou usar search_code direto pra procurar 'MAX_' ou termos de tentativa.</think><tool_call name=\"search_code\">{\"pattern\": \"MAX_LOGIN\", \"path\": \"src\"}</tool_call><tool_result name=\"search_code\" status=\"ok\">{\"matches\": [{\"path\": \"src/auth/lockout.py\", \"line\": 1, \"text\": \"MAX_LOGIN_ATTEMPTS = 3\"}, {\"path\": \"src/auth/lockout.py\", \"line\": 5, \"text\": \"return attempts >= MAX_LOGIN_ATTEMPTS\"}], \"truncated\": false}</tool_result><think>A busca achou direto em src/auth/lockout.py — vou ler o arquivo pra confirmar o contexto antes de editar.</think><tool_call name=\"read_file\">{\"path\": \"src/auth/lockout.py\"}</tool_call><tool_result name=\"read_file\" status=\"ok\">{\"content\": \"MAX_LOGIN_ATTEMPTS = 3\\n\\n\\ndef is_locked_out(attempts):\\n    return attempts >= MAX_LOGIN_ATTEMPTS\\n\", \"start_line\": 1, \"end_line\": 5, \"total_lines\": 5}</tool_result><think>Confirmado, é a constante certa. Vou atualizar o valor.</think><tool_call name=\"write_file\">{\"path\": \"src/auth/lockout.py\", \"content\": \"MAX_LOGIN_ATTEMPTS = 5\\n\\n\\ndef is_locked_out(attempts):\\n    return attempts >= MAX_LOGIN_ATTEMPTS\\n\"}</tool_call><tool_result name=\"write_file\" status=\"ok\">{\"path\": \"src/auth/lockout.py\", \"bytes_written\": 96, \"mode\": \"overwrite\"}</tool_result><think>Vou validar que o novo limite é respeitado.</think><tool_call name=\"checker\">{\"language\": \"python\", \"operation\": \"compile_and_test\", \"files\": [{\"path\": \"src/auth/lockout.py\", \"content\": \"MAX_LOGIN_ATTEMPTS = 5\\n\\n\\ndef is_locked_out(attempts):\\n    return attempts >= MAX_LOGIN_ATTEMPTS\\n\"}, {\"path\": \"test_lockout.py\", \"content\": \"from src.auth.lockout import is_locked_out, MAX_LOGIN_ATTEMPTS\\n\\n\\ndef test_max_attempts_updated():\\n    assert MAX_LOGIN_ATTEMPTS == 5\\n    assert is_locked_out(5) is True\\n    assert is_locked_out(4) is False\\n\"}]}</tool_call><tool_result name=\"checker\" status=\"ok\">{\"passed\": true, \"errors\": [], \"stdout\": \".                                                                        [100%]\\n1 passed in 0.02s\\n\", \"stderr\": \"\", \"metadata\": {\"language\": \"python\", \"duration_ms\": 3030}}</tool_result><final>Em vez de abrir os 5 arquivos do projeto um por um, busquei direto por 'MAX_LOGIN' e achei a constante em src/auth/lockout.py de primeira. Atualizei de 3 pra 5 tentativas. Validei com o checker — passa.</final>"
+  }
+}

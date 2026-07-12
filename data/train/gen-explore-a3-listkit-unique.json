@@ -1,0 +1,32 @@
+{
+  "metadata": {
+    "id": "gen-explore-a3-listkit-unique",
+    "domain": "debugging",
+    "language": "python",
+    "difficulty": "medium",
+    "tools_used": [
+      "list_files",
+      "search_code",
+      "read_file",
+      "write_file",
+      "checker"
+    ],
+    "num_steps": 5,
+    "task_type": "multi_file_root_cause_diagnosis",
+    "source": "curated_manual_real_execution",
+    "license": "synthetic-no-license-needed",
+    "validation_status": "validated",
+    "execution_performed": true,
+    "split": "train",
+    "checker_used": "checker-python-1.0",
+    "expected_result": {
+      "passed": true
+    },
+    "execution_classification": "tested"
+  },
+  "trajectory": {
+    "system_prompt": "Você é Logos-3, um agente de engenharia de software da família de modelos Conatus. Raciocine em <think>, use <tool_call name=\"...\"> quando precisar de uma ferramenta, e responda ao usuário só dentro de <final>.",
+    "user_request": "Parece que uma função de lista tá com bug, investiga?",
+    "raw_text": "<think>Sem nome de arquivo no pedido — vou listar a estrutura primeiro.</think><tool_call name=\"list_files\">{\"path\": \".\"}</tool_call><tool_result name=\"list_files\" status=\"ok\">{\"files\": [\"src\", \"src/listkit\", \"src/listkit/__init__.py\", \"src/listkit/ops.py\", \"tests\", \"tests/test_ops.py\"]}</tool_result><think>Vou procurar as funções de lista existentes em src pra saber o que investigar.</think><tool_call name=\"search_code\">{\"pattern\": \"def \", \"path\": \"src\"}</tool_call><tool_result name=\"search_code\" status=\"ok\">{\"matches\": [{\"path\": \"src/listkit/ops.py\", \"line\": 1, \"text\": \"def unique_items(items):\"}, {\"path\": \"src/listkit/ops.py\", \"line\": 5, \"text\": \"def flatten(items):\"}], \"truncated\": false}</tool_result><think>unique_items e flatten existem em ops.py. unique_items usando set() é suspeito porque set não preserva ordem — vou ler o arquivo pra confirmar.</think><tool_call name=\"read_file\">{\"path\": \"src/listkit/ops.py\"}</tool_call><tool_result name=\"read_file\" status=\"ok\">{\"content\": \"def unique_items(items):\\n    return list(set(items))\\n\\n\\ndef flatten(items):\\n    result = []\\n    for i in items:\\n        result.extend(i)\\n    return result\\n\", \"start_line\": 1, \"end_line\": 9, \"total_lines\": 9}</tool_result><think>Confirmado: unique_items(items) usa list(set(items)), que não preserva a ordem original dos itens. Vou reescrever preservando ordem com um set auxiliar de vistos.</think><tool_call name=\"write_file\">{\"path\": \"src/listkit/ops.py\", \"content\": \"def unique_items(items):\\n    seen = set()\\n    result = []\\n    for item in items:\\n        if item not in seen:\\n            seen.add(item)\\n            result.append(item)\\n    return result\\n\\n\\ndef flatten(items):\\n    result = []\\n    for i in items:\\n        result.extend(i)\\n    return result\\n\"}</tool_call><tool_result name=\"write_file\" status=\"ok\">{\"path\": \"src/listkit/ops.py\", \"bytes_written\": 288, \"mode\": \"overwrite\"}</tool_result><think>Vou validar com um teste real cobrindo ordem preservada.</think><tool_call name=\"checker\">{\"language\": \"python\", \"operation\": \"compile_and_test\", \"files\": [{\"path\": \"src/listkit/__init__.py\", \"content\": \"\"}, {\"path\": \"src/listkit/ops.py\", \"content\": \"def unique_items(items):\\n    seen = set()\\n    result = []\\n    for item in items:\\n        if item not in seen:\\n            seen.add(item)\\n            result.append(item)\\n    return result\\n\\n\\ndef flatten(items):\\n    result = []\\n    for i in items:\\n        result.extend(i)\\n    return result\\n\"}, {\"path\": \"tests/test_ops.py\", \"content\": \"from src.listkit.ops import unique_items, flatten\\n\\n\\ndef test_flatten():\\n    assert flatten([[1, 2], [3]]) == [1, 2, 3]\\n\\n\\ndef test_unique_items_preserves_order():\\n    assert unique_items([3, 1, 3, 2, 1]) == [3, 1, 2]\\n\"}]}</tool_call><tool_result name=\"checker\" status=\"ok\">{\"passed\": true, \"errors\": [], \"stdout\": \"..                                                                       [100%]\\n2 passed in 0.02s\\n\", \"stderr\": \"\", \"metadata\": {\"language\": \"python\", \"duration_ms\": 4014}}</tool_result><final>Encontrei o bug em src/listkit/ops.py: unique_items(items) usava list(set(items)), que não preserva a ordem original. Reescrevi preservando ordem e validei com o checker — passa.</final>"
+  }
+}

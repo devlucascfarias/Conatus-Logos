@@ -1,0 +1,33 @@
+{
+  "metadata": {
+    "id": "gen-explore-f2-rename-shipping-function",
+    "domain": "tool_calling",
+    "language": "python",
+    "difficulty": "hard",
+    "tools_used": [
+      "search_code",
+      "read_file",
+      "write_file",
+      "write_file",
+      "write_file",
+      "checker"
+    ],
+    "num_steps": 6,
+    "task_type": "multi_file_read_and_edit",
+    "source": "curated_manual_real_execution",
+    "license": "synthetic-no-license-needed",
+    "validation_status": "validated",
+    "execution_performed": true,
+    "split": "train",
+    "checker_used": "checker-python-1.0",
+    "expected_result": {
+      "passed": true
+    },
+    "execution_classification": "tested"
+  },
+  "trajectory": {
+    "system_prompt": "Você é Logos-3, um agente de engenharia de software da família de modelos Conatus. Raciocine em <think>, use <tool_call name=\"...\"> quando precisar de uma ferramenta, e responda ao usuário só dentro de <final>.",
+    "user_request": "Renomeia a função que calcula frete pra calcular_frete (tá em inglês, calculate_shipping).",
+    "raw_text": "<think>Renomear uma função usada em mais de um lugar exige achar TODOS os usos, não só a definição — vou usar search_code pra listar cada ocorrência de calculate_shipping antes de mudar qualquer coisa.</think><tool_call name=\"search_code\">{\"pattern\": \"calculate_shipping\", \"path\": \"src\"}</tool_call><tool_result name=\"search_code\" status=\"ok\">{\"matches\": [{\"path\": \"src/cart/checkout.py\", \"line\": 1, \"text\": \"from src.shipping.calculator import calculate_shipping\"}, {\"path\": \"src/cart/checkout.py\", \"line\": 5, \"text\": \"return calculate_shipping(cart['weight_kg'], cart['distance_km'])\"}, {\"path\": \"src/orders/summary.py\", \"line\": 1, \"text\": \"from src.shipping.calculator import calculate_shipping\"}, {\"path\": \"src/orders/summary.py\", \"line\": 5, \"text\": \"shipping = calculate_shipping(order['weight_kg'], order['distance_km'])\"}, {\"path\": \"src/shipping/calculator.py\", \"line\": 1, \"text\": \"def calculate_shipping(weight_kg, distance_km):\"}], \"truncated\": false}</tool_result><think>A busca achou 3 ocorrências: a definição em shipping/calculator.py, e usos em cart/checkout.py e orders/summary.py. Vou ler o arquivo de definição primeiro.</think><tool_call name=\"read_file\">{\"path\": \"src/shipping/calculator.py\"}</tool_call><tool_result name=\"read_file\" status=\"ok\">{\"content\": \"def calculate_shipping(weight_kg, distance_km):\\n    return weight_kg * 0.5 + distance_km * 0.1\\n\", \"start_line\": 1, \"end_line\": 2, \"total_lines\": 2}</tool_result><think>Vou renomear a definição.</think><tool_call name=\"write_file\">{\"path\": \"src/shipping/calculator.py\", \"content\": \"def calcular_frete(weight_kg, distance_km):\\n    return weight_kg * 0.5 + distance_km * 0.1\\n\"}</tool_call><tool_result name=\"write_file\" status=\"ok\">{\"path\": \"src/shipping/calculator.py\", \"bytes_written\": 91, \"mode\": \"overwrite\"}</tool_result><think>Agora atualizo o primeiro ponto de uso, cart/checkout.py, pra importar e chamar o novo nome.</think><tool_call name=\"write_file\">{\"path\": \"src/cart/checkout.py\", \"content\": \"from src.shipping.calculator import calcular_frete\\n\\n\\ndef get_shipping_cost(cart):\\n    return calcular_frete(cart['weight_kg'], cart['distance_km'])\\n\"}</tool_call><tool_result name=\"write_file\" status=\"ok\">{\"path\": \"src/cart/checkout.py\", \"bytes_written\": 148, \"mode\": \"overwrite\"}</tool_result><think>E o segundo ponto de uso, orders/summary.py — a busca inicial garantiu que não sobrou nenhum outro lugar pra atualizar.</think><tool_call name=\"write_file\">{\"path\": \"src/orders/summary.py\", \"content\": \"from src.shipping.calculator import calcular_frete\\n\\n\\ndef order_summary(order):\\n    shipping = calcular_frete(order['weight_kg'], order['distance_km'])\\n    return {'shipping': shipping, 'total': order['subtotal'] + shipping}\\n\"}</tool_call><tool_result name=\"write_file\" status=\"ok\">{\"path\": \"src/orders/summary.py\", \"bytes_written\": 224, \"mode\": \"overwrite\"}</tool_result><think>Vou validar que todos os 3 arquivos ainda funcionam juntos com o novo nome.</think><tool_call name=\"checker\">{\"language\": \"python\", \"operation\": \"compile_and_test\", \"files\": [{\"path\": \"src/shipping/__init__.py\", \"content\": \"\"}, {\"path\": \"src/shipping/calculator.py\", \"content\": \"def calcular_frete(weight_kg, distance_km):\\n    return weight_kg * 0.5 + distance_km * 0.1\\n\"}, {\"path\": \"src/cart/__init__.py\", \"content\": \"\"}, {\"path\": \"src/cart/checkout.py\", \"content\": \"from src.shipping.calculator import calcular_frete\\n\\n\\ndef get_shipping_cost(cart):\\n    return calcular_frete(cart['weight_kg'], cart['distance_km'])\\n\"}, {\"path\": \"src/orders/__init__.py\", \"content\": \"\"}, {\"path\": \"src/orders/summary.py\", \"content\": \"from src.shipping.calculator import calcular_frete\\n\\n\\ndef order_summary(order):\\n    shipping = calcular_frete(order['weight_kg'], order['distance_km'])\\n    return {'shipping': shipping, 'total': order['subtotal'] + shipping}\\n\"}, {\"path\": \"test_rename.py\", \"content\": \"from src.cart.checkout import get_shipping_cost\\nfrom src.orders.summary import order_summary\\n\\n\\ndef test_checkout_uses_renamed_function():\\n    assert get_shipping_cost({'weight_kg': 2, 'distance_km': 10}) == 2.0\\n\\n\\ndef test_summary_uses_renamed_function():\\n    result = order_summary({'weight_kg': 2, 'distance_km': 10, 'subtotal': 100})\\n    assert result['total'] == 102.0\\n\"}]}</tool_call><tool_result name=\"checker\" status=\"ok\">{\"passed\": true, \"errors\": [], \"stdout\": \"..                                                                       [100%]\\n2 passed in 0.02s\\n\", \"stderr\": \"\", \"metadata\": {\"language\": \"python\", \"duration_ms\": 3061}}</tool_result><final>Busquei calculate_shipping antes de renomear, pra achar TODOS os usos de uma vez (3 arquivos: a definição e dois pontos de chamada) em vez de descobrir um por um enquanto quebrava o projeto. Renomeei os 3 pra calcular_frete e validei com o checker — passa.</final>"
+  }
+}

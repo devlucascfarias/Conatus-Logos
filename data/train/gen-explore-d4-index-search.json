@@ -1,0 +1,32 @@
+{
+  "metadata": {
+    "id": "gen-explore-d4-index-search",
+    "domain": "debugging",
+    "language": "python",
+    "difficulty": "hard",
+    "tools_used": [
+      "list_files",
+      "search_code",
+      "read_file",
+      "write_file",
+      "checker"
+    ],
+    "num_steps": 5,
+    "task_type": "hypothesis_revision_after_failure",
+    "source": "curated_manual_real_execution",
+    "license": "synthetic-no-license-needed",
+    "validation_status": "validated",
+    "execution_performed": true,
+    "split": "train",
+    "checker_used": "checker-python-1.0",
+    "expected_result": {
+      "passed": true
+    },
+    "execution_classification": "tested"
+  },
+  "trajectory": {
+    "system_prompt": "Você é Logos-3, um agente de engenharia de software da família de modelos Conatus. Raciocine em <think>, use <tool_call name=\"...\"> quando precisar de uma ferramenta, e responda ao usuário só dentro de <final>.",
+    "user_request": "Os resultados de busca estão saindo na ordem errada, o mais relevante deveria vir primeiro. Corrige.",
+    "raw_text": "<think>O pedido é sobre 'busca' — vou listar o projeto primeiro.</think><tool_call name=\"list_files\">{\"path\": \".\"}</tool_call><tool_result name=\"list_files\" status=\"ok\">{\"files\": [\"src\", \"src/logs\", \"src/logs/__init__.py\", \"src/logs/index.py\", \"src/search\", \"src/search/__init__.py\", \"src/search/index.py\"]}</tool_result><think>Vou procurar por 'rank_results', já que parece ser a função de ordenação relevante.</think><tool_call name=\"search_code\">{\"pattern\": \"def rank_results\", \"path\": \"src\"}</tool_call><tool_result name=\"search_code\" status=\"ok\">{\"matches\": [{\"path\": \"src/logs/index.py\", \"line\": 1, \"text\": \"def rank_results(entries):\"}, {\"path\": \"src/search/index.py\", \"line\": 1, \"text\": \"def rank_results(results):\"}], \"truncated\": false}</tool_result><think>A busca achou rank_results em src/search/index.py e também em src/logs/index.py — preciso ler a de search, já que o pedido é sobre resultados de busca.</think><tool_call name=\"read_file\">{\"path\": \"src/search/index.py\"}</tool_call><tool_result name=\"read_file\" status=\"ok\">{\"content\": \"def rank_results(results):\\n    return sorted(results, key=lambda r: r['score'])\\n\", \"start_line\": 1, \"end_line\": 2, \"total_lines\": 2}</tool_result><think>Confirmado: essa é a função certa (usa 'score', que bate com relevância de busca). O bug é a ordem: sorted() por padrão é crescente, então o menor score vem primeiro — precisa ser decrescente pra relevância. Vou corrigir com reverse=True.</think><tool_call name=\"write_file\">{\"path\": \"src/search/index.py\", \"content\": \"def rank_results(results):\\n    return sorted(results, key=lambda r: r['score'], reverse=True)\\n\"}</tool_call><tool_result name=\"write_file\" status=\"ok\">{\"path\": \"src/search/index.py\", \"bytes_written\": 94, \"mode\": \"overwrite\"}</tool_result><think>Vou validar com um teste real de ordenação por relevância.</think><tool_call name=\"checker\">{\"language\": \"python\", \"operation\": \"compile_and_test\", \"files\": [{\"path\": \"src/search/__init__.py\", \"content\": \"\"}, {\"path\": \"src/search/index.py\", \"content\": \"def rank_results(results):\\n    return sorted(results, key=lambda r: r['score'], reverse=True)\\n\"}, {\"path\": \"src/search/test_index.py\", \"content\": \"from src.search.index import rank_results\\n\\n\\ndef test_rank_results_most_relevant_first():\\n    results = [{'score': 0.2}, {'score': 0.9}, {'score': 0.5}]\\n    ranked = rank_results(results)\\n    assert [r['score'] for r in ranked] == [0.9, 0.5, 0.2]\\n\"}]}</tool_call><tool_result name=\"checker\" status=\"ok\">{\"passed\": true, \"errors\": [], \"stdout\": \".                                                                        [100%]\\n1 passed in 0.02s\\n\", \"stderr\": \"\", \"metadata\": {\"language\": \"python\", \"duration_ms\": 3047}}</tool_result><final>Havia duas funções rank_results (src/search e src/logs) — li a de search por bater com 'score'/relevância do pedido. O bug era a ordem: sorted() sem reverse=True colocava o menor score primeiro. Corrigi e validei com o checker — passa.</final>"
+  }
+}

@@ -1,0 +1,32 @@
+{
+  "metadata": {
+    "id": "gen-explore-a1-mathkit-divide",
+    "domain": "debugging",
+    "language": "python",
+    "difficulty": "medium",
+    "tools_used": [
+      "list_files",
+      "search_code",
+      "read_file",
+      "write_file",
+      "checker"
+    ],
+    "num_steps": 5,
+    "task_type": "multi_file_root_cause_diagnosis",
+    "source": "curated_manual_real_execution",
+    "license": "synthetic-no-license-needed",
+    "validation_status": "validated",
+    "execution_performed": true,
+    "split": "train",
+    "checker_used": "checker-python-1.0",
+    "expected_result": {
+      "passed": true
+    },
+    "execution_classification": "tested"
+  },
+  "trajectory": {
+    "system_prompt": "Você é Logos-3, um agente de engenharia de software da família de modelos Conatus. Raciocine em <think>, use <tool_call name=\"...\"> quando precisar de uma ferramenta, e responda ao usuário só dentro de <final>.",
+    "user_request": "Tem um bug em algum lugar nesse pacote de matemática, será que dá pra achar e consertar?",
+    "raw_text": "<think>Pedido vago, sem nome de arquivo — vou listar o workspace primeiro pra entender a estrutura do projeto antes de procurar qualquer coisa.</think><tool_call name=\"list_files\">{\"path\": \".\"}</tool_call><tool_result name=\"list_files\" status=\"ok\">{\"files\": [\"src\", \"src/mathkit\", \"src/mathkit/__init__.py\", \"src/mathkit/core.py\", \"tests\", \"tests/test_core.py\"]}</tool_result><think>Tem uma pasta src/mathkit e uma tests/. Em vez de abrir cada arquivo, vou procurar diretamente por 'def ' no pacote pra ver quais funções existem.</think><tool_call name=\"search_code\">{\"pattern\": \"def \", \"path\": \"src\"}</tool_call><tool_result name=\"search_code\" status=\"ok\">{\"matches\": [{\"path\": \"src/mathkit/core.py\", \"line\": 1, \"text\": \"def divide(a, b):\"}, {\"path\": \"src/mathkit/core.py\", \"line\": 5, \"text\": \"def multiply(a, b):\"}], \"truncated\": false}</tool_result><think>Vejo divide e multiply em core.py. divide usando // (divisão inteira) é suspeito pra uma função de matemática genérica — vou ler o arquivo pra confirmar antes de mexer.</think><tool_call name=\"read_file\">{\"path\": \"src/mathkit/core.py\"}</tool_call><tool_result name=\"read_file\" status=\"ok\">{\"content\": \"def divide(a, b):\\n    return a // b\\n\\n\\ndef multiply(a, b):\\n    return a * b\\n\", \"start_line\": 1, \"end_line\": 6, \"total_lines\": 6}</tool_result><think>Confirmado: divide(a, b) usa // em vez de /, então divide(7, 2) devolve 3 em vez de 3.5. Vou corrigir pra divisão real.</think><tool_call name=\"write_file\">{\"path\": \"src/mathkit/core.py\", \"content\": \"def divide(a, b):\\n    return a / b\\n\\n\\ndef multiply(a, b):\\n    return a * b\\n\"}</tool_call><tool_result name=\"write_file\" status=\"ok\">{\"path\": \"src/mathkit/core.py\", \"bytes_written\": 74, \"mode\": \"overwrite\"}</tool_result><think>Vou validar a correção com um teste real cobrindo o caso que estava quebrado.</think><tool_call name=\"checker\">{\"language\": \"python\", \"operation\": \"compile_and_test\", \"files\": [{\"path\": \"src/mathkit/__init__.py\", \"content\": \"\"}, {\"path\": \"src/mathkit/core.py\", \"content\": \"def divide(a, b):\\n    return a / b\\n\\n\\ndef multiply(a, b):\\n    return a * b\\n\"}, {\"path\": \"tests/test_core.py\", \"content\": \"from src.mathkit.core import divide, multiply\\n\\n\\ndef test_multiply():\\n    assert multiply(3, 4) == 12\\n\\n\\ndef test_divide_returns_float():\\n    assert divide(7, 2) == 3.5\\n\"}]}</tool_call><tool_result name=\"checker\" status=\"ok\">{\"passed\": true, \"errors\": [], \"stdout\": \"..                                                                       [100%]\\n2 passed in 0.02s\\n\", \"stderr\": \"\", \"metadata\": {\"language\": \"python\", \"duration_ms\": 4342}}</tool_result><final>Encontrei o bug em src/mathkit/core.py: divide(a, b) usava divisão inteira (//) em vez de divisão real (/), então divide(7, 2) devolvia 3 em vez de 3.5. Corrigi e validei com o checker — passa.</final>"
+  }
+}

@@ -1,0 +1,32 @@
+{
+  "metadata": {
+    "id": "gen-explore-c2-payments-deep",
+    "domain": "debugging",
+    "language": "python",
+    "difficulty": "medium",
+    "tools_used": [
+      "list_files",
+      "search_code",
+      "read_file",
+      "write_file",
+      "checker"
+    ],
+    "num_steps": 5,
+    "task_type": "multi_file_root_cause_diagnosis",
+    "source": "curated_manual_real_execution",
+    "license": "synthetic-no-license-needed",
+    "validation_status": "validated",
+    "execution_performed": true,
+    "split": "train",
+    "checker_used": "checker-python-1.0",
+    "expected_result": {
+      "passed": true
+    },
+    "execution_classification": "tested"
+  },
+  "trajectory": {
+    "system_prompt": "Você é Logos-3, um agente de engenharia de software da família de modelos Conatus. Raciocine em <think>, use <tool_call name=\"...\"> quando precisar de uma ferramenta, e responda ao usuário só dentro de <final>.",
+    "user_request": "A parte de pagamentos desse app parece ter um bug, consegue achar?",
+    "raw_text": "<think>Vou listar a raiz primeiro pra entender a estrutura.</think><tool_call name=\"list_files\">{\"path\": \".\"}</tool_call><tool_result name=\"list_files\" status=\"ok\">{\"files\": [\"app\", \"app/__init__.py\", \"app/main.py\", \"app/services\", \"app/services/__init__.py\", \"app/services/payments\"]}</tool_result><think>Existe app/services com subpastas — vou usar search_code direto em vez de listar nível por nível, já que ele busca recursivamente.</think><tool_call name=\"search_code\">{\"pattern\": \"def \", \"path\": \"app/services\"}</tool_call><tool_result name=\"search_code\" status=\"ok\">{\"matches\": [{\"path\": \"app/services/payments/gateway.py\", \"line\": 1, \"text\": \"def apply_tax(amount, tax_pct):\"}], \"truncated\": false}</tool_result><think>Achei apply_tax em app/services/payments/gateway.py — vou ler o arquivo inteiro antes de mexer.</think><tool_call name=\"read_file\">{\"path\": \"app/services/payments/gateway.py\"}</tool_call><tool_result name=\"read_file\" status=\"ok\">{\"content\": \"def apply_tax(amount, tax_pct):\\n    return amount + tax_pct\\n\", \"start_line\": 1, \"end_line\": 2, \"total_lines\": 2}</tool_result><think>Mesmo padrão de bug que já vi antes nesse tipo de código: apply_tax soma tax_pct direto (uma porcentagem) em vez de aplicar proporcionalmente sobre amount. Vou corrigir.</think><tool_call name=\"write_file\">{\"path\": \"app/services/payments/gateway.py\", \"content\": \"def apply_tax(amount, tax_pct):\\n    return amount * (1 + tax_pct / 100)\\n\"}</tool_call><tool_result name=\"write_file\" status=\"ok\">{\"path\": \"app/services/payments/gateway.py\", \"bytes_written\": 72, \"mode\": \"overwrite\"}</tool_result><think>Vou validar com um teste real de imposto aplicado corretamente.</think><tool_call name=\"checker\">{\"language\": \"python\", \"operation\": \"compile_and_test\", \"files\": [{\"path\": \"app/services/payments/__init__.py\", \"content\": \"\"}, {\"path\": \"app/services/payments/gateway.py\", \"content\": \"def apply_tax(amount, tax_pct):\\n    return amount * (1 + tax_pct / 100)\\n\"}, {\"path\": \"app/services/payments/test_gateway.py\", \"content\": \"from app.services.payments.gateway import apply_tax\\n\\n\\ndef test_apply_tax():\\n    assert round(apply_tax(100, 10), 2) == 110.0\\n\"}]}</tool_call><tool_result name=\"checker\" status=\"ok\">{\"passed\": true, \"errors\": [], \"stdout\": \".                                                                        [100%]\\n1 passed in 0.03s\\n\", \"stderr\": \"\", \"metadata\": {\"language\": \"python\", \"duration_ms\": 3264}}</tool_result><final>Encontrei o bug em app/services/payments/gateway.py, achado via busca recursiva em vez de listar cada subpasta manualmente: apply_tax somava a porcentagem de imposto direto em vez de aplicá-la proporcionalmente. Corrigi e validei com o checker — passa.</final>"
+  }
+}

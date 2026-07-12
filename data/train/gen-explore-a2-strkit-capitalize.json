@@ -1,0 +1,32 @@
+{
+  "metadata": {
+    "id": "gen-explore-a2-strkit-capitalize",
+    "domain": "debugging",
+    "language": "python",
+    "difficulty": "medium",
+    "tools_used": [
+      "list_files",
+      "search_code",
+      "read_file",
+      "write_file",
+      "checker"
+    ],
+    "num_steps": 5,
+    "task_type": "multi_file_root_cause_diagnosis",
+    "source": "curated_manual_real_execution",
+    "license": "synthetic-no-license-needed",
+    "validation_status": "validated",
+    "execution_performed": true,
+    "split": "train",
+    "checker_used": "checker-python-1.0",
+    "expected_result": {
+      "passed": true
+    },
+    "execution_classification": "tested"
+  },
+  "trajectory": {
+    "system_prompt": "Você é Logos-3, um agente de engenharia de software da família de modelos Conatus. Raciocine em <think>, use <tool_call name=\"...\"> quando precisar de uma ferramenta, e responda ao usuário só dentro de <final>.",
+    "user_request": "Uma das funções de texto não está formatando direito, acha o problema?",
+    "raw_text": "<think>Vou listar o workspace primeiro, já que o pedido não diz qual arquivo é.</think><tool_call name=\"list_files\">{\"path\": \".\"}</tool_call><tool_result name=\"list_files\" status=\"ok\">{\"files\": [\"src\", \"src/strkit\", \"src/strkit/__init__.py\", \"src/strkit/text.py\", \"tests\", \"tests/test_text.py\"]}</tool_result><think>Existe src/strkit — vou procurar funções relacionadas a formatação de texto direto por busca, em vez de abrir tudo.</think><tool_call name=\"search_code\">{\"pattern\": \"def \", \"path\": \"src\"}</tool_call><tool_result name=\"search_code\" status=\"ok\">{\"matches\": [{\"path\": \"src/strkit/text.py\", \"line\": 1, \"text\": \"def capitalize_words(text):\"}, {\"path\": \"src/strkit/text.py\", \"line\": 5, \"text\": \"def reverse_text(text):\"}], \"truncated\": false}</tool_result><think>capitalize_words e reverse_text existem. 'formatando direito' soa como capitalize_words — vou ler o arquivo pra ver a implementação real antes de assumir.</think><tool_call name=\"read_file\">{\"path\": \"src/strkit/text.py\"}</tool_call><tool_result name=\"read_file\" status=\"ok\">{\"content\": \"def capitalize_words(text):\\n    return ' '.join(w[0] + w[1:] for w in text.split(' '))\\n\\n\\ndef reverse_text(text):\\n    return text[::-1]\\n\", \"start_line\": 1, \"end_line\": 6, \"total_lines\": 6}</tool_result><think>Confirmado: capitalize_words(text) faz w[0] + w[1:] sem usar .upper() em w[0], então não capitaliza nada de verdade — só reconstrói a palavra igual. Vou corrigir usando w[0].upper().</think><tool_call name=\"write_file\">{\"path\": \"src/strkit/text.py\", \"content\": \"def capitalize_words(text):\\n    return ' '.join(w[0].upper() + w[1:] for w in text.split(' ') if w)\\n\\n\\ndef reverse_text(text):\\n    return text[::-1]\\n\"}</tool_call><tool_result name=\"write_file\" status=\"ok\">{\"path\": \"src/strkit/text.py\", \"bytes_written\": 148, \"mode\": \"overwrite\"}</tool_result><think>Vou validar com um teste real cobrindo o caso de capitalização.</think><tool_call name=\"checker\">{\"language\": \"python\", \"operation\": \"compile_and_test\", \"files\": [{\"path\": \"src/strkit/__init__.py\", \"content\": \"\"}, {\"path\": \"src/strkit/text.py\", \"content\": \"def capitalize_words(text):\\n    return ' '.join(w[0].upper() + w[1:] for w in text.split(' ') if w)\\n\\n\\ndef reverse_text(text):\\n    return text[::-1]\\n\"}, {\"path\": \"tests/test_text.py\", \"content\": \"from src.strkit.text import capitalize_words, reverse_text\\n\\n\\ndef test_reverse_text():\\n    assert reverse_text('abc') == 'cba'\\n\\n\\ndef test_capitalize_words():\\n    assert capitalize_words('ola mundo') == 'Ola Mundo'\\n\"}]}</tool_call><tool_result name=\"checker\" status=\"ok\">{\"passed\": true, \"errors\": [], \"stdout\": \"..                                                                       [100%]\\n2 passed in 0.02s\\n\", \"stderr\": \"\", \"metadata\": {\"language\": \"python\", \"duration_ms\": 4171}}</tool_result><final>Encontrei o bug em src/strkit/text.py: capitalize_words(text) reconstruía a palavra sem chamar .upper() na primeira letra, então não capitalizava nada de verdade. Corrigi e validei com o checker — passa.</final>"
+  }
+}

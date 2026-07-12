@@ -1,0 +1,32 @@
+{
+  "metadata": {
+    "id": "gen-explore-h1-button-class-mismatch",
+    "domain": "frontend",
+    "language": "html",
+    "difficulty": "medium",
+    "tools_used": [
+      "list_files",
+      "search_code",
+      "read_file",
+      "write_file",
+      "checker"
+    ],
+    "num_steps": 5,
+    "task_type": "multi_file_root_cause_diagnosis",
+    "source": "curated_manual_real_execution",
+    "license": "synthetic-no-license-needed",
+    "validation_status": "validated",
+    "execution_performed": true,
+    "split": "train",
+    "checker_used": "checker-html-1.0",
+    "expected_result": {
+      "passed": true
+    },
+    "execution_classification": "interpreted"
+  },
+  "trajectory": {
+    "system_prompt": "Você é Logos-3, um agente de engenharia de software da família de modelos Conatus. Raciocine em <think>, use <tool_call name=\"...\"> quando precisar de uma ferramenta, e responda ao usuário só dentro de <final>.",
+    "user_request": "O botão principal da página não está com a cor certa, dá uma olhada?",
+    "raw_text": "<think>Vou listar o projeto primeiro pra ver a estrutura.</think><tool_call name=\"list_files\">{\"path\": \".\"}</tool_call><tool_result name=\"list_files\" status=\"ok\">{\"files\": [\"components\", \"components/card.html\", \"index.html\", \"styles\", \"styles/buttons.css\"]}</tool_result><think>Vou procurar por 'btn-primary' no código, já que é a classe do botão mencionado.</think><tool_call name=\"search_code\">{\"pattern\": \"btn-primary\", \"path\": \".\"}</tool_call><tool_result name=\"search_code\" status=\"ok\">{\"matches\": [{\"path\": \"index.html\", \"line\": 9, \"text\": \"<button class=\\\"btn-primary\\\">Comprar agora</button>\"}], \"truncated\": false}</tool_result><think>A busca só achou 'btn-primary' em index.html — não aparece em nenhum lugar do CSS. Isso sugere um nome de classe que não bate. Vou ler o CSS de botões pra confirmar.</think><tool_call name=\"read_file\">{\"path\": \"styles/buttons.css\"}</tool_call><tool_result name=\"read_file\" status=\"ok\">{\"content\": \".button-primary {\\n  background: #0071e3;\\n  color: #fff;\\n  border: none;\\n  border-radius: 980px;\\n  padding: 0.6rem 1.5rem;\\n}\\n\", \"start_line\": 1, \"end_line\": 7, \"total_lines\": 7}</tool_result><think>Confirmado: o CSS define '.button-primary' (com hífen extra), mas o HTML usa 'btn-primary' — nomes diferentes, a regra nunca se aplica. Vou corrigir o CSS pra bater com o HTML.</think><tool_call name=\"write_file\">{\"path\": \"styles/buttons.css\", \"content\": \".btn-primary {\\n  background: #0071e3;\\n  color: #fff;\\n  border: none;\\n  border-radius: 980px;\\n  padding: 0.6rem 1.5rem;\\n}\\n\"}</tool_call><tool_result name=\"write_file\" status=\"ok\">{\"path\": \"styles/buttons.css\", \"bytes_written\": 121, \"mode\": \"overwrite\"}</tool_result><think>Vou renderizar de verdade num navegador e conferir que não há erro de console.</think><tool_call name=\"checker\">{\"language\": \"html\", \"operation\": \"run\", \"files\": [{\"path\": \"index.html\", \"content\": \"<!doctype html>\\n<html lang=\\\"pt-br\\\">\\n<head>\\n<meta charset=\\\"utf-8\\\">\\n<title>Loja</title>\\n<link rel=\\\"stylesheet\\\" href=\\\"styles/buttons.css\\\">\\n</head>\\n<body>\\n<button class=\\\"btn-primary\\\">Comprar agora</button>\\n</body>\\n</html>\\n\"}, {\"path\": \"styles/buttons.css\", \"content\": \".btn-primary {\\n  background: #0071e3;\\n  color: #fff;\\n  border: none;\\n  border-radius: 980px;\\n  padding: 0.6rem 1.5rem;\\n}\\n\"}], \"entrypoint\": \"index.html\"}</tool_call><tool_result name=\"checker\" status=\"ok\">{\"passed\": true, \"errors\": [], \"stdout\": \"\", \"stderr\": \"\", \"metadata\": {\"language\": \"html\", \"duration_ms\": 1563, \"console_warnings\": []}}</tool_result><final>Busquei por 'btn-primary' no projeto e confirmei que a classe só aparecia no HTML, nunca no CSS — o arquivo styles/buttons.css definia '.button-primary' (nome diferente), então a regra nunca se aplicava. Corrigi o nome da classe no CSS. Validei renderizando de verdade — sem erro de console.</final>"
+  }
+}

@@ -1,0 +1,32 @@
+{
+  "metadata": {
+    "id": "gen-explore-h3-missing-footer-link",
+    "domain": "frontend",
+    "language": "html",
+    "difficulty": "medium",
+    "tools_used": [
+      "list_files",
+      "search_code",
+      "read_file",
+      "write_file",
+      "checker"
+    ],
+    "num_steps": 5,
+    "task_type": "multi_file_root_cause_diagnosis",
+    "source": "curated_manual_real_execution",
+    "license": "synthetic-no-license-needed",
+    "validation_status": "validated",
+    "execution_performed": true,
+    "split": "train",
+    "checker_used": "checker-html-1.0",
+    "expected_result": {
+      "passed": true
+    },
+    "execution_classification": "interpreted"
+  },
+  "trajectory": {
+    "system_prompt": "Você é Logos-3, um agente de engenharia de software da família de modelos Conatus. Raciocine em <think>, use <tool_call name=\"...\"> quando precisar de uma ferramenta, e responda ao usuário só dentro de <final>.",
+    "user_request": "O rodapé da página não está estilizado, será que esqueceram algum CSS?",
+    "raw_text": "<think>Vou listar o projeto primeiro — pode ser que o CSS exista mas não esteja sendo carregado.</think><tool_call name=\"list_files\">{\"path\": \"assets/css\"}</tool_call><tool_result name=\"list_files\" status=\"ok\">{\"files\": [\"assets/css/base.css\", \"assets/css/footer.css\"]}</tool_result><think>Existe footer.css além de base.css — vou procurar por 'site-footer' pra confirmar se a classe usada no HTML está definida em algum lugar.</think><tool_call name=\"search_code\">{\"pattern\": \"site-footer\", \"path\": \".\"}</tool_call><tool_result name=\"search_code\" status=\"ok\">{\"matches\": [{\"path\": \"assets/css/footer.css\", \"line\": 1, \"text\": \".site-footer {\"}, {\"path\": \"index.html\", \"line\": 10, \"text\": \"<footer class=\\\"site-footer\\\">&copy; 2026 Logos</footer>\"}], \"truncated\": false}</tool_result><think>A busca confirma: 'site-footer' está no HTML E em footer.css — a regra existe. O problema não é a regra em si, é se o arquivo está sendo carregado. Vou ler o index.html pra conferir os <link> na página.</think><tool_call name=\"read_file\">{\"path\": \"index.html\"}</tool_call><tool_result name=\"read_file\" status=\"ok\">{\"content\": \"<!doctype html>\\n<html lang=\\\"pt-br\\\">\\n<head>\\n<meta charset=\\\"utf-8\\\">\\n<title>Site</title>\\n<link rel=\\\"stylesheet\\\" href=\\\"assets/css/base.css\\\">\\n</head>\\n<body>\\n<main><h1>Conteúdo</h1></main>\\n<footer class=\\\"site-footer\\\">&copy; 2026 Logos</footer>\\n</body>\\n</html>\\n\", \"start_line\": 1, \"end_line\": 12, \"total_lines\": 12}</tool_result><think>Confirmado: index.html só linka assets/css/base.css — falta o <link> pra assets/css/footer.css, por isso as regras nunca chegam a ser aplicadas. Vou adicionar o link que falta.</think><tool_call name=\"write_file\">{\"path\": \"index.html\", \"content\": \"<!doctype html>\\n<html lang=\\\"pt-br\\\">\\n<head>\\n<meta charset=\\\"utf-8\\\">\\n<title>Site</title>\\n<link rel=\\\"stylesheet\\\" href=\\\"assets/css/base.css\\\">\\n<link rel=\\\"stylesheet\\\" href=\\\"assets/css/footer.css\\\">\\n</head>\\n<body>\\n<main><h1>Conteúdo</h1></main>\\n<footer class=\\\"site-footer\\\">&copy; 2026 Logos</footer>\\n</body>\\n</html>\\n\"}</tool_call><tool_result name=\"write_file\" status=\"ok\">{\"path\": \"index.html\", \"bytes_written\": 308, \"mode\": \"overwrite\"}</tool_result><think>Vou renderizar de verdade e conferir que a página carrega sem erro de console.</think><tool_call name=\"checker\">{\"language\": \"html\", \"operation\": \"run\", \"files\": [{\"path\": \"index.html\", \"content\": \"<!doctype html>\\n<html lang=\\\"pt-br\\\">\\n<head>\\n<meta charset=\\\"utf-8\\\">\\n<title>Site</title>\\n<link rel=\\\"stylesheet\\\" href=\\\"assets/css/base.css\\\">\\n<link rel=\\\"stylesheet\\\" href=\\\"assets/css/footer.css\\\">\\n</head>\\n<body>\\n<main><h1>Conteúdo</h1></main>\\n<footer class=\\\"site-footer\\\">&copy; 2026 Logos</footer>\\n</body>\\n</html>\\n\"}, {\"path\": \"assets/css/base.css\", \"content\": \"body { margin: 0; font-family: system-ui, sans-serif; }\\n\"}, {\"path\": \"assets/css/footer.css\", \"content\": \".site-footer {\\n  padding: 1rem 2rem;\\n  background: #1d1d1f;\\n  color: #f5f5f7;\\n  text-align: center;\\n}\\n\"}], \"entrypoint\": \"index.html\"}</tool_call><tool_result name=\"checker\" status=\"ok\">{\"passed\": true, \"errors\": [], \"stdout\": \"\", \"stderr\": \"\", \"metadata\": {\"language\": \"html\", \"duration_ms\": 1702, \"console_warnings\": []}}</tool_result><final>Busquei por 'site-footer' e confirmei que a regra JÁ EXISTIA em assets/css/footer.css — o problema não era CSS faltando, era um <link> faltando no <head> do index.html. Adicionei o link. Validei renderizando de verdade — sem erro de console.</final>"
+  }
+}

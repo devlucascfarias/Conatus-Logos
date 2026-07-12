@@ -1,0 +1,32 @@
+{
+  "metadata": {
+    "id": "gen-explore-b4-app-version",
+    "domain": "tool_calling",
+    "language": "python",
+    "difficulty": "easy",
+    "tools_used": [
+      "list_files",
+      "search_code",
+      "read_file",
+      "write_file",
+      "checker"
+    ],
+    "num_steps": 5,
+    "task_type": "multi_file_read_and_edit",
+    "source": "curated_manual_real_execution",
+    "license": "synthetic-no-license-needed",
+    "validation_status": "validated",
+    "execution_performed": true,
+    "split": "train",
+    "checker_used": "checker-python-1.0",
+    "expected_result": {
+      "passed": true
+    },
+    "execution_classification": "tested"
+  },
+  "trajectory": {
+    "system_prompt": "Você é Logos-3, um agente de engenharia de software da família de modelos Conatus. Raciocine em <think>, use <tool_call name=\"...\"> quando precisar de uma ferramenta, e responda ao usuário só dentro de <final>.",
+    "user_request": "Atualiza a versão do app pra 1.1.0.",
+    "raw_text": "<think>Vou listar o projeto pra ver onde a versão pode estar definida.</think><tool_call name=\"list_files\">{\"path\": \".\"}</tool_call><tool_result name=\"list_files\" status=\"ok\">{\"files\": [\"src\", \"src/api\", \"src/api/routes.py\", \"src/api/version.py\", \"src/cli\", \"src/cli/main.py\"]}</tool_result><think>Vou procurar diretamente por 'VERSION' em vez de abrir cada arquivo.</think><tool_call name=\"search_code\">{\"pattern\": \"VERSION\", \"path\": \"src\"}</tool_call><tool_result name=\"search_code\" status=\"ok\">{\"matches\": [{\"path\": \"src/api/routes.py\", \"line\": 1, \"text\": \"from api.version import APP_VERSION\"}, {\"path\": \"src/api/routes.py\", \"line\": 5, \"text\": \"return {'version': APP_VERSION}\"}, {\"path\": \"src/api/version.py\", \"line\": 1, \"text\": \"APP_VERSION = '1.0.0'\"}], \"truncated\": false}</tool_result><think>A busca achou a definição em src/api/version.py — vou ler pra confirmar que é só essa constante antes de editar.</think><tool_call name=\"read_file\">{\"path\": \"src/api/version.py\"}</tool_call><tool_result name=\"read_file\" status=\"ok\">{\"content\": \"APP_VERSION = '1.0.0'\\n\", \"start_line\": 1, \"end_line\": 1, \"total_lines\": 1}</tool_result><think>É a única definição de versão. Vou atualizar o valor.</think><tool_call name=\"write_file\">{\"path\": \"src/api/version.py\", \"content\": \"APP_VERSION = '1.1.0'\\n\"}</tool_call><tool_result name=\"write_file\" status=\"ok\">{\"path\": \"src/api/version.py\", \"bytes_written\": 22, \"mode\": \"overwrite\"}</tool_result><think>Vou confirmar que quem usa a constante reflete o valor novo.</think><tool_call name=\"checker\">{\"language\": \"python\", \"operation\": \"compile_and_test\", \"files\": [{\"path\": \"src/api/version.py\", \"content\": \"APP_VERSION = '1.1.0'\\n\"}, {\"path\": \"tests/test_version.py\", \"content\": \"from src.api.version import APP_VERSION\\n\\n\\ndef test_version_updated():\\n    assert APP_VERSION == '1.1.0'\\n\"}]}</tool_call><tool_result name=\"checker\" status=\"ok\">{\"passed\": true, \"errors\": [], \"stdout\": \".                                                                        [100%]\\n1 passed in 0.02s\\n\", \"stderr\": \"\", \"metadata\": {\"language\": \"python\", \"duration_ms\": 3109}}</tool_result><final>Achei a constante de versão em src/api/version.py via busca no código e atualizei de 1.0.0 pra 1.1.0. Validei com o checker — passa.</final>"
+  }
+}

@@ -1,0 +1,32 @@
+{
+  "metadata": {
+    "id": "gen-explore-d3-store-cache",
+    "domain": "debugging",
+    "language": "python",
+    "difficulty": "hard",
+    "tools_used": [
+      "list_files",
+      "search_code",
+      "read_file",
+      "write_file",
+      "checker"
+    ],
+    "num_steps": 5,
+    "task_type": "hypothesis_revision_after_failure",
+    "source": "curated_manual_real_execution",
+    "license": "synthetic-no-license-needed",
+    "validation_status": "validated",
+    "execution_performed": true,
+    "split": "train",
+    "checker_used": "checker-python-1.0",
+    "expected_result": {
+      "passed": true
+    },
+    "execution_classification": "tested"
+  },
+  "trajectory": {
+    "system_prompt": "Você é Logos-3, um agente de engenharia de software da família de modelos Conatus. Raciocine em <think>, use <tool_call name=\"...\"> quando precisar de uma ferramenta, e responda ao usuário só dentro de <final>.",
+    "user_request": "Os itens do cache não estão expirando nunca, mesmo depois do tempo configurado. Corrige.",
+    "raw_text": "<think>O pedido é sobre 'cache' — vou listar o projeto primeiro, sem assumir o caminho.</think><tool_call name=\"list_files\">{\"path\": \".\"}</tool_call><tool_result name=\"list_files\" status=\"ok\">{\"files\": [\"src\", \"src/cache\", \"src/cache/__init__.py\", \"src/cache/store.py\", \"src/session\", \"src/session/__init__.py\", \"src/session/store.py\"]}</tool_result><think>Vou procurar por 'ttl' (time to live), já que é um termo específico de expiração de cache que deve aparecer só onde importa.</think><tool_call name=\"search_code\">{\"pattern\": \"ttl\", \"path\": \"src\"}</tool_call><tool_result name=\"search_code\" status=\"ok\">{\"matches\": [{\"path\": \"src/cache/store.py\", \"line\": 8, \"text\": \"def set(self, key, value, ttl_seconds):\"}, {\"path\": \"src/cache/store.py\", \"line\": 9, \"text\": \"self._data[key] = (value, time.time() + ttl_seconds)\"}], \"truncated\": false}</tool_result><think>Só apareceu em src/cache/store.py — é o candidato certo. Vou ler o arquivo inteiro antes de mexer.</think><tool_call name=\"read_file\">{\"path\": \"src/cache/store.py\"}</tool_call><tool_result name=\"read_file\" status=\"ok\">{\"content\": \"import time\\n\\n\\nclass Store:\\n    def __init__(self):\\n        self._data = {}\\n\\n    def set(self, key, value, ttl_seconds):\\n        self._data[key] = (value, time.time() + ttl_seconds)\\n\\n    def get(self, key):\\n        if key not in self._data:\\n            return None\\n        value, _expires_at = self._data[key]\\n        return value\\n\", \"start_line\": 1, \"end_line\": 15, \"total_lines\": 15}</tool_result><think>Confirmado: set() guarda (value, expires_at) corretamente, mas get() ignora _expires_at completamente — nunca checa se expirou. Vou corrigir get() pra comparar com o tempo atual.</think><tool_call name=\"write_file\">{\"path\": \"src/cache/store.py\", \"content\": \"import time\\n\\n\\nclass Store:\\n    def __init__(self):\\n        self._data = {}\\n\\n    def set(self, key, value, ttl_seconds):\\n        self._data[key] = (value, time.time() + ttl_seconds)\\n\\n    def get(self, key):\\n        if key not in self._data:\\n            return None\\n        value, expires_at = self._data[key]\\n        if time.time() > expires_at:\\n            del self._data[key]\\n            return None\\n        return value\\n\"}</tool_call><tool_result name=\"write_file\" status=\"ok\">{\"path\": \"src/cache/store.py\", \"bytes_written\": 422, \"mode\": \"overwrite\"}</tool_result><think>Vou validar com um teste real cobrindo expiração de verdade.</think><tool_call name=\"checker\">{\"language\": \"python\", \"operation\": \"compile_and_test\", \"files\": [{\"path\": \"src/cache/__init__.py\", \"content\": \"\"}, {\"path\": \"src/cache/store.py\", \"content\": \"import time\\n\\n\\nclass Store:\\n    def __init__(self):\\n        self._data = {}\\n\\n    def set(self, key, value, ttl_seconds):\\n        self._data[key] = (value, time.time() + ttl_seconds)\\n\\n    def get(self, key):\\n        if key not in self._data:\\n            return None\\n        value, expires_at = self._data[key]\\n        if time.time() > expires_at:\\n            del self._data[key]\\n            return None\\n        return value\\n\"}, {\"path\": \"src/cache/test_store.py\", \"content\": \"from src.cache.store import Store\\n\\n\\ndef test_expired_item_returns_none():\\n    store = Store()\\n    store.set('a', 1, ttl_seconds=-1)\\n    assert store.get('a') is None\\n\\n\\ndef test_fresh_item_returns_value():\\n    store = Store()\\n    store.set('a', 1, ttl_seconds=60)\\n    assert store.get('a') == 1\\n\"}]}</tool_call><tool_result name=\"checker\" status=\"ok\">{\"passed\": true, \"errors\": [], \"stdout\": \"..                                                                       [100%]\\n2 passed in 0.03s\\n\", \"stderr\": \"\", \"metadata\": {\"language\": \"python\", \"duration_ms\": 3235}}</tool_result><final>Havia duas classes Store (src/cache e src/session) — busquei por 'ttl' pra achar direto a certa, sem precisar ler as duas. O bug era que get() salvava a expiração mas nunca a checava. Corrigi e validei com o checker — passa.</final>"
+  }
+}
