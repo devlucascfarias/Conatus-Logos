@@ -27,7 +27,14 @@ TEMPLATE_DIR = (
     Path(__file__).resolve().parent.parent.parent.parent / "checker_templates" / "react_three_fiber"
 )
 
-_TEMPLATE_SCAFFOLD_FILES = ("vite.config.ts", "tsconfig.json", "package.json", "index.html", "src/main.tsx")
+# Config sempre copiada do template quando o agente não traz a própria.
+_CONFIG_SCAFFOLD = ("vite.config.ts", "tsconfig.json", "package.json")
+# Bootstrap = par ligado (index.html referencia src/main.tsx). Copiado SÓ quando o agente não
+# traz o próprio entry point — se o agente fornece index.html ou algum src/main.*, ele está
+# bootstrapando à própria maneira (ex.: Three.js vanilla sem React), e copiar o main.tsx do
+# template criaria um arquivo órfão importando um `./App` inexistente, quebrando o `tsc`.
+_BOOTSTRAP_SCAFFOLD = ("index.html", "src/main.tsx")
+_ENTRY_MARKERS = ("index.html", "src/main.ts", "src/main.tsx", "src/main.jsx", "src/main.js")
 _TEST_SUFFIXES = (".test.ts", ".test.tsx", ".spec.ts", ".spec.tsx")
 
 
@@ -67,15 +74,24 @@ def _link_node_modules(base_dir: Path) -> None:
     )
 
 
+def _copy_template_file(name: str, base_dir: Path) -> None:
+    dest = base_dir / name
+    dest.parent.mkdir(parents=True, exist_ok=True)
+    dest.write_text((TEMPLATE_DIR / name).read_text(encoding="utf-8"), encoding="utf-8")
+
+
 def _prepare_project(files: list[CheckFile], base_dir: Path) -> None:
-    # Scaffolding do template (config/entrypoint padrão) só é usado quando o próprio conjunto de
-    # arquivos do checker não já traz sua própria versão — o agente pode sobrescrever qualquer um.
+    # Scaffolding do template só é usado quando o conjunto de arquivos do checker não já traz sua
+    # própria versão — o agente pode sobrescrever qualquer um.
     provided_paths = {f.path for f in files}
-    for name in _TEMPLATE_SCAFFOLD_FILES:
+    for name in _CONFIG_SCAFFOLD:
         if name not in provided_paths and (TEMPLATE_DIR / name).exists():
-            dest = base_dir / name
-            dest.parent.mkdir(parents=True, exist_ok=True)
-            dest.write_text((TEMPLATE_DIR / name).read_text(encoding="utf-8"), encoding="utf-8")
+            _copy_template_file(name, base_dir)
+    agent_has_own_entry = any(marker in provided_paths for marker in _ENTRY_MARKERS)
+    if not agent_has_own_entry:
+        for name in _BOOTSTRAP_SCAFFOLD:
+            if (TEMPLATE_DIR / name).exists():
+                _copy_template_file(name, base_dir)
     materialize_files(base_dir, files)
     _link_node_modules(base_dir)
 
