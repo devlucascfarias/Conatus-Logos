@@ -22,6 +22,7 @@ class SandboxPolicy:
     max_output_bytes: int
     max_memory_bytes: int
     allowlist_binaries: frozenset
+    shell_interpreters: frozenset
     git_allowed_subcommands: frozenset
     denylist_patterns: tuple
     shell_network_enabled: bool
@@ -41,6 +42,7 @@ class SandboxPolicy:
             max_output_bytes=raw["resource_limits"]["max_output_bytes"],
             max_memory_bytes=raw["resource_limits"]["max_memory_bytes"],
             allowlist_binaries=frozenset(raw["shell"]["allowlist_binaries"]),
+            shell_interpreters=frozenset(raw["shell"].get("shell_interpreters", [])),
             git_allowed_subcommands=frozenset(raw["shell"]["git_allowed_subcommands"]),
             denylist_patterns=tuple(raw["shell"]["denylist_patterns"]),
             shell_network_enabled=raw["network"]["shell_network_enabled"],
@@ -60,6 +62,7 @@ class SandboxPolicy:
             max_output_bytes=self.max_output_bytes,
             max_memory_bytes=self.max_memory_bytes,
             allowlist_binaries=self.allowlist_binaries,
+            shell_interpreters=self.shell_interpreters,
             git_allowed_subcommands=self.git_allowed_subcommands,
             denylist_patterns=self.denylist_patterns,
             shell_network_enabled=self.shell_network_enabled,
@@ -108,6 +111,21 @@ class SandboxPolicy:
             subcommand = args[0] if args else None
             if subcommand not in self.git_allowed_subcommands:
                 return False, f"subcomando git não permitido (somente leitura): {subcommand!r}"
+
+        # Validação extra por interpretador (D-shell-crossplatform-hardening): a denylist é
+        # substring sobre texto claro — um comando codificado em base64 (`powershell
+        # -EncodedCommand <b64>`, `pwsh -e <b64>`) driblaria TODA a denylist porque os verbos
+        # destrutivos não aparecem em texto. Bloqueio essas flags de bypass casando o ARG
+        # inteiro (não substring frouxo), case-insensitive, só para binários interpretadores.
+        if resolved_binary in self.shell_interpreters:
+            bypass_flags = {"-e", "-ec", "-enc", "-encodedcommand", "-encoded", "/e"}
+            for a in args:
+                token = str(a).strip().lower()
+                if token in bypass_flags:
+                    return False, (
+                        f"flag de comando codificado bloqueada em interpretador "
+                        f"{resolved_binary!r}: {a!r} (driblaria a denylist)"
+                    )
 
         return True, None
 

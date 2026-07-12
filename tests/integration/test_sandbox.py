@@ -82,6 +82,7 @@ def test_output_is_truncated_beyond_max_bytes(sandbox):
         max_output_bytes=100,
         max_memory_bytes=policy.max_memory_bytes,
         allowlist_binaries=policy.allowlist_binaries,
+        shell_interpreters=policy.shell_interpreters,
         git_allowed_subcommands=policy.git_allowed_subcommands,
         denylist_patterns=policy.denylist_patterns,
         shell_network_enabled=policy.shell_network_enabled,

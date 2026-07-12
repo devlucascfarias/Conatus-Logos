@@ -59,3 +59,55 @@ def test_agent_loop_denies_shell_by_default_confirmation_policy():
         assert error_codes.UNSAFE_COMMAND in result.trajectory.raw_text
     finally:
         sandbox.cleanup()
+
+
+# --- D-shell-crossplatform-hardening: interpretadores nativos liberados, mas endurecidos ---
+
+
+def test_hardened_denylist_blocks_powershell_remove_item():
+    """Com powershell na allowlist (Fase H), a proteção contra deleção destrutiva passa a ser
+    a denylist reforçada — `Remove-Item` (e seu efeito equivalente ao `rm`) nunca deve passar."""
+    policy = SandboxPolicy.load().with_confirmation_mode("auto_approve_safe")
+    allowed, reason = policy.is_command_allowed(
+        "powershell", ("-NoProfile", "-Command", "Remove-Item -Recurse -Force C:\\dados")
+    )
+    assert not allowed
+    assert "denylist" in reason
+
+
+def test_hardened_denylist_blocks_cmd_del_and_format():
+    policy = SandboxPolicy.load().with_confirmation_mode("auto_approve_safe")
+    for cmd_args in (("/c", "del", "/q", "arquivo.txt"), ("/c", "format", "C:")):
+        allowed, reason = policy.is_command_allowed("cmd", cmd_args)
+        assert not allowed, f"deveria bloquear cmd {cmd_args}"
+
+
+def test_hardened_blocks_encoded_command_bypass_on_interpreters():
+    """Bypass real: um comando codificado em base64 driblaria a denylist substring (os verbos
+    não aparecem em texto claro). A checagem por interpretador deve barrar a flag inteira."""
+    policy = SandboxPolicy.load().with_confirmation_mode("auto_approve_safe")
+    # -encodedcommand/-enc são pegos já pela denylist (camada anterior); -e cai só na checagem
+    # por interpretador — os dois caminhos bloqueiam, defesa em profundidade.
+    for flag in ("-EncodedCommand", "-enc", "-e"):
+        allowed, reason = policy.is_command_allowed("powershell", (flag, "ZwBjAGkA"))
+        assert not allowed, f"deveria bloquear bypass via {flag}"
+        assert ("codificado" in reason) or ("denylist" in reason)
+
+    # Um interpretador com a flag de bypass isolada (sem verbo destrutivo em claro) é barrado
+    # ESPECIFICAMENTE pela checagem por interpretador, não pela denylist.
+    allowed, reason = policy.is_command_allowed("pwsh", ("-e", " QQBiAEMA"))
+    assert not allowed and "codificado" in reason
+
+
+def test_hardened_allows_real_read_only_native_commands():
+    """O ponto da Fase H: comandos NATIVOS de inspeção (não destrutivos) devem PASSAR pela
+    política — tanto PowerShell quanto cmd quanto bash — pra o modelo poder usá-los de verdade."""
+    policy = SandboxPolicy.load().with_confirmation_mode("auto_approve_safe")
+    for binary, args in (
+        ("powershell", ("-NoProfile", "-Command", "Get-ChildItem -Name")),
+        ("cmd", ("/c", "dir", "/b")),
+        ("bash", ("-c", "grep foo a.txt | wc -l")),
+        ("findstr", ("/s", "TODO", "*.py")),
+    ):
+        allowed, reason = policy.is_command_allowed(binary, args)
+        assert allowed, f"comando de inspeção nativo deveria passar: {binary} {args} — {reason}"

@@ -16,39 +16,150 @@ filesystem:
 
 shell:
   # Allowlist de binários (seção 7.5) — comando fora daqui nunca executa (UNSAFE_COMMAND).
+  # D-shell-crossplatform-hardening (docs/PLAN.md): a Fase H exige que o modelo saiba usar o
+  # CLI NATIVO do SO do usuário (PowerShell/cmd no Windows, bash/coreutils no Linux/Mac). Rodar
+  # comandos nativos de verdade exige liberar os interpretadores (powershell/cmd/bash) e mais
+  # coreutils. Isso ENFRAQUECE a garantia original da allowlist ("só um punhado de binários
+  # nomeados seguros roda"): com um interpretador liberado, o que protege é a denylist
+  # reforçada abaixo + `shell_interpreters`/checagem de bypass no código + o workspace efêmero +
+  # rede desligada. Escolha explícita do usuário ("híbrido endurecido"), documentada e não
+  # silenciosa — a denylist substring NÃO é um sandbox formal, é defesa-em-profundidade.
   allowlist_binaries:
+    # toolchain de dev (fase 1 original)
     - python
     - python3
     - pip
     - go
     - pytest
+    - ruff
+    - gofmt
+    - git
+    # coreutils POSIX (Linux/Mac; no host Windows vêm do Git Bash e rodam de verdade)
     - ls
     - cat
     - grep
-    - git
-    - ruff
-    - gofmt
+    - find
+    - wc
+    - sed
+    - awk
+    - head
+    - tail
+    - sort
+    - uniq
+    - diff
+    - tr
+    - cut
+    - tee
+    - echo
+    - pwd
+    - basename
+    - dirname
+    # binários nomeados nativos do Windows (somente leitura/inspeção)
+    - findstr
+    - where
+    # interpretadores (necessários pra comandos embutidos do shell e pipelines reais) —
+    # ver `shell_interpreters` e a checagem de bypass por comando codificado no código
+    - powershell
+    - pwsh
+    - cmd
+    - bash
+    - sh
+  # Interpretadores de shell — recebem escrutínio extra em src/security/policy.py (bloqueio de
+  # bypass por comando codificado em base64, ex.: `powershell -EncodedCommand <b64>`, que
+  # driblaria a denylist substring por não conter os verbos em texto claro).
+  shell_interpreters:
+    - powershell
+    - pwsh
+    - cmd
+    - bash
+    - sh
   # Subcomandos permitidos quando o binário é "git" (somente leitura).
   git_allowed_subcommands:
     - status
     - diff
     - log
-  # Padrões sempre bloqueados, mesmo que o binário base esteja na allowlist.
+  # Padrões sempre bloqueados, mesmo que o binário base esteja na allowlist. Casados por
+  # substring contra `binary + args` em minúsculas (nunca uma string de shell executada —
+  # ver D-shell-v2). Cobrem os verbos destrutivos/de rede/de execução dos três shells.
   denylist_patterns:
+    # --- POSIX / Unix (bash/sh/coreutils) ---
     - "rm -rf"
     - "rm -r -f"
+    - "rm -fr"
+    - "rm -r "
+    - "rm -f "
     - "sudo"
     - "curl"
     - "wget"
     - "dd "
     - "mkfs"
+    - "fdisk"
+    - "shred "
     - "shutdown"
     - "reboot"
     - "chmod 777"
+    - "chmod -r"
+    - "chown "
+    - "kill -9"
+    - "pkill"
+    - "killall"
+    - ":(){"
     - ">/dev"
+    - "> /dev"
+    - "> /etc"
+    - ">/etc"
+    - "tee /etc"
+    # --- git destrutivo/remoto ---
     - "git push"
     - "git reset --hard"
     - "git clean"
+    # --- PowerShell ---
+    - "remove-item"
+    - "remove-itemproperty"
+    - "clear-content"
+    - "set-content"
+    - "add-content"
+    - "out-file"
+    - "invoke-expression"
+    - "iex "
+    - "invoke-webrequest"
+    - "iwr "
+    - "invoke-restmethod"
+    - "irm "
+    - "start-process"
+    - "set-executionpolicy"
+    - "downloadstring"
+    - "downloadfile"
+    - "net.webclient"
+    - "stop-process"
+    - "stop-computer"
+    - "restart-computer"
+    - "new-service"
+    - "set-service"
+    - "-encodedcommand"
+    - "-enc "
+    # --- cmd.exe ---
+    - "del /"
+    - "erase "
+    - "rd /s"
+    - "rmdir /s"
+    - "format "
+    - "diskpart"
+    - "reg delete"
+    - "reg add"
+    - "reg import"
+    - "net user"
+    - "net localgroup"
+    - "sc delete"
+    - "sc config"
+    - "takeown"
+    - "icacls "
+    - "cipher /w"
+    - "bcdedit"
+    - "vssadmin"
+    - "wmic "
+    - "schtasks "
+    - "attrib "
 
 network:
   shell_network_enabled: false
