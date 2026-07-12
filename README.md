@@ -44,6 +44,21 @@ O backend `go` do checker (`src/checker/backends/go_backend.py`) precisa do bin�
 `MISSING_DEPENDENCY` de forma estruturada (não uma exceção). O mesmo vale para o backend `html`
 (`src/checker/backends/frontend_backend.py`) sem o Chromium do Playwright instalado.
 
+O backend `javascript`/`typescript` (`src/checker/backends/node_backend.py`, D-checker-node-backend)
+precisa de `node`/`npm` no `PATH` **e** de `node_modules` instalado no projeto-template em
+`checker_templates/react_three_fiber/` (React + TypeScript + Vite + React Three Fiber + drei) —
+sem isso, as chamadas retornam `MISSING_DEPENDENCY` estruturado, os testes correspondentes são
+pulados:
+
+```bash
+cd checker_templates/react_three_fiber
+npm install    # uma vez só — node_modules não é versionado (ver .gitignore)
+```
+
+A operação `run` builda com `vite build` de verdade e renderiza o resultado num Chromium headless
+real (servido por HTTP local, não `file://` — scripts `type="module"` são bloqueados por CORS ao
+carregar via `file://`), capturando erros de console genuínos, WebGL incluso.
+
 ## Rodar os testes
 
 ```bash

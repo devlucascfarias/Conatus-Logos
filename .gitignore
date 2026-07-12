@@ -31,3 +31,8 @@ Thumbs.db
 
 # Estado interno do harness do Claude Code, não faz parte do projeto
 .claude/
+
+# Projeto-template do checker Node/React/R3F (D-checker-node-backend) — package.json/lockfile
+# são versionados, node_modules/dist não (instalação local via 'npm install', ver README.md)
+checker_templates/*/node_modules/
+checker_templates/*/dist/

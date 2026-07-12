@@ -52,11 +52,14 @@ TASK_TYPES = frozenset(
 
 # MVP = Python + Go (D4). "html" entrou depois (D-checker-html-backend, ver docs/PLAN.md) — tem
 # backend de checker real registrado (src/checker/backends/frontend_backend.py), não é mais uma
-# linguagem "de schema só", mesmo sem exemplos de HTML no dataset atual. Outras linguagens do
-# enum do checker (seção 4.1) continuam sem backend, não devem CLAIMAR suporte real do checker
-# no dataset — continua valendo, ver `LANGUAGE_METADATA_VALUES` abaixo pra por que isso não é a
-# mesma coisa que "quais valores metadata.language pode ter".
-MVP_LANGUAGES = frozenset({"python", "go", "html"})
+# linguagem "de schema só", mesmo sem exemplos de HTML no dataset atual. "javascript"/"typescript"
+# entraram depois (D-checker-node-backend) — backend real via projeto-template Node/React/Vite/
+# React Three Fiber (src/checker/backends/node_backend.py), operação `run` builda com Vite de
+# verdade e renderiza num Chromium headless (WebGL incluso). Outras linguagens do enum do checker
+# (seção 4.1) continuam sem backend, não devem CLAIMAR suporte real do checker no dataset —
+# continua valendo, ver `LANGUAGE_METADATA_VALUES` abaixo pra por que isso não é a mesma coisa
+# que "quais valores metadata.language pode ter".
+MVP_LANGUAGES = frozenset({"python", "go", "html", "javascript", "typescript"})
 
 # D-language-metadata-widen (achado real, docs/PLAN.md): `metadata.language` só é consumido por
 # `stats_report` (`src/dataset/pipeline.py`, bucket `by_language`, puro relatório) — NUNCA decide
