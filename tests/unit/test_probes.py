@@ -6,9 +6,12 @@ import pytest
 from src.evaluation import categories
 from src.evaluation.probes import (
     probe_checker_rejection_recovery,
+    probe_cross_language,
     probe_direct_vs_tool_choice,
     probe_fabricated_tool_result_attempt,
+    probe_frontend_checker_language_choice,
     probe_loop_termination,
+    probe_multi_file_edit,
     probe_paraphrase_generalization,
 )
 from src.harness import PRAXIS_SYSTEM_PROMPT
@@ -162,6 +165,152 @@ def test_probe_paraphrase_fails_when_forced_by_max_steps(sandbox, registry):
     runner = ScriptedModelRunner(calls)
     result = probe_paraphrase_generalization.run(
         runner, registry, sandbox, "crie hello.py", expected_file="hello.py"
+    )
+    assert result.category == categories.FAIL
+
+
+# --- probe_cross_language (D-eval-fase-g-probes) ----------------------------------------
+
+
+def test_probe_cross_language_passes_when_two_languages_touched_and_final_checker_ok(sandbox, registry):
+    runner = ScriptedModelRunner(
+        [
+            '<tool_call name="write_file">{"path": "report.py", "content": '
+            '"import json\\nwith open(\\"report.json\\", \\"w\\") as f:\\n    '
+            'json.dump({\\"value\\": 42}, f)\\n"}</tool_call>',
+            '<tool_call name="shell">{"binary": "python", "args": ["report.py"]}</tool_call>',
+            '<tool_call name="checker">{"language": "node", "operation": "run", "files": '
+            '[{"path": "read.mjs", "content": "import { readFileSync } from \\"node:fs\\";\\n'
+            'const d = JSON.parse(readFileSync(new URL(\\"./report.json\\", import.meta.url), '
+            '\\"utf-8\\"));\\nconsole.log(d.value);\\n"}, '
+            '{"path": "report.json", "content": "{\\"value\\": 42}"}], '
+            '"entrypoint": "read.mjs"}</tool_call>',
+            "<final>ok</final>",
+        ]
+    )
+    result = probe_cross_language.run(runner, registry, sandbox, "gere em python e leia em node")
+    assert result.category == categories.REPAIR_PASS
+
+
+def test_probe_cross_language_fails_when_only_one_language_touched(sandbox, registry):
+    runner = ScriptedModelRunner(
+        [
+            '<tool_call name="checker">{"language": "python", "operation": "syntax_check", '
+            '"files": [{"path": "a.py", "content": "print(1)\\n"}]}</tool_call>',
+            "<final>ok</final>",
+        ]
+    )
+    result = probe_cross_language.run(runner, registry, sandbox, "só python")
+    assert result.category == categories.FAIL
+    assert "2 linguagens" in result.detail
+
+
+def test_probe_cross_language_fails_when_final_checker_errors(sandbox, registry):
+    runner = ScriptedModelRunner(
+        [
+            '<tool_call name="shell">{"binary": "python", "args": ["-c", "print(1)"]}</tool_call>',
+            '<tool_call name="checker">{"language": "node", "operation": "run", "files": '
+            '[{"path": "bad.mjs", "content": "throw new Error(\\"boom\\");\\n"}], '
+            '"entrypoint": "bad.mjs"}</tool_call>',
+            "<final>ok</final>",
+        ]
+    )
+    result = probe_cross_language.run(runner, registry, sandbox, "cross language que falha")
+    assert result.category == categories.FAIL
+
+
+# --- probe_multi_file_edit (D-eval-fase-g-probes) -----------------------------------------
+
+
+def test_probe_multi_file_edit_passes_when_two_files_and_final_checker_ok(sandbox, registry):
+    runner = ScriptedModelRunner(
+        [
+            '<tool_call name="write_file">{"path": "calc.py", "content": '
+            '"def absolute(n):\\n    return n if n >= 0 else -n\\n"}</tool_call>',
+            '<tool_call name="write_file">{"path": "test_calc.py", "content": '
+            '"from calc import absolute\\n\\ndef test_absolute():\\n    '
+            'assert absolute(-5) == 5\\n"}</tool_call>',
+            '<tool_call name="checker">{"language": "python", "operation": "compile_and_test", '
+            '"files": [{"path": "calc.py", "content": "def absolute(n):\\n    '
+            'return n if n >= 0 else -n\\n"}, {"path": "test_calc.py", "content": '
+            '"from calc import absolute\\n\\ndef test_absolute():\\n    '
+            'assert absolute(-5) == 5\\n"}]}</tool_call>',
+            "<final>ok</final>",
+        ]
+    )
+    result = probe_multi_file_edit.run(runner, registry, sandbox, "crie a função e o teste")
+    assert result.category == categories.TOOL_PASS
+
+
+def test_probe_multi_file_edit_fails_when_only_one_file_touched(sandbox, registry):
+    runner = ScriptedModelRunner(
+        [
+            '<tool_call name="write_file">{"path": "calc.py", "content": "def f():\\n    pass\\n"}</tool_call>',
+            "<final>ok</final>",
+        ]
+    )
+    result = probe_multi_file_edit.run(runner, registry, sandbox, "só um arquivo")
+    assert result.category == categories.FAIL
+    assert "2 arquivos" in result.detail
+
+
+def test_probe_multi_file_edit_fails_when_final_checker_never_passes(sandbox, registry):
+    runner = ScriptedModelRunner(
+        [
+            '<tool_call name="write_file">{"path": "a.py", "content": "x = 1\\n"}</tool_call>',
+            '<tool_call name="write_file">{"path": "b.py", "content": "y = 2\\n"}</tool_call>',
+            '<tool_call name="checker">{"language": "python", "operation": "syntax_check", '
+            '"files": [{"path": "a.py", "content": "def f(:\\n"}]}</tool_call>',
+            "<final>ok</final>",
+        ]
+    )
+    result = probe_multi_file_edit.run(runner, registry, sandbox, "dois arquivos mas checker falha")
+    assert result.category == categories.FAIL
+
+
+# --- probe_frontend_checker_language_choice (D-eval-fase-g-probes) ------------------------
+
+
+def test_probe_frontend_language_choice_passes_when_correct_language_and_checker_ok(sandbox, registry):
+    import json
+
+    scss = "$primary: #3498db;\n\n.card {\n  color: $primary;\n}\n"
+    write_args = json.dumps({"path": "theme.scss", "content": scss})
+    checker_args = json.dumps(
+        {"language": "scss", "operation": "compile", "files": [{"path": "theme.scss", "content": scss}]}
+    )
+    runner = ScriptedModelRunner(
+        [
+            f'<tool_call name="write_file">{write_args}</tool_call>',
+            f'<tool_call name="checker">{checker_args}</tool_call>',
+            "<final>ok</final>",
+        ]
+    )
+    result = probe_frontend_checker_language_choice.run(
+        runner, registry, sandbox, "crie um tema scss", expected_language="scss"
+    )
+    assert result.category == categories.TOOL_PASS
+
+
+def test_probe_frontend_language_choice_fails_when_wrong_language_used(sandbox, registry):
+    runner = ScriptedModelRunner(
+        [
+            '<tool_call name="checker">{"language": "html", "operation": "run", '
+            '"files": [{"path": "a.html", "content": "<html></html>"}], "entrypoint": "a.html"}</tool_call>',
+            "<final>ok</final>",
+        ]
+    )
+    result = probe_frontend_checker_language_choice.run(
+        runner, registry, sandbox, "crie um tema scss", expected_language="scss"
+    )
+    assert result.category == categories.FAIL
+    assert "scss" in result.detail
+
+
+def test_probe_frontend_language_choice_fails_when_no_checker_called(sandbox, registry):
+    runner = ScriptedModelRunner(["<final>pronto, sem validar nada</final>"])
+    result = probe_frontend_checker_language_choice.run(
+        runner, registry, sandbox, "crie um tema scss", expected_language="scss"
     )
     assert result.category == categories.FAIL
 
