@@ -1,0 +1,28 @@
+{
+  "metadata": {
+    "id": "gen-cli-win-find-ext-0",
+    "domain": "cli_shell",
+    "language": "shell",
+    "difficulty": "medium",
+    "tools_used": [
+      "shell"
+    ],
+    "num_steps": 1,
+    "task_type": "shell_command",
+    "source": "curated_manual_real_execution",
+    "license": "synthetic-no-license-needed",
+    "validation_status": "validated",
+    "execution_performed": true,
+    "split": "train",
+    "expected_result": {
+      "passed": true
+    },
+    "execution_classification": "tested",
+    "os_family": "windows"
+  },
+  "trajectory": {
+    "system_prompt": "Você é Logos-3, um agente de engenharia de software da família de modelos Conatus. Raciocine em <think>, use <tool_call name=\"...\"> quando precisar de uma ferramenta, e responda ao usuário só dentro de <final>.",
+    "user_request": "No Windows, lista todos os arquivos .py (incluindo subpastas).",
+    "raw_text": "<think>No Windows: `Get-ChildItem -Recurse -Filter *.py` é o equivalente ao `find`. Atenção: `find` no Windows existe, mas é o find.exe de BUSCAR TEXTO, nada a ver com o `find` do Unix.</think><tool_call name=\"shell\">{\"binary\": \"powershell\", \"args\": [\"-NoProfile\", \"-Command\", \"Get-ChildItem -Recurse -File -Filter *.py | Select-Object -ExpandProperty Name\"]}</tool_call><tool_result name=\"shell\" status=\"ok\">{\"stdout\": \"app.py\\nutils.py\\n\", \"stderr\": \"\", \"returncode\": 0}</tool_result><final>Arquivos .py:\n\napp.py\nutils.py</final>"
+  }
+}

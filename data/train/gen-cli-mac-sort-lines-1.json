@@ -1,0 +1,28 @@
+{
+  "metadata": {
+    "id": "gen-cli-mac-sort-lines-1",
+    "domain": "cli_shell",
+    "language": "shell",
+    "difficulty": "medium",
+    "tools_used": [
+      "shell"
+    ],
+    "num_steps": 1,
+    "task_type": "shell_command",
+    "source": "curated_manual_real_execution",
+    "license": "synthetic-no-license-needed",
+    "validation_status": "validated",
+    "execution_performed": true,
+    "split": "train",
+    "expected_result": {
+      "passed": true
+    },
+    "execution_classification": "tested",
+    "os_family": "mac"
+  },
+  "trajectory": {
+    "system_prompt": "Você é Logos-3, um agente de engenharia de software da família de modelos Conatus. Raciocine em <think>, use <tool_call name=\"...\"> quando precisar de uma ferramenta, e responda ao usuário só dentro de <final>.",
+    "user_request": "No macOS, ordena as linhas de nomes.txt em ordem alfabética.",
+    "raw_text": "<think>No macOS: `sort nomes.txt` ordena alfabeticamente. Idêntico Linux/macOS.</think><tool_call name=\"shell\">{\"binary\": \"bash\", \"args\": [\"-c\", \"sort nomes.txt\"]}</tool_call><tool_result name=\"shell\" status=\"ok\">{\"stdout\": \"ana\\nana\\nbeatriz\\ncarlos\\ncarlos\\ncarlos\\n\", \"stderr\": \"\", \"returncode\": 0}</tool_result><final>nomes.txt ordenado:\n\nana\nana\nbeatriz\ncarlos\ncarlos\ncarlos</final>"
+  }
+}

@@ -1,0 +1,28 @@
+{
+  "metadata": {
+    "id": "gen-cli-linux-preview-replace-1",
+    "domain": "cli_shell",
+    "language": "shell",
+    "difficulty": "medium",
+    "tools_used": [
+      "shell"
+    ],
+    "num_steps": 1,
+    "task_type": "shell_command",
+    "source": "curated_manual_real_execution",
+    "license": "synthetic-no-license-needed",
+    "validation_status": "validated",
+    "execution_performed": true,
+    "split": "train",
+    "expected_result": {
+      "passed": true
+    },
+    "execution_classification": "tested",
+    "os_family": "linux"
+  },
+  "trajectory": {
+    "system_prompt": "Você é Logos-3, um agente de engenharia de software da família de modelos Conatus. Raciocine em <think>, use <tool_call name=\"...\"> quando precisar de uma ferramenta, e responda ao usuário só dentro de <final>.",
+    "user_request": "No Linux (Ubuntu), me mostra como settings.conf ficaria trocando 'cache=off' por 'cache=on' — sem alterar o arquivo.",
+    "raw_text": "<think>No Linux (Ubuntu): `sed 's/cache=off/cache=on/' settings.conf` imprime o resultado SEM alterar o arquivo (não usei `-i`, que edita in-place — e cuja sintaxe aliás DIFERE entre GNU/Linux e BSD/macOS: no macOS `-i` exige um argumento de sufixo). Como é só prévia, fica portátil.</think><tool_call name=\"shell\">{\"binary\": \"bash\", \"args\": [\"-c\", \"sed 's/cache=off/cache=on/' settings.conf\"]}</tool_call><tool_result name=\"shell\" status=\"ok\">{\"stdout\": \"cache=on\\nworkers=4\\ncache=on\\nverbose=true\\n\", \"stderr\": \"\", \"returncode\": 0}</tool_result><final>Prévia (arquivo original intacto):\n\ncache=on\nworkers=4\ncache=on\nverbose=true</final>"
+  }
+}

@@ -1,0 +1,28 @@
+{
+  "metadata": {
+    "id": "gen-cli-win-search-3",
+    "domain": "cli_shell",
+    "language": "shell",
+    "difficulty": "medium",
+    "tools_used": [
+      "shell"
+    ],
+    "num_steps": 1,
+    "task_type": "shell_command",
+    "source": "curated_manual_real_execution",
+    "license": "synthetic-no-license-needed",
+    "validation_status": "validated",
+    "execution_performed": true,
+    "split": "train",
+    "expected_result": {
+      "passed": true
+    },
+    "execution_classification": "tested",
+    "os_family": "windows"
+  },
+  "trajectory": {
+    "system_prompt": "Você é Logos-3, um agente de engenharia de software da família de modelos Conatus. Raciocine em <think>, use <tool_call name=\"...\"> quando precisar de uma ferramenta, e responda ao usuário só dentro de <final>.",
+    "user_request": "Estou no Windows. Onde aparece 'ERRO' em build.log?",
+    "raw_text": "<think>No Windows, o equivalente ao `grep` é `Select-String`. `Select-String -Path build.log -Pattern 'ERRO'` já dá arquivo:linha:conteúdo.</think><tool_call name=\"shell\">{\"binary\": \"powershell\", \"args\": [\"-NoProfile\", \"-Command\", \"Select-String -Path build.log -Pattern 'ERRO'\"]}</tool_call><tool_result name=\"shell\" status=\"ok\">{\"stdout\": \"\\nbuild.log:2:ERRO import ciclico\\nbuild.log:4:ERRO simbolo indefinido\\nbuild.log:6:ERRO permissao negada\\n\\n\\n\", \"stderr\": \"\", \"returncode\": 0}</tool_result><final>Ocorrências de 'ERRO':\n\n\nbuild.log:2:ERRO import ciclico\nbuild.log:4:ERRO simbolo indefinido\nbuild.log:6:ERRO permissao negada</final>"
+  }
+}

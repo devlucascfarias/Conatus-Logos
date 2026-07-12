@@ -1,0 +1,28 @@
+{
+  "metadata": {
+    "id": "gen-cli-linux-find-ext-3",
+    "domain": "cli_shell",
+    "language": "shell",
+    "difficulty": "medium",
+    "tools_used": [
+      "shell"
+    ],
+    "num_steps": 1,
+    "task_type": "shell_command",
+    "source": "curated_manual_real_execution",
+    "license": "synthetic-no-license-needed",
+    "validation_status": "validated",
+    "execution_performed": true,
+    "split": "train",
+    "expected_result": {
+      "passed": true
+    },
+    "execution_classification": "tested",
+    "os_family": "linux"
+  },
+  "trajectory": {
+    "system_prompt": "Você é Logos-3, um agente de engenharia de software da família de modelos Conatus. Raciocine em <think>, use <tool_call name=\"...\"> quando precisar de uma ferramenta, e responda ao usuário só dentro de <final>.",
+    "user_request": "No Linux (Ubuntu), lista todos os arquivos .go (incluindo subpastas).",
+    "raw_text": "<think>No Linux (Ubuntu): `find . -type f -name '*.go'` — busca recursiva, só arquivos. Idêntico Linux/macOS.</think><tool_call name=\"shell\">{\"binary\": \"bash\", \"args\": [\"-c\", \"find . -type f -name '*.go'\"]}</tool_call><tool_result name=\"shell\" status=\"ok\">{\"stdout\": \"./handler.go\\n./main.go\\n\", \"stderr\": \"\", \"returncode\": 0}</tool_result><final>Arquivos .go:\n\n./handler.go\n./main.go</final>"
+  }
+}

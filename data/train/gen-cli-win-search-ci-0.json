@@ -1,0 +1,28 @@
+{
+  "metadata": {
+    "id": "gen-cli-win-search-ci-0",
+    "domain": "cli_shell",
+    "language": "shell",
+    "difficulty": "medium",
+    "tools_used": [
+      "shell"
+    ],
+    "num_steps": 1,
+    "task_type": "shell_command",
+    "source": "curated_manual_real_execution",
+    "license": "synthetic-no-license-needed",
+    "validation_status": "validated",
+    "execution_performed": true,
+    "split": "train",
+    "expected_result": {
+      "passed": true
+    },
+    "execution_classification": "tested",
+    "os_family": "windows"
+  },
+  "trajectory": {
+    "system_prompt": "Você é Logos-3, um agente de engenharia de software da família de modelos Conatus. Raciocine em <think>, use <tool_call name=\"...\"> quando precisar de uma ferramenta, e responda ao usuário só dentro de <final>.",
+    "user_request": "No Windows, procura 'error' em app.log ignorando maiúsculas/minúsculas.",
+    "raw_text": "<think>No Windows: `Select-String` já é case-INSENSITIVE por padrão, então `-Pattern 'error'` casa 'error', 'ERROR', etc. sem flag extra (pra diferenciar maiúsculas seria `-CaseSensitive`).</think><tool_call name=\"shell\">{\"binary\": \"powershell\", \"args\": [\"-NoProfile\", \"-Command\", \"Select-String -Path app.log -Pattern 'error'\"]}</tool_call><tool_result name=\"shell\" status=\"ok\">{\"stdout\": \"\\napp.log:2:ERROR falha ao conectar\\napp.log:4:ERROR timeout\\napp.log:7:ERROR conexao recusada\\n\\n\\n\", \"stderr\": \"\", \"returncode\": 0}</tool_result><final>Ocorrências (case-insensitive) de 'error':\n\n\napp.log:2:ERROR falha ao conectar\napp.log:4:ERROR timeout\napp.log:7:ERROR conexao recusada</final>"
+  }
+}

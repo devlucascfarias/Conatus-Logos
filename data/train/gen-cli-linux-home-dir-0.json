@@ -1,0 +1,28 @@
+{
+  "metadata": {
+    "id": "gen-cli-linux-home-dir-0",
+    "domain": "cli_shell",
+    "language": "shell",
+    "difficulty": "medium",
+    "tools_used": [
+      "shell"
+    ],
+    "num_steps": 1,
+    "task_type": "shell_command",
+    "source": "curated_manual_real_execution",
+    "license": "synthetic-no-license-needed",
+    "validation_status": "validated",
+    "execution_performed": true,
+    "split": "train",
+    "expected_result": {
+      "passed": true
+    },
+    "execution_classification": "tested",
+    "os_family": "linux"
+  },
+  "trajectory": {
+    "system_prompt": "Você é Logos-3, um agente de engenharia de software da família de modelos Conatus. Raciocine em <think>, use <tool_call name=\"...\"> quando precisar de uma ferramenta, e responda ao usuário só dentro de <final>.",
+    "user_request": "No Linux (Ubuntu), qual é o caminho da minha pasta de usuário (home)?",
+    "raw_text": "<think>No Linux (Ubuntu): o diretório do usuário é `$HOME` (ex.: /home/nome no Linux, /Users/nome no macOS). No Windows a variável equivalente teria outro nome (USERPROFILE) — divergência real.</think><tool_call name=\"shell\">{\"binary\": \"bash\", \"args\": [\"-c\", \"echo \\\"$HOME\\\"\"]}</tool_call><tool_result name=\"shell\" status=\"ok\">{\"stdout\": \"/home/lucas\\n\", \"stderr\": \"\", \"returncode\": 0}</tool_result><final>Sua pasta de usuário é:\n\n/home/lucas</final>"
+  }
+}

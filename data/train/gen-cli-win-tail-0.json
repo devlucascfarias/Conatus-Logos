@@ -1,0 +1,28 @@
+{
+  "metadata": {
+    "id": "gen-cli-win-tail-0",
+    "domain": "cli_shell",
+    "language": "shell",
+    "difficulty": "medium",
+    "tools_used": [
+      "shell"
+    ],
+    "num_steps": 1,
+    "task_type": "shell_command",
+    "source": "curated_manual_real_execution",
+    "license": "synthetic-no-license-needed",
+    "validation_status": "validated",
+    "execution_performed": true,
+    "split": "train",
+    "expected_result": {
+      "passed": true
+    },
+    "execution_classification": "tested",
+    "os_family": "windows"
+  },
+  "trajectory": {
+    "system_prompt": "Você é Logos-3, um agente de engenharia de software da família de modelos Conatus. Raciocine em <think>, use <tool_call name=\"...\"> quando precisar de uma ferramenta, e responda ao usuário só dentro de <final>.",
+    "user_request": "No Windows, mostra as últimas 3 linhas de app.log.",
+    "raw_text": "<think>No Windows: `Get-Content app.log -Tail 3` — o `-Tail` é o equivalente direto ao `tail -n`.</think><tool_call name=\"shell\">{\"binary\": \"powershell\", \"args\": [\"-NoProfile\", \"-Command\", \"Get-Content app.log -Tail 3\"]}</tool_call><tool_result name=\"shell\" status=\"ok\">{\"stdout\": \"WARN memoria\\nINFO ok\\nERROR conexao recusada\\n\", \"stderr\": \"\", \"returncode\": 0}</tool_result><final>Últimas 3 linhas de app.log:\n\nWARN memoria\nINFO ok\nERROR conexao recusada</final>"
+  }
+}

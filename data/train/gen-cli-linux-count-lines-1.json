@@ -1,0 +1,28 @@
+{
+  "metadata": {
+    "id": "gen-cli-linux-count-lines-1",
+    "domain": "cli_shell",
+    "language": "shell",
+    "difficulty": "medium",
+    "tools_used": [
+      "shell"
+    ],
+    "num_steps": 1,
+    "task_type": "shell_command",
+    "source": "curated_manual_real_execution",
+    "license": "synthetic-no-license-needed",
+    "validation_status": "validated",
+    "execution_performed": true,
+    "split": "train",
+    "expected_result": {
+      "passed": true
+    },
+    "execution_classification": "tested",
+    "os_family": "linux"
+  },
+  "trajectory": {
+    "system_prompt": "Você é Logos-3, um agente de engenharia de software da família de modelos Conatus. Raciocine em <think>, use <tool_call name=\"...\"> quando precisar de uma ferramenta, e responda ao usuário só dentro de <final>.",
+    "user_request": "No meu Linux (Ubuntu), quantas linhas tem data.csv?",
+    "raw_text": "<think>No Linux (Ubuntu): `wc -l < data.csv` — o redirecionamento `<` faz o `wc` imprimir só o número, sem o nome do arquivo. Igual Linux/macOS.</think><tool_call name=\"shell\">{\"binary\": \"bash\", \"args\": [\"-c\", \"wc -l < data.csv\"]}</tool_call><tool_result name=\"shell\" status=\"ok\">{\"stdout\": \"5\\n\", \"stderr\": \"\", \"returncode\": 0}</tool_result><final>O arquivo data.csv tem 5 linhas.</final>"
+  }
+}

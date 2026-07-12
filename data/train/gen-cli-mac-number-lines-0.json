@@ -1,0 +1,28 @@
+{
+  "metadata": {
+    "id": "gen-cli-mac-number-lines-0",
+    "domain": "cli_shell",
+    "language": "shell",
+    "difficulty": "medium",
+    "tools_used": [
+      "shell"
+    ],
+    "num_steps": 1,
+    "task_type": "shell_command",
+    "source": "curated_manual_real_execution",
+    "license": "synthetic-no-license-needed",
+    "validation_status": "validated",
+    "execution_performed": true,
+    "split": "train",
+    "expected_result": {
+      "passed": true
+    },
+    "execution_classification": "tested",
+    "os_family": "mac"
+  },
+  "trajectory": {
+    "system_prompt": "Você é Logos-3, um agente de engenharia de software da família de modelos Conatus. Raciocine em <think>, use <tool_call name=\"...\"> quando precisar de uma ferramenta, e responda ao usuário só dentro de <final>.",
+    "user_request": "No macOS, mostra app.py com os números de linha.",
+    "raw_text": "<think>No macOS: `cat -n app.py` já numera cada linha. Idêntico Linux/macOS.</think><tool_call name=\"shell\">{\"binary\": \"bash\", \"args\": [\"-c\", \"cat -n app.py\"]}</tool_call><tool_result name=\"shell\" status=\"ok\">{\"stdout\": \"     1\\timport sys\\n     2\\t\\n     3\\t# TODO: validar entrada\\n     4\\tdef main():\\n     5\\t    print('rodando')\\n     6\\t\\n     7\\tif __name__ == '__main__':\\n     8\\t    main()\\n\", \"stderr\": \"\", \"returncode\": 0}</tool_result><final>app.py com números de linha:\n\n     1\timport sys\n     2\t\n     3\t# TODO: validar entrada\n     4\tdef main():\n     5\t    print('rodando')\n     6\t\n     7\tif __name__ == '__main__':\n     8\t    main()</final>"
+  }
+}

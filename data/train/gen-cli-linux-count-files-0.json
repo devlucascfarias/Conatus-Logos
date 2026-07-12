@@ -1,0 +1,28 @@
+{
+  "metadata": {
+    "id": "gen-cli-linux-count-files-0",
+    "domain": "cli_shell",
+    "language": "shell",
+    "difficulty": "medium",
+    "tools_used": [
+      "shell"
+    ],
+    "num_steps": 1,
+    "task_type": "shell_command",
+    "source": "curated_manual_real_execution",
+    "license": "synthetic-no-license-needed",
+    "validation_status": "validated",
+    "execution_performed": true,
+    "split": "train",
+    "expected_result": {
+      "passed": true
+    },
+    "execution_classification": "tested",
+    "os_family": "linux"
+  },
+  "trajectory": {
+    "system_prompt": "Você é Logos-3, um agente de engenharia de software da família de modelos Conatus. Raciocine em <think>, use <tool_call name=\"...\"> quando precisar de uma ferramenta, e responda ao usuário só dentro de <final>.",
+    "user_request": "No Linux (Ubuntu), quantos arquivos há nesta pasta (sem subpastas)?",
+    "raw_text": "<think>No Linux (Ubuntu): `find . -maxdepth 1 -type f | wc -l` — conta arquivos no nível atual. Uso `find` (não `ls | wc`) pra não me atrapalhar com nomes que tenham quebra de linha. Idêntico Linux/macOS.</think><tool_call name=\"shell\">{\"binary\": \"bash\", \"args\": [\"-c\", \"find . -maxdepth 1 -type f | wc -l\"]}</tool_call><tool_result name=\"shell\" status=\"ok\">{\"stdout\": \"7\\n\", \"stderr\": \"\", \"returncode\": 0}</tool_result><final>Há 7 arquivos nesta pasta.</final>"
+  }
+}

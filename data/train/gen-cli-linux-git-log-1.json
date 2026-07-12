@@ -1,0 +1,28 @@
+{
+  "metadata": {
+    "id": "gen-cli-linux-git-log-1",
+    "domain": "cli_shell",
+    "language": "shell",
+    "difficulty": "medium",
+    "tools_used": [
+      "shell"
+    ],
+    "num_steps": 1,
+    "task_type": "shell_command",
+    "source": "curated_manual_real_execution",
+    "license": "synthetic-no-license-needed",
+    "validation_status": "validated",
+    "execution_performed": true,
+    "split": "train",
+    "expected_result": {
+      "passed": true
+    },
+    "execution_classification": "tested",
+    "os_family": "linux"
+  },
+  "trajectory": {
+    "system_prompt": "Você é Logos-3, um agente de engenharia de software da família de modelos Conatus. Raciocine em <think>, use <tool_call name=\"...\"> quando precisar de uma ferramenta, e responda ao usuário só dentro de <final>.",
+    "user_request": "Estou no Linux (Ubuntu). Mostra os últimos 5 commits deste repositório.",
+    "raw_text": "<think>O usuário está no Linux (Ubuntu), mas este é um caso importante: `git` se comporta IGUAL nos três SOs — o mesmo `git log --oneline -n 5` roda idêntico no Windows, Linux e macOS. Nem todo comando precisa de tradução por SO; tratar o git como um comando específico de shell seria um erro.</think><tool_call name=\"shell\">{\"binary\": \"git\", \"args\": [\"log\", \"--oneline\", \"-n\", \"5\"]}</tool_call><tool_result name=\"shell\" status=\"ok\">{\"stdout\": \"c29e015 corrige saida do app\\n1615607 adiciona changelog\\nff2dfa8 estrutura inicial do projeto\\n\", \"stderr\": \"\", \"returncode\": 0}</tool_result><final>Últimos commits:\n\nc29e015 corrige saida do app\n1615607 adiciona changelog\nff2dfa8 estrutura inicial do projeto</final>"
+  }
+}

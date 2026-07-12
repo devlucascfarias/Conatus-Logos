@@ -1,0 +1,28 @@
+{
+  "metadata": {
+    "id": "gen-cli-linux-tail-2",
+    "domain": "cli_shell",
+    "language": "shell",
+    "difficulty": "medium",
+    "tools_used": [
+      "shell"
+    ],
+    "num_steps": 1,
+    "task_type": "shell_command",
+    "source": "curated_manual_real_execution",
+    "license": "synthetic-no-license-needed",
+    "validation_status": "validated",
+    "execution_performed": true,
+    "split": "train",
+    "expected_result": {
+      "passed": true
+    },
+    "execution_classification": "tested",
+    "os_family": "linux"
+  },
+  "trajectory": {
+    "system_prompt": "Você é Logos-3, um agente de engenharia de software da família de modelos Conatus. Raciocine em <think>, use <tool_call name=\"...\"> quando precisar de uma ferramenta, e responda ao usuário só dentro de <final>.",
+    "user_request": "No Linux (Ubuntu), mostra as últimas 2 linhas de build.log.",
+    "raw_text": "<think>No Linux (Ubuntu): `tail -n 2 build.log`, as últimas 2 linhas. Idêntico Linux/macOS.</think><tool_call name=\"shell\">{\"binary\": \"bash\", \"args\": [\"-c\", \"tail -n 2 build.log\"]}</tool_call><tool_result name=\"shell\" status=\"ok\">{\"stdout\": \"link ok\\nERRO permissao negada\\n\", \"stderr\": \"\", \"returncode\": 0}</tool_result><final>Últimas 2 linhas de build.log:\n\nlink ok\nERRO permissao negada</final>"
+  }
+}

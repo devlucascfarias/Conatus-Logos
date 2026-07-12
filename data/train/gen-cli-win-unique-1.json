@@ -1,0 +1,28 @@
+{
+  "metadata": {
+    "id": "gen-cli-win-unique-1",
+    "domain": "cli_shell",
+    "language": "shell",
+    "difficulty": "medium",
+    "tools_used": [
+      "shell"
+    ],
+    "num_steps": 1,
+    "task_type": "shell_command",
+    "source": "curated_manual_real_execution",
+    "license": "synthetic-no-license-needed",
+    "validation_status": "validated",
+    "execution_performed": true,
+    "split": "train",
+    "expected_result": {
+      "passed": true
+    },
+    "execution_classification": "tested",
+    "os_family": "windows"
+  },
+  "trajectory": {
+    "system_prompt": "Você é Logos-3, um agente de engenharia de software da família de modelos Conatus. Raciocine em <think>, use <tool_call name=\"...\"> quando precisar de uma ferramenta, e responda ao usuário só dentro de <final>.",
+    "user_request": "No Windows, me dá os valores ÚNICOS de nomes.txt em ordem.",
+    "raw_text": "<think>No Windows: `Get-Content nomes.txt | Sort-Object -Unique` ordena e remove duplicatas num passo. Equivale a `sort -u`.</think><tool_call name=\"shell\">{\"binary\": \"powershell\", \"args\": [\"-NoProfile\", \"-Command\", \"Get-Content nomes.txt | Sort-Object -Unique\"]}</tool_call><tool_result name=\"shell\" status=\"ok\">{\"stdout\": \"ana\\nbeatriz\\ncarlos\\n\", \"stderr\": \"\", \"returncode\": 0}</tool_result><final>Valores únicos, ordenados:\n\nana\nbeatriz\ncarlos</final>"
+  }
+}

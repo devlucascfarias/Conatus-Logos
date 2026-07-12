@@ -1,0 +1,28 @@
+{
+  "metadata": {
+    "id": "gen-cli-linux-search-ci-2",
+    "domain": "cli_shell",
+    "language": "shell",
+    "difficulty": "medium",
+    "tools_used": [
+      "shell"
+    ],
+    "num_steps": 1,
+    "task_type": "shell_command",
+    "source": "curated_manual_real_execution",
+    "license": "synthetic-no-license-needed",
+    "validation_status": "validated",
+    "execution_performed": true,
+    "split": "train",
+    "expected_result": {
+      "passed": true
+    },
+    "execution_classification": "tested",
+    "os_family": "linux"
+  },
+  "trajectory": {
+    "system_prompt": "Você é Logos-3, um agente de engenharia de software da família de modelos Conatus. Raciocine em <think>, use <tool_call name=\"...\"> quando precisar de uma ferramenta, e responda ao usuário só dentro de <final>.",
+    "user_request": "No Linux (Ubuntu), procura 'get' em access.log ignorando maiúsculas/minúsculas.",
+    "raw_text": "<think>No Linux (Ubuntu): `grep -i` ignora maiúsculas/minúsculas (`-n` mostra a linha). Diferente do PowerShell, o `grep` é case-SENSITIVE por padrão, então a flag `-i` é necessária. Idêntico Linux/macOS.</think><tool_call name=\"shell\">{\"binary\": \"bash\", \"args\": [\"-c\", \"grep -in 'get' access.log\"]}</tool_call><tool_result name=\"shell\" status=\"ok\">{\"stdout\": \"1:200 GET /\\n2:404 GET /favicon\\n3:200 GET /api\\n5:200 GET /\\n6:404 GET /robots\\n7:500 GET /crash\\n8:200 GET /\\n\", \"stderr\": \"\", \"returncode\": 0}</tool_result><final>Ocorrências (case-insensitive) de 'get':\n\n1:200 GET /\n2:404 GET /favicon\n3:200 GET /api\n5:200 GET /\n6:404 GET /robots\n7:500 GET /crash\n8:200 GET /</final>"
+  }
+}
