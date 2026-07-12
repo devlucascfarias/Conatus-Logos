@@ -1,0 +1,28 @@
+{
+  "metadata": {
+    "id": "gen-nobugdiag-slug",
+    "domain": "tratamento_erro",
+    "language": "python",
+    "difficulty": "medium",
+    "tools_used": [
+      "checker"
+    ],
+    "num_steps": 1,
+    "task_type": "no_bug_found_report",
+    "source": "curated_manual_real_execution",
+    "license": "synthetic-no-license-needed",
+    "validation_status": "validated",
+    "execution_performed": true,
+    "split": "train",
+    "checker_used": "checker-python-1.0",
+    "expected_result": {
+      "passed": true
+    },
+    "execution_classification": "tested"
+  },
+  "trajectory": {
+    "system_prompt": "Você é Logos-3, um agente de engenharia de software da família de modelos Conatus. Raciocine em <think>, use <tool_call name=\"...\"> quando precisar de uma ferramenta, e responda ao usuário só dentro de <final>.",
+    "user_request": "Tenho slugify.py e test_slugify.py. O time relatou que test_slugify.py falha intermitentemente. Encontre a causa raiz e corrija o arquivo certo.",
+    "raw_text": "<think>Falha 'intermitente' em teste determinístico como esse geralmente significa que o problema não está no código em si — vou confirmar rodando o checker antes de assumir qualquer coisa.</think><tool_call name=\"checker\">{\"language\": \"python\", \"operation\": \"compile_and_test\", \"files\": [{\"path\": \"slugify.py\", \"content\": \"import re\\n\\n\\ndef slugify(texto):\\n    texto = texto.lower().strip()\\n    texto = re.sub(r'[^a-z0-9]+', '-', texto)\\n    return texto.strip('-')\\n\"}, {\"path\": \"test_slugify.py\", \"content\": \"from slugify import slugify\\n\\n\\ndef test_slugify():\\n    assert slugify('Ola Mundo!') == 'ola-mundo'\\n    assert slugify('  espacos  ') == 'espacos'\\n\"}]}</tool_call><tool_result name=\"checker\" status=\"ok\">{\"passed\": true, \"errors\": [], \"stdout\": \".                                                                        [100%]\\n1 passed in 0.02s\\n\", \"stderr\": \"\", \"metadata\": {\"language\": \"python\", \"duration_ms\": 3187}}</tool_result><think>O checker rodou slugify.py e test_slugify.py juntos e os dois casos passaram de forma determinística — não há nada intermitente neste código. Uma falha intermitente relatada pelo time provavelmente vem de outro fator (paralelismo de testes, ordem de execução, outra versão do arquivo), não deste código.</think><final>Rodei slugify.py e test_slugify.py de verdade e ambos passam de forma consistente — não achei nenhum bug real nem comportamento intermitente. Se o time está vendo falhas intermitentes, o problema provavelmente é externo a este arquivo (ordem de testes, ambiente de CI); vale investigar isso separadamente.</final>"
+  }
+}

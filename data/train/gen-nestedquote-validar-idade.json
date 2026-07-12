@@ -1,0 +1,29 @@
+{
+  "metadata": {
+    "id": "gen-nestedquote-validar-idade",
+    "domain": "tratamento_erro",
+    "language": "python",
+    "difficulty": "medium",
+    "tools_used": [
+      "write_file",
+      "checker"
+    ],
+    "num_steps": 2,
+    "task_type": "multi_tool_call",
+    "source": "curated_manual_real_execution",
+    "license": "synthetic-no-license-needed",
+    "validation_status": "validated",
+    "execution_performed": true,
+    "split": "train",
+    "checker_used": "checker-python-1.0",
+    "expected_result": {
+      "passed": true
+    },
+    "execution_classification": "tested"
+  },
+  "trajectory": {
+    "system_prompt": "Você é Logos-3, um agente de engenharia de software da família de modelos Conatus. Raciocine em <think>, use <tool_call name=\"...\"> quando precisar de uma ferramenta, e responda ao usuário só dentro de <final>.",
+    "user_request": "Escreva validar_idade(idade) que rejeita idade negativa e acima de 130 anos, cada caso com sua própria mensagem de erro, e valide com testes reais cobrindo os dois erros.",
+    "raw_text": "<think>Vou implementar validar_idade(idade) com duas condições de erro, cada uma com mensagem própria — depois escrevo os testes usando pytest.raises(match=...) pra cobrir as duas, com cuidado pra manter as aspas simples da mensagem dentro da string do JSON corretamente fechadas.</think><tool_call name=\"write_file\">{\"path\": \"validar_idade.py\", \"content\": \"def validar_idade(idade):\\n    if idade < 0:\\n        raise ValueError('idade nao pode ser negativa')\\n    if idade > 130:\\n        raise ValueError('idade acima do limite plausivel')\\n    return idade\\n\"}</tool_call><tool_result name=\"write_file\" status=\"ok\">{\"path\": \"validar_idade.py\", \"bytes_written\": 197, \"mode\": \"overwrite\"}</tool_result><think>Agora escrevo o arquivo de teste com os dois casos de erro e valido tudo junto pelo checker.</think><tool_call name=\"checker\">{\"language\": \"python\", \"operation\": \"compile_and_test\", \"files\": [{\"path\": \"validar_idade.py\", \"content\": \"def validar_idade(idade):\\n    if idade < 0:\\n        raise ValueError('idade nao pode ser negativa')\\n    if idade > 130:\\n        raise ValueError('idade acima do limite plausivel')\\n    return idade\\n\"}, {\"path\": \"test_validar_idade.py\", \"content\": \"import pytest\\n\\nfrom validar_idade import validar_idade\\n\\n\\ndef test_validar_idade_valida():\\n    assert validar_idade(30) == 30\\n\\n\\ndef test_validar_idade_negativa():\\n    with pytest.raises(ValueError, match='idade nao pode ser negativa'):\\n        validar_idade(-1)\\n\\n\\ndef test_validar_idade_acima_limite():\\n    with pytest.raises(ValueError, match='idade acima do limite plausivel'):\\n        validar_idade(200)\\n\"}]}</tool_call><tool_result name=\"checker\" status=\"ok\">{\"passed\": true, \"errors\": [], \"stdout\": \"...                                                                      [100%]\\n3 passed in 0.02s\\n\", \"stderr\": \"\", \"metadata\": {\"language\": \"python\", \"duration_ms\": 6203}}</tool_result><final>Implementei validar_idade(idade) com validação de limites e cobri os dois casos de erro (negativa e acima do limite) com pytest.raises. Todos os testes passam.</final>"
+  }
+}

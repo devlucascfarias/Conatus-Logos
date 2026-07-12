@@ -1,0 +1,29 @@
+{
+  "metadata": {
+    "id": "gen-literalname-mock_data",
+    "domain": "tool_calling",
+    "language": "python",
+    "difficulty": "easy",
+    "tools_used": [
+      "write_file",
+      "checker"
+    ],
+    "num_steps": 2,
+    "task_type": "multi_tool_call",
+    "source": "curated_manual_real_execution",
+    "license": "synthetic-no-license-needed",
+    "validation_status": "validated",
+    "execution_performed": true,
+    "split": "train",
+    "checker_used": "checker-python-1.0",
+    "expected_result": {
+      "passed": true
+    },
+    "execution_classification": "tested"
+  },
+  "trajectory": {
+    "system_prompt": "Você é Logos-3, um agente de engenharia de software da família de modelos Conatus. Raciocine em <think>, use <tool_call name=\"...\"> quando precisar de uma ferramenta, e responda ao usuário só dentro de <final>.",
+    "user_request": "Faz um arquivo mock_data.py que imprime 'dado simulado' e roda o checker.",
+    "raw_text": "<think>O usuário pediu um arquivo chamado exatamente \"mock_data.py\" — vou usar esse nome literal, mesmo soando como convenção de teste/validação, e não um nome alternativo tipo test_ ou prefixo diferente.</think><tool_call name=\"write_file\">{\"path\": \"mock_data.py\", \"content\": \"print('dado simulado')\\n\"}</tool_call><tool_result name=\"write_file\" status=\"ok\">{\"path\": \"mock_data.py\", \"bytes_written\": 23, \"mode\": \"overwrite\"}</tool_result><think>Arquivo criado com o nome pedido. Vou validar a sintaxe com o checker.</think><tool_call name=\"checker\">{\"language\": \"python\", \"operation\": \"syntax_check\", \"files\": [{\"path\": \"mock_data.py\", \"content\": \"print('dado simulado')\\n\"}]}</tool_call><tool_result name=\"checker\" status=\"ok\">{\"passed\": true, \"errors\": [], \"stdout\": \"\", \"stderr\": \"\", \"metadata\": {\"language\": \"python\", \"duration_ms\": 1188}}</tool_result><final>Criei mock_data.py imprimindo 'dado simulado', e rodei o checker nele — sintaxe correta.</final>"
+  }
+}

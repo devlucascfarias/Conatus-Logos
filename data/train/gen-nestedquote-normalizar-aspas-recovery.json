@@ -1,0 +1,29 @@
+{
+  "metadata": {
+    "id": "gen-nestedquote-normalizar-aspas-recovery",
+    "domain": "tratamento_erro",
+    "language": "python",
+    "difficulty": "hard",
+    "tools_used": [
+      "write_file",
+      "checker"
+    ],
+    "num_steps": 2,
+    "task_type": "tool_call_json_recovery",
+    "source": "curated_manual_real_execution",
+    "license": "synthetic-no-license-needed",
+    "validation_status": "validated",
+    "execution_performed": true,
+    "split": "train",
+    "checker_used": "checker-python-1.0",
+    "expected_result": {
+      "passed": true
+    },
+    "execution_classification": "tested"
+  },
+  "trajectory": {
+    "system_prompt": "Você é Logos-3, um agente de engenharia de software da família de modelos Conatus. Raciocine em <think>, use <tool_call name=\"...\"> quando precisar de uma ferramenta, e responda ao usuário só dentro de <final>.",
+    "user_request": "Escreva normalizar_aspas(texto) que troca toda aspa simples por aspa dupla no texto. Valide com um teste real.",
+    "raw_text": "<think>Vou implementar normalizar_aspas(texto), trocando aspas simples por aspas duplas — preciso ter cuidado com o escaping das próprias aspas dentro do JSON do write_file.</think><tool_call name=\"write_file\">{\"path\": \"normalizar_aspas.py\", \"content\": \"def normalizar_aspas(texto):\\n    return texto.replace(\\\"'\\\", '\"')\\n\"}</tool_call><tool_result name=\"write_file\" status=\"error\">{\"code\": \"TOOL_CALL_PARSE_ERROR\", \"message\": \"Invalid \\\\escape: barra invertida antes de aspas simples nao e uma sequencia valida\"}</tool_result><think>O JSON que enviei estava malformado — usei uma barra invertida antes de uma aspa simples sem necessidade, o que não é um escape válido em JSON. O problema é na minha formatação, não na ferramenta. Vou reescrever com o escaping correto: só aspas duplas internas precisam de \\\", aspas simples não precisam de escape nenhum.</think><tool_call name=\"write_file\">{\"path\": \"normalizar_aspas.py\", \"content\": \"def normalizar_aspas(texto):\\n    return texto.replace(\\\"'\\\", '\\\"')\\n\"}</tool_call><tool_result name=\"write_file\" status=\"ok\">{\"path\": \"normalizar_aspas.py\", \"bytes_written\": 64, \"mode\": \"overwrite\"}</tool_result><think>Agora que o arquivo está correto, escrevo o teste e valido tudo com o checker.</think><tool_call name=\"checker\">{\"language\": \"python\", \"operation\": \"compile_and_test\", \"files\": [{\"path\": \"normalizar_aspas.py\", \"content\": \"def normalizar_aspas(texto):\\n    return texto.replace(\\\"'\\\", '\\\"')\\n\"}, {\"path\": \"test_normalizar_aspas.py\", \"content\": \"from normalizar_aspas import normalizar_aspas\\n\\n\\ndef test_normalizar_aspas():\\n    assert normalizar_aspas(\\\"ele disse 'oi'\\\") == 'ele disse \\\"oi\\\"'\\n\"}]}</tool_call><tool_result name=\"checker\" status=\"ok\">{\"passed\": true, \"errors\": [], \"stdout\": \".                                                                        [100%]\\n1 passed in 0.02s\\n\", \"stderr\": \"\", \"metadata\": {\"language\": \"python\", \"duration_ms\": 3219}}</tool_result><final>Implementei normalizar_aspas(texto), trocando aspas simples por aspas duplas. Corrigi um erro de escaping na primeira tentativa de escrita, e o teste real confirma o comportamento.</final>"
+  }
+}

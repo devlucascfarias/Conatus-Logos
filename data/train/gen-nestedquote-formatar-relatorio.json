@@ -1,0 +1,29 @@
+{
+  "metadata": {
+    "id": "gen-nestedquote-formatar-relatorio",
+    "domain": "tratamento_erro",
+    "language": "python",
+    "difficulty": "medium",
+    "tools_used": [
+      "write_file",
+      "checker"
+    ],
+    "num_steps": 2,
+    "task_type": "multi_tool_call",
+    "source": "curated_manual_real_execution",
+    "license": "synthetic-no-license-needed",
+    "validation_status": "validated",
+    "execution_performed": true,
+    "split": "train",
+    "checker_used": "checker-python-1.0",
+    "expected_result": {
+      "passed": true
+    },
+    "execution_classification": "tested"
+  },
+  "trajectory": {
+    "system_prompt": "Você é Logos-3, um agente de engenharia de software da família de modelos Conatus. Raciocine em <think>, use <tool_call name=\"...\"> quando precisar de uma ferramenta, e responda ao usuário só dentro de <final>.",
+    "user_request": "Escreva formatar_relatorio(itens) que recebe uma lista de pares (nome, valor) e retorna um texto com uma linha 'nome: valor' por item, documentando o formato na docstring. Valide com um teste real.",
+    "raw_text": "<think>Vou implementar formatar_relatorio(itens) com uma docstring explicando o formato de saída (linhas separadas por \\n), tomando cuidado pra escapar corretamente as barras invertidas da docstring dentro do JSON do write_file.</think><tool_call name=\"write_file\">{\"path\": \"formatar_relatorio.py\", \"content\": \"def formatar_relatorio(itens):\\n    \\\"\\\"\\\"Formata itens em um relatorio de texto.\\n\\n    Cada item vira uma linha no formato 'nome: valor'.\\n    Linhas sao separadas por '\\\\n'.\\n    \\\"\\\"\\\"\\n    linhas = [f\\\"{nome}: {valor}\\\" for nome, valor in itens]\\n    return \\\"\\\\n\\\".join(linhas)\\n\"}</tool_call><tool_result name=\"write_file\" status=\"ok\">{\"path\": \"formatar_relatorio.py\", \"bytes_written\": 265, \"mode\": \"overwrite\"}</tool_result><think>Agora escrevo o teste montando a string esperada por concatenação, e valido tudo pelo checker num único envio.</think><tool_call name=\"checker\">{\"language\": \"python\", \"operation\": \"compile_and_test\", \"files\": [{\"path\": \"formatar_relatorio.py\", \"content\": \"def formatar_relatorio(itens):\\n    \\\"\\\"\\\"Formata itens em um relatorio de texto.\\n\\n    Cada item vira uma linha no formato 'nome: valor'.\\n    Linhas sao separadas por '\\\\n'.\\n    \\\"\\\"\\\"\\n    linhas = [f\\\"{nome}: {valor}\\\" for nome, valor in itens]\\n    return \\\"\\\\n\\\".join(linhas)\\n\"}, {\"path\": \"test_formatar_relatorio.py\", \"content\": \"from formatar_relatorio import formatar_relatorio\\n\\n\\ndef test_formatar_relatorio():\\n    itens = [('cpu', '80%'), ('memoria', '4gb')]\\n    esperado = 'cpu: 80%' + '\\\\n' + 'memoria: 4gb'\\n    assert formatar_relatorio(itens) == esperado\\n\"}]}</tool_call><tool_result name=\"checker\" status=\"ok\">{\"passed\": true, \"errors\": [], \"stdout\": \".                                                                        [100%]\\n1 passed in 0.02s\\n\", \"stderr\": \"\", \"metadata\": {\"language\": \"python\", \"duration_ms\": 4062}}</tool_result><final>Implementei formatar_relatorio(itens), que junta as linhas 'nome: valor' separadas por quebra de linha. O teste real confirma o formato esperado.</final>"
+  }
+}

@@ -1,0 +1,28 @@
+{
+  "metadata": {
+    "id": "gen-nobugdiag-parser",
+    "domain": "tratamento_erro",
+    "language": "python",
+    "difficulty": "medium",
+    "tools_used": [
+      "checker"
+    ],
+    "num_steps": 1,
+    "task_type": "no_bug_found_report",
+    "source": "curated_manual_real_execution",
+    "license": "synthetic-no-license-needed",
+    "validation_status": "validated",
+    "execution_performed": true,
+    "split": "train",
+    "checker_used": "checker-python-1.0",
+    "expected_result": {
+      "passed": true
+    },
+    "execution_classification": "tested"
+  },
+  "trajectory": {
+    "system_prompt": "Você é Logos-3, um agente de engenharia de software da família de modelos Conatus. Raciocine em <think>, use <tool_call name=\"...\"> quando precisar de uma ferramenta, e responda ao usuário só dentro de <final>.",
+    "user_request": "Tenho parse_csv_linha.py e test_parse_csv_linha.py. Um colega jura que test_parse_csv_linha.py está quebrado. Investigue a causa raiz e corrija o arquivo certo.",
+    "raw_text": "<think>Antes de sair editando algum dos dois arquivos, vou confirmar com o checker se o teste realmente falha nesta versão do código — 'jurar que está quebrado' não é a mesma coisa que ver o erro real.</think><tool_call name=\"checker\">{\"language\": \"python\", \"operation\": \"compile_and_test\", \"files\": [{\"path\": \"parse_csv_linha.py\", \"content\": \"def parse_csv_linha(linha):\\n    return [campo.strip() for campo in linha.split(',')]\\n\"}, {\"path\": \"test_parse_csv_linha.py\", \"content\": \"from parse_csv_linha import parse_csv_linha\\n\\n\\ndef test_parse_csv_linha():\\n    assert parse_csv_linha('a, b, c') == ['a', 'b', 'c']\\n    assert parse_csv_linha('x') == ['x']\\n\"}]}</tool_call><tool_result name=\"checker\" status=\"ok\">{\"passed\": true, \"errors\": [], \"stdout\": \".                                                                        [100%]\\n1 passed in 0.02s\\n\", \"stderr\": \"\", \"metadata\": {\"language\": \"python\", \"duration_ms\": 4047}}</tool_result><think>O checker confirma que parse_csv_linha.py e test_parse_csv_linha.py passam juntos sem erro nenhum — não existe bug nesta versão. A alegação do colega pode se referir a uma versão anterior do código ou a um caso de teste diferente do que está aqui.</think><final>Testei parse_csv_linha.py com test_parse_csv_linha.py de verdade e ambos passam sem erro — não encontrei o bug que seu colega mencionou nesta versão dos arquivos. Se ele tem um caso específico que falha, me manda o exemplo que eu reproduzo.</final>"
+  }
+}

@@ -1,0 +1,29 @@
+{
+  "metadata": {
+    "id": "gen-nestedquote-validar-matriz",
+    "domain": "tratamento_erro",
+    "language": "python",
+    "difficulty": "medium",
+    "tools_used": [
+      "write_file",
+      "checker"
+    ],
+    "num_steps": 2,
+    "task_type": "multi_tool_call",
+    "source": "curated_manual_real_execution",
+    "license": "synthetic-no-license-needed",
+    "validation_status": "validated",
+    "execution_performed": true,
+    "split": "train",
+    "checker_used": "checker-python-1.0",
+    "expected_result": {
+      "passed": true
+    },
+    "execution_classification": "tested"
+  },
+  "trajectory": {
+    "system_prompt": "Você é Logos-3, um agente de engenharia de software da família de modelos Conatus. Raciocine em <think>, use <tool_call name=\"...\"> quando precisar de uma ferramenta, e responda ao usuário só dentro de <final>.",
+    "user_request": "Escreva validar_matriz(texto) que recebe um texto com linhas separadas por quebra de linha e células separadas por vírgula, e valida que há exatamente 3 linhas de 3 células. Teste o caso válido e um caso de erro com pytest.raises.",
+    "raw_text": "<think>Vou implementar validar_matriz(texto) verificando 3 linhas de 3 células cada. Pro teste, vou montar o texto de exemplo concatenando pedaços com + — preciso manter o JSON válido mesmo com essa concatenação multi-linha dentro da string de content.</think><tool_call name=\"write_file\">{\"path\": \"validar_matriz.py\", \"content\": \"def validar_matriz(texto):\\n    linhas = texto.split('\\\\n')\\n    if len(linhas) != 3:\\n        raise ValueError('matriz precisa ter exatamente 3 linhas')\\n    for linha in linhas:\\n        celulas = linha.split(',')\\n        if len(celulas) != 3:\\n            raise ValueError('cada linha precisa ter exatamente 3 celulas')\\n    return True\\n\"}</tool_call><tool_result name=\"write_file\" status=\"ok\">{\"path\": \"validar_matriz.py\", \"bytes_written\": 332, \"mode\": \"overwrite\"}</tool_result><think>Escrevo agora o teste com o caso válido (concatenado) e o caso de erro com pytest.raises(match=...), e valido tudo num único tool_call de checker.</think><tool_call name=\"checker\">{\"language\": \"python\", \"operation\": \"compile_and_test\", \"files\": [{\"path\": \"validar_matriz.py\", \"content\": \"def validar_matriz(texto):\\n    linhas = texto.split('\\\\n')\\n    if len(linhas) != 3:\\n        raise ValueError('matriz precisa ter exatamente 3 linhas')\\n    for linha in linhas:\\n        celulas = linha.split(',')\\n        if len(celulas) != 3:\\n            raise ValueError('cada linha precisa ter exatamente 3 celulas')\\n    return True\\n\"}, {\"path\": \"test_validar_matriz.py\", \"content\": \"import pytest\\n\\nfrom validar_matriz import validar_matriz\\n\\n\\ndef test_validar_matriz_ok():\\n    texto = (\\n        '1,2,3' + '\\\\n' +\\n        '4,5,6' + '\\\\n' +\\n        '7,8,9'\\n    )\\n    assert validar_matriz(texto) is True\\n\\n\\ndef test_validar_matriz_linhas_erradas():\\n    with pytest.raises(ValueError, match='matriz precisa ter exatamente 3 linhas'):\\n        validar_matriz('1,2,3\\\\n4,5,6')\\n\"}]}</tool_call><tool_result name=\"checker\" status=\"ok\">{\"passed\": true, \"errors\": [], \"stdout\": \"..                                                                       [100%]\\n2 passed in 0.02s\\n\", \"stderr\": \"\", \"metadata\": {\"language\": \"python\", \"duration_ms\": 4108}}</tool_result><final>Implementei validar_matriz(texto), exigindo 3 linhas de 3 células separadas por vírgula. Os testes reais cobrem o caso válido e o de número errado de linhas.</final>"
+  }
+}

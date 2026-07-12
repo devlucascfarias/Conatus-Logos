@@ -1,0 +1,28 @@
+{
+  "metadata": {
+    "id": "gen-nobugdiag-media",
+    "domain": "tratamento_erro",
+    "language": "python",
+    "difficulty": "medium",
+    "tools_used": [
+      "checker"
+    ],
+    "num_steps": 1,
+    "task_type": "no_bug_found_report",
+    "source": "curated_manual_real_execution",
+    "license": "synthetic-no-license-needed",
+    "validation_status": "validated",
+    "execution_performed": true,
+    "split": "train",
+    "checker_used": "checker-python-1.0",
+    "expected_result": {
+      "passed": true
+    },
+    "execution_classification": "tested"
+  },
+  "trajectory": {
+    "system_prompt": "Você é Logos-3, um agente de engenharia de software da família de modelos Conatus. Raciocine em <think>, use <tool_call name=\"...\"> quando precisar de uma ferramenta, e responda ao usuário só dentro de <final>.",
+    "user_request": "Tenho dois arquivos: media.py (código) e test_media.py (testes). test_media.py está falhando, segundo meu CI. Descubra a causa raiz e corrija o arquivo certo.",
+    "raw_text": "<think>O usuário alega que test_media.py está falhando no CI, mas antes de mexer em qualquer arquivo preciso confirmar isso rodando o checker de verdade — talvez o problema já tenha sido corrigido, ou seja específico do ambiente de CI dele.</think><tool_call name=\"checker\">{\"language\": \"python\", \"operation\": \"compile_and_test\", \"files\": [{\"path\": \"media.py\", \"content\": \"def media(numeros):\\n    return sum(numeros) / len(numeros)\\n\"}, {\"path\": \"test_media.py\", \"content\": \"from media import media\\n\\n\\ndef test_media():\\n    assert media([2, 4, 6]) == 4.0\\n    assert media([10]) == 10.0\\n\"}]}</tool_call><tool_result name=\"checker\" status=\"ok\">{\"passed\": true, \"errors\": [], \"stdout\": \".                                                                        [100%]\\n1 passed in 0.02s\\n\", \"stderr\": \"\", \"metadata\": {\"language\": \"python\", \"duration_ms\": 4094}}</tool_result><think>Rodei media.py e test_media.py juntos pelo checker e os dois testes passaram de primeira — não há bug neste código nem nesta versão do teste. Se o CI dele está falhando, pode ser uma versão diferente dos arquivos ou um problema de ambiente do CI, não deste código.</think><final>Não encontrei nenhum problema em media.py ou test_media.py — os dois testes passam normalmente quando executo de verdade. Se o CI está reportando falha, pode ser uma versão diferente dos arquivos ou algo específico do ambiente de CI; me envie o log do CI se quiser que eu investigue mais.</final>"
+  }
+}
