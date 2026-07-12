@@ -1,0 +1,30 @@
+{
+  "metadata": {
+    "id": "gen-scss-maps-each-utilities",
+    "domain": "frontend",
+    "language": "scss",
+    "difficulty": "hard",
+    "tools_used": [
+      "write_file",
+      "write_file",
+      "checker"
+    ],
+    "num_steps": 3,
+    "task_type": "multi_tool_call",
+    "source": "curated_manual_real_execution",
+    "license": "synthetic-no-license-needed",
+    "validation_status": "validated",
+    "execution_performed": true,
+    "split": "train",
+    "checker_used": "checker-scss-1.0",
+    "expected_result": {
+      "passed": true
+    },
+    "execution_classification": "interpreted"
+  },
+  "trajectory": {
+    "system_prompt": "Você é Logos-3, um agente de engenharia de software da família de modelos Conatus. Raciocine em <think>, use <tool_call name=\"...\"> quando precisar de uma ferramenta, e responda ao usuário só dentro de <final>.",
+    "user_request": "Gere um pequeno conjunto de classes utilitárias de margin/padding (escala de 0 a 5) e de cor de texto/fundo (a partir de uma paleta nomeada), sem escrever cada classe à mão — derive tudo de duas listas de valores.",
+    "raw_text": "<think>Em vez de escrever .m-0, .m-1, .m-2... uma por uma, defino $spacers e $colors como SCSS maps (chave: valor) e uso @each pra iterar e gerar uma classe por entrada. #{$name} interpola a chave do map dentro do nome da classe (.m-#{$name} vira .m-3 pra chave 3). Isso significa que adicionar um novo espaçamento ou cor é só acrescentar uma linha no map — as classes utilitárias aparecem sozinhas, sem tocar no resto do arquivo.</think><tool_call name=\"write_file\">{\"path\": \"utils.scss\", \"content\": \"$spacers: (\\n  0: 0,\\n  1: 0.25rem,\\n  2: 0.5rem,\\n  3: 1rem,\\n  4: 1.5rem,\\n  5: 3rem,\\n);\\n\\n$colors: (\\n  primary: #3d7bff,\\n  danger: #ff453a,\\n  success: #34c759,\\n  muted: #6e6e73,\\n);\\n\\nbody { margin: 0; font-family: -apple-system, sans-serif; padding: 1rem; }\\n\\n@each $name, $value in $spacers {\\n  .m-#{$name} { margin: $value; }\\n  .p-#{$name} { padding: $value; }\\n}\\n\\n@each $name, $value in $colors {\\n  .text-#{$name} { color: $value; }\\n  .bg-#{$name} { background: $value; }\\n}\\n\"}</tool_call><tool_result name=\"write_file\" status=\"ok\">{\"path\": \"utils.scss\", \"bytes_written\": 470, \"mode\": \"overwrite\"}</tool_result><think>HTML usando algumas das classes utilitárias geradas.</think><tool_call name=\"write_file\">{\"path\": \"index.html\", \"content\": \"<!doctype html><html lang=\\\"pt-br\\\"><head><meta charset=\\\"utf-8\\\"><title>Utilitários</title><link rel=\\\"stylesheet\\\" href=\\\"utils.css\\\"></head><body>\\n<div class=\\\"p-4 bg-primary text-success\\\" style=\\\"border-radius: 0.75rem;\\\">\\n<p class=\\\"m-0 p-2\\\">Gerado por @each a partir de um map SCSS.</p>\\n</div>\\n</body></html>\\n\"}</tool_call><tool_result name=\"write_file\" status=\"ok\">{\"path\": \"index.html\", \"bytes_written\": 304, \"mode\": \"overwrite\"}</tool_result><think>Vou compilar e renderizar de verdade pra confirmar que o @each gerou as classes certas (ex.: .p-4, .bg-primary) e a página monta sem erro.</think><tool_call name=\"checker\">{\"language\": \"scss\", \"operation\": \"run\", \"files\": [{\"path\": \"utils.scss\", \"content\": \"$spacers: (\\n  0: 0,\\n  1: 0.25rem,\\n  2: 0.5rem,\\n  3: 1rem,\\n  4: 1.5rem,\\n  5: 3rem,\\n);\\n\\n$colors: (\\n  primary: #3d7bff,\\n  danger: #ff453a,\\n  success: #34c759,\\n  muted: #6e6e73,\\n);\\n\\nbody { margin: 0; font-family: -apple-system, sans-serif; padding: 1rem; }\\n\\n@each $name, $value in $spacers {\\n  .m-#{$name} { margin: $value; }\\n  .p-#{$name} { padding: $value; }\\n}\\n\\n@each $name, $value in $colors {\\n  .text-#{$name} { color: $value; }\\n  .bg-#{$name} { background: $value; }\\n}\\n\"}, {\"path\": \"index.html\", \"content\": \"<!doctype html><html lang=\\\"pt-br\\\"><head><meta charset=\\\"utf-8\\\"><title>Utilitários</title><link rel=\\\"stylesheet\\\" href=\\\"utils.css\\\"></head><body>\\n<div class=\\\"p-4 bg-primary text-success\\\" style=\\\"border-radius: 0.75rem;\\\">\\n<p class=\\\"m-0 p-2\\\">Gerado por @each a partir de um map SCSS.</p>\\n</div>\\n</body></html>\\n\"}], \"entrypoint\": \"index.html\", \"timeout_ms\": 30000}</tool_call><tool_result name=\"checker\" status=\"ok\">{\"passed\": true, \"errors\": [], \"stdout\": \"\", \"stderr\": \"\", \"metadata\": {\"language\": \"scss\", \"duration_ms\": 2015, \"console_warnings\": []}}</tool_result><final>Gerei as classes utilitárias a partir de dois SCSS maps ($spacers, $colors) percorridos por @each, interpolando a chave no nome da classe (#{$name}) — nenhuma classe foi escrita à mão, e adicionar um valor novo ao map basta pra ganhar a classe correspondente. Confirmei compilando e renderizando de verdade — sem erro de console.</final>"
+  }
+}

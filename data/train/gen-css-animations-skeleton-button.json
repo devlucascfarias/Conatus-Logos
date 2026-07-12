@@ -1,0 +1,30 @@
+{
+  "metadata": {
+    "id": "gen-css-animations-skeleton-button",
+    "domain": "frontend",
+    "language": "html",
+    "difficulty": "medium",
+    "tools_used": [
+      "write_file",
+      "write_file",
+      "checker"
+    ],
+    "num_steps": 3,
+    "task_type": "multi_tool_call",
+    "source": "curated_manual_real_execution",
+    "license": "synthetic-no-license-needed",
+    "validation_status": "validated",
+    "execution_performed": true,
+    "split": "train",
+    "checker_used": "checker-html-1.0",
+    "expected_result": {
+      "passed": true
+    },
+    "execution_classification": "interpreted"
+  },
+  "trajectory": {
+    "system_prompt": "Você é Logos-3, um agente de engenharia de software da família de modelos Conatus. Raciocine em <think>, use <tool_call name=\"...\"> quando precisar de uma ferramenta, e responda ao usuário só dentro de <final>.",
+    "user_request": "Crie um botão com transição suave de hover (leve elevação e sombra) e um skeleton loading com efeito de brilho (shimmer) contínuo. Respeite prefers-reduced-motion.",
+    "raw_text": "<think>O hover do botão usa transition (não @keyframes) já que é uma mudança de estado simples de A pra B — transform + box-shadow com easing curto. O skeleton usa @keyframes de verdade porque é um loop contínuo e independente de interação: um gradiente linear de 3 tons com background-size ampliado (400%) que desliza via animation infinita, criando o efeito de brilho passando. Os dois (transition e animation) são desligados quando prefers-reduced-motion: reduce está ativo, num único bloco de media query no final.</think><tool_call name=\"write_file\">{\"path\": \"anim.css\", \"content\": \"* { box-sizing: border-box; }\\nbody { margin: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif; background: #0d0f16; color: #eef2fb; padding: 2rem; }\\n.btn {\\n  padding: 0.7rem 1.6rem;\\n  border-radius: 980px;\\n  border: none;\\n  background: #3d7bff;\\n  color: #fff;\\n  font-weight: 500;\\n  cursor: pointer;\\n  transition: transform 0.15s ease, box-shadow 0.15s ease;\\n}\\n.btn:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(61,123,255,0.4); }\\n.btn:active { transform: translateY(0); }\\n.skeleton {\\n  margin-top: 2rem;\\n  width: 20rem;\\n  height: 1.2rem;\\n  border-radius: 0.4rem;\\n  background: linear-gradient(90deg, #1a1d29 25%, #262a3a 37%, #1a1d29 63%);\\n  background-size: 400% 100%;\\n  animation: shimmer 1.4s ease infinite;\\n}\\n@keyframes shimmer {\\n  0% { background-position: 100% 50%; }\\n  100% { background-position: 0% 50%; }\\n}\\n@media (prefers-reduced-motion: reduce) {\\n  .btn, .skeleton { animation: none !important; transition: none !important; }\\n}\\n\"}</tool_call><tool_result name=\"write_file\" status=\"ok\">{\"path\": \"anim.css\", \"bytes_written\": 994, \"mode\": \"overwrite\"}</tool_result><think>HTML com o botão e o skeleton.</think><tool_call name=\"write_file\">{\"path\": \"index.html\", \"content\": \"<!doctype html><html lang=\\\"pt-br\\\"><head><meta charset=\\\"utf-8\\\"><title>Animações</title><link rel=\\\"stylesheet\\\" href=\\\"anim.css\\\"></head><body>\\n<button class=\\\"btn\\\">Passe o mouse</button>\\n<div class=\\\"skeleton\\\"></div>\\n</body></html>\\n\"}</tool_call><tool_result name=\"write_file\" status=\"ok\">{\"path\": \"index.html\", \"bytes_written\": 228, \"mode\": \"overwrite\"}</tool_result><think>Vou renderizar de verdade pra confirmar que a página monta sem erro de console, com a animação rodando.</think><tool_call name=\"checker\">{\"language\": \"html\", \"operation\": \"run\", \"files\": [{\"path\": \"anim.css\", \"content\": \"* { box-sizing: border-box; }\\nbody { margin: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif; background: #0d0f16; color: #eef2fb; padding: 2rem; }\\n.btn {\\n  padding: 0.7rem 1.6rem;\\n  border-radius: 980px;\\n  border: none;\\n  background: #3d7bff;\\n  color: #fff;\\n  font-weight: 500;\\n  cursor: pointer;\\n  transition: transform 0.15s ease, box-shadow 0.15s ease;\\n}\\n.btn:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(61,123,255,0.4); }\\n.btn:active { transform: translateY(0); }\\n.skeleton {\\n  margin-top: 2rem;\\n  width: 20rem;\\n  height: 1.2rem;\\n  border-radius: 0.4rem;\\n  background: linear-gradient(90deg, #1a1d29 25%, #262a3a 37%, #1a1d29 63%);\\n  background-size: 400% 100%;\\n  animation: shimmer 1.4s ease infinite;\\n}\\n@keyframes shimmer {\\n  0% { background-position: 100% 50%; }\\n  100% { background-position: 0% 50%; }\\n}\\n@media (prefers-reduced-motion: reduce) {\\n  .btn, .skeleton { animation: none !important; transition: none !important; }\\n}\\n\"}, {\"path\": \"index.html\", \"content\": \"<!doctype html><html lang=\\\"pt-br\\\"><head><meta charset=\\\"utf-8\\\"><title>Animações</title><link rel=\\\"stylesheet\\\" href=\\\"anim.css\\\"></head><body>\\n<button class=\\\"btn\\\">Passe o mouse</button>\\n<div class=\\\"skeleton\\\"></div>\\n</body></html>\\n\"}], \"entrypoint\": \"index.html\", \"timeout_ms\": 30000}</tool_call><tool_result name=\"checker\" status=\"ok\">{\"passed\": true, \"errors\": [], \"stdout\": \"\", \"stderr\": \"\", \"metadata\": {\"language\": \"html\", \"duration_ms\": 1500, \"console_warnings\": []}}</tool_result><final>Criei o botão com transition de hover (elevação + sombra) e o skeleton com @keyframes de shimmer contínuo (gradiente deslizando). Os dois são desligados sob prefers-reduced-motion: reduce. Confirmei renderizando de verdade — sem erro de console.</final>"
+  }
+}

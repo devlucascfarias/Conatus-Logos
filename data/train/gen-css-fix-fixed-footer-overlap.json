@@ -1,0 +1,30 @@
+{
+  "metadata": {
+    "id": "gen-css-fix-fixed-footer-overlap",
+    "domain": "frontend",
+    "language": "html",
+    "difficulty": "medium",
+    "tools_used": [
+      "read_file",
+      "write_file",
+      "checker"
+    ],
+    "num_steps": 3,
+    "task_type": "model_fixes_after_error",
+    "source": "curated_manual_real_execution",
+    "license": "synthetic-no-license-needed",
+    "validation_status": "validated",
+    "execution_performed": true,
+    "split": "train",
+    "checker_used": "checker-html-1.0",
+    "expected_result": {
+      "passed": true
+    },
+    "execution_classification": "interpreted"
+  },
+  "trajectory": {
+    "system_prompt": "Você é Logos-3, um agente de engenharia de software da família de modelos Conatus. Raciocine em <think>, use <tool_call name=\"...\"> quando precisar de uma ferramenta, e responda ao usuário só dentro de <final>.",
+    "user_request": "O rodapé desse site está sobrepondo o conteúdo da página e cobrindo parte do texto do hero. Corrija sem mudar a aparência visual do rodapé em si.",
+    "raw_text": "<think>Vou ler o CSS atual pra entender o posicionamento.</think><tool_call name=\"read_file\">{\"path\": \"layout.css\"}</tool_call><tool_result name=\"read_file\" status=\"ok\">{\"content\": \"* { box-sizing: border-box; }\\nbody { margin: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif; }\\n.nav { display: flex; justify-content: space-between; padding: 1rem 2rem; background: #1d1d1f; }\\n.nav a { color: #fff; text-decoration: none; }\\n.hero { height: 100vh; display: flex; align-items: center; justify-content: center; background: #f5f5f7; }\\n.footer { position: fixed; bottom: 0; width: 100%; padding: 1rem 2rem; background: #1d1d1f; color: #fff; }\\n\", \"start_line\": 1, \"end_line\": 6, \"total_lines\": 6}</tool_result><think>Confirmado: .footer usa position: fixed, então sai do fluxo normal do documento e flutua sobre o conteúdo — .hero (height: 100vh) não sabe que existe um rodapé fixo por cima e é coberto por ele. A correção certa não é dar padding-bottom no body (gambiarra frágil, quebra se a altura do rodapé mudar) — é tirar o footer do posicionamento fixo (ele já é o último elemento, fica no final do fluxo naturalmente como um rodapé normal) e ajustar a altura do hero pra descontar a altura real da nav (calc(100vh - 3.5rem) em vez de 100vh cheio), senão o hero sozinho já ultrapassa a tela por causa da nav acima dele.</think><tool_call name=\"write_file\">{\"path\": \"layout.css\", \"content\": \"* { box-sizing: border-box; }\\nbody { margin: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif; }\\n.nav { display: flex; justify-content: space-between; padding: 1rem 2rem; background: #1d1d1f; }\\n.nav a { color: #fff; text-decoration: none; }\\n.hero { min-height: calc(100vh - 3.5rem); display: flex; align-items: center; justify-content: center; background: #f5f5f7; }\\n.footer { padding: 1rem 2rem; background: #1d1d1f; color: #fff; }\\n\"}</tool_call><tool_result name=\"write_file\" status=\"ok\">{\"path\": \"layout.css\", \"bytes_written\": 469, \"mode\": \"overwrite\"}</tool_result><think>Vou renderizar de verdade pra confirmar que o layout ficou correto e sem erro de console.</think><tool_call name=\"checker\">{\"language\": \"html\", \"operation\": \"run\", \"files\": [{\"path\": \"layout.css\", \"content\": \"* { box-sizing: border-box; }\\nbody { margin: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif; }\\n.nav { display: flex; justify-content: space-between; padding: 1rem 2rem; background: #1d1d1f; }\\n.nav a { color: #fff; text-decoration: none; }\\n.hero { min-height: calc(100vh - 3.5rem); display: flex; align-items: center; justify-content: center; background: #f5f5f7; }\\n.footer { padding: 1rem 2rem; background: #1d1d1f; color: #fff; }\\n\"}, {\"path\": \"index.html\", \"content\": \"<!doctype html><html lang=\\\"pt-br\\\"><head><meta charset=\\\"utf-8\\\"><title>Bug de layout</title><link rel=\\\"stylesheet\\\" href=\\\"layout.css\\\"></head><body>\\n<nav class=\\\"nav\\\"><a href=\\\"#\\\">Logos</a><a href=\\\"#\\\">Contato</a></nav>\\n<section class=\\\"hero\\\"><h1>Bem-vindo</h1></section>\\n<footer class=\\\"footer\\\">&copy; 2026 Logos</footer>\\n</body></html>\\n\"}], \"entrypoint\": \"index.html\", \"timeout_ms\": 30000}</tool_call><tool_result name=\"checker\" status=\"ok\">{\"passed\": true, \"errors\": [], \"stdout\": \"\", \"stderr\": \"\", \"metadata\": {\"language\": \"html\", \"duration_ms\": 1484, \"console_warnings\": []}}</tool_result><final>O bug era position: fixed no rodapé — isso o tira do fluxo do documento e faz flutuar sobre o conteúdo, cobrindo o final do hero. Troquei pro fluxo normal (removi o fixed) e ajustei a altura do hero com calc(100vh - 3.5rem) pra descontar a altura da nav acima dele. A aparência visual do rodapé em si não mudou, só o posicionamento. Confirmei renderizando de verdade — sem erro de console.</final>"
+  }
+}

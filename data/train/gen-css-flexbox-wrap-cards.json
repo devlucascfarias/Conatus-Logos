@@ -1,0 +1,30 @@
+{
+  "metadata": {
+    "id": "gen-css-flexbox-wrap-cards",
+    "domain": "frontend",
+    "language": "html",
+    "difficulty": "easy",
+    "tools_used": [
+      "write_file",
+      "write_file",
+      "checker"
+    ],
+    "num_steps": 3,
+    "task_type": "multi_tool_call",
+    "source": "curated_manual_real_execution",
+    "license": "synthetic-no-license-needed",
+    "validation_status": "validated",
+    "execution_performed": true,
+    "split": "train",
+    "checker_used": "checker-html-1.0",
+    "expected_result": {
+      "passed": true
+    },
+    "execution_classification": "interpreted"
+  },
+  "trajectory": {
+    "system_prompt": "Você é Logos-3, um agente de engenharia de software da família de modelos Conatus. Raciocine em <think>, use <tool_call name=\"...\"> quando precisar de uma ferramenta, e responda ao usuário só dentro de <final>.",
+    "user_request": "Crie uma fileira de 4 cartões que se ajusta ao espaço disponível: numa tela larga ficam lado a lado, numa tela estreita quebram pra próxima linha automaticamente, sem media query manual pra decidir quando quebrar.",
+    "raw_text": "<think>O pedido pede quebra automática sem media query decidindo o ponto de corte — isso é flex-wrap combinado com flex-basis, não Grid com breakpoints fixos. Cada cartão usa flex: 1 1 16rem (cresce, encolhe, base de 16rem) — o navegador decide sozinho quantos cabem por linha e quebra quando não cabe mais nenhum de 16rem. min-width: 0 evita que o conteúdo force o cartão a ficar maior que o espaço disponível.</think><tool_call name=\"write_file\">{\"path\": \"flex.css\", \"content\": \"* { box-sizing: border-box; }\\nbody { margin: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif; background: #fff; color: #1d1d1f; padding: 2rem; }\\n.row {\\n  display: flex;\\n  flex-wrap: wrap;\\n  gap: 1.25rem;\\n}\\n.card {\\n  flex: 1 1 16rem;\\n  min-width: 0;\\n  background: #f5f5f7;\\n  border-radius: 1rem;\\n  padding: 1.25rem;\\n}\\n.card h3 { margin: 0 0 0.4rem; }\\n.card p { margin: 0; color: #6e6e73; font-size: 0.9rem; }\\n\"}</tool_call><tool_result name=\"write_file\" status=\"ok\">{\"path\": \"flex.css\", \"bytes_written\": 445, \"mode\": \"overwrite\"}</tool_result><think>HTML com os 4 cartões dentro do container flex.</think><tool_call name=\"write_file\">{\"path\": \"index.html\", \"content\": \"<!doctype html><html lang=\\\"pt-br\\\"><head><meta charset=\\\"utf-8\\\"><title>Cards</title><link rel=\\\"stylesheet\\\" href=\\\"flex.css\\\"></head><body>\\n<div class=\\\"row\\\">\\n<div class=\\\"card\\\"><h3>Velocidade</h3><p>Deploys em segundos.</p></div>\\n<div class=\\\"card\\\"><h3>Segurança</h3><p>Sandbox isolado por padrão.</p></div>\\n<div class=\\\"card\\\"><h3>Observabilidade</h3><p>Logs e métricas no mesmo painel.</p></div>\\n<div class=\\\"card\\\"><h3>Escala</h3><p>De um projeto a mil, sem reconfigurar.</p></div>\\n</div>\\n</body></html>\\n\"}</tool_call><tool_result name=\"write_file\" status=\"ok\">{\"path\": \"index.html\", \"bytes_written\": 499, \"mode\": \"overwrite\"}</tool_result><think>Vou renderizar de verdade pra confirmar que monta sem erro de console.</think><tool_call name=\"checker\">{\"language\": \"html\", \"operation\": \"run\", \"files\": [{\"path\": \"flex.css\", \"content\": \"* { box-sizing: border-box; }\\nbody { margin: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif; background: #fff; color: #1d1d1f; padding: 2rem; }\\n.row {\\n  display: flex;\\n  flex-wrap: wrap;\\n  gap: 1.25rem;\\n}\\n.card {\\n  flex: 1 1 16rem;\\n  min-width: 0;\\n  background: #f5f5f7;\\n  border-radius: 1rem;\\n  padding: 1.25rem;\\n}\\n.card h3 { margin: 0 0 0.4rem; }\\n.card p { margin: 0; color: #6e6e73; font-size: 0.9rem; }\\n\"}, {\"path\": \"index.html\", \"content\": \"<!doctype html><html lang=\\\"pt-br\\\"><head><meta charset=\\\"utf-8\\\"><title>Cards</title><link rel=\\\"stylesheet\\\" href=\\\"flex.css\\\"></head><body>\\n<div class=\\\"row\\\">\\n<div class=\\\"card\\\"><h3>Velocidade</h3><p>Deploys em segundos.</p></div>\\n<div class=\\\"card\\\"><h3>Segurança</h3><p>Sandbox isolado por padrão.</p></div>\\n<div class=\\\"card\\\"><h3>Observabilidade</h3><p>Logs e métricas no mesmo painel.</p></div>\\n<div class=\\\"card\\\"><h3>Escala</h3><p>De um projeto a mil, sem reconfigurar.</p></div>\\n</div>\\n</body></html>\\n\"}], \"entrypoint\": \"index.html\", \"timeout_ms\": 30000}</tool_call><tool_result name=\"checker\" status=\"ok\">{\"passed\": true, \"errors\": [], \"stdout\": \"\", \"stderr\": \"\", \"metadata\": {\"language\": \"html\", \"duration_ms\": 1500, \"console_warnings\": []}}</tool_result><final>Criei a fileira de cartões com flex-wrap + flex: 1 1 16rem em cada cartão — o navegador decide sozinho quantos cabem por linha e quebra automaticamente, sem nenhuma media query decidindo o ponto de corte. Confirmei renderizando de verdade — sem erro de console.</final>"
+  }
+}

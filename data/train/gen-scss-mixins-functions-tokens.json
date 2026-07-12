@@ -1,0 +1,30 @@
+{
+  "metadata": {
+    "id": "gen-scss-mixins-functions-tokens",
+    "domain": "frontend",
+    "language": "scss",
+    "difficulty": "hard",
+    "tools_used": [
+      "write_file",
+      "write_file",
+      "checker"
+    ],
+    "num_steps": 3,
+    "task_type": "multi_tool_call",
+    "source": "curated_manual_real_execution",
+    "license": "synthetic-no-license-needed",
+    "validation_status": "validated",
+    "execution_performed": true,
+    "split": "train",
+    "checker_used": "checker-scss-1.0",
+    "expected_result": {
+      "passed": true
+    },
+    "execution_classification": "interpreted"
+  },
+  "trajectory": {
+    "system_prompt": "Você é Logos-3, um agente de engenharia de software da família de modelos Conatus. Raciocine em <think>, use <tool_call name=\"...\"> quando precisar de uma ferramenta, e responda ao usuário só dentro de <final>.",
+    "user_request": "Crie um sistema pequeno de tokens em SCSS: uma função de escala de espaçamento, um mixin de breakpoint responsivo reutilizável, e um mixin de variante de botão que aceita cor de fundo e cor de texto. Use os três num grid responsivo e em dois botões.",
+    "raw_text": "<think>space($multiplier) é uma @function que multiplica uma unidade base — centraliza a escala de espaçamento num lugar só, em vez de valores soltos tipo 0.5rem/1.5rem espalhados. responsive($min-width) é um @mixin que recebe @content — o bloco de regras passado por quem chama o mixin vira o corpo da media query, então o breakpoint fica reutilizável sem repetir a sintaxe de @media toda vez. button-variant($bg, $fg: #fff) tem um parâmetro com valor padrão (branco), então dá pra chamar só com a cor de fundo na maioria dos casos. Uso @use 'sass:math' porque é a forma moderna recomendada de acessar funções de matemática do Sass (a divisão direta com / está depreciada).</think><tool_call name=\"write_file\">{\"path\": \"mixins.scss\", \"content\": \"@use 'sass:math';\\n\\n$space-unit: 0.5rem;\\n$breakpoint-md: 768px;\\n\\n@function space($multiplier) {\\n  @return $space-unit * $multiplier;\\n}\\n\\n@mixin responsive($min-width) {\\n  @media (min-width: $min-width) {\\n    @content;\\n  }\\n}\\n\\n@mixin button-variant($bg, $fg: #fff) {\\n  background: $bg;\\n  color: $fg;\\n  border: none;\\n  border-radius: 980px;\\n  padding: space(1) space(3);\\n  font-weight: 500;\\n  cursor: pointer;\\n}\\n\\nbody { margin: 0; font-family: -apple-system, sans-serif; padding: space(4); }\\n\\n.grid {\\n  display: grid;\\n  gap: space(2);\\n  grid-template-columns: 1fr;\\n\\n  @include responsive($breakpoint-md) {\\n    grid-template-columns: repeat(3, 1fr);\\n  }\\n}\\n\\n.btn-primary { @include button-variant(#3d7bff); }\\n.btn-danger { @include button-variant(#ff453a); }\\n\"}</tool_call><tool_result name=\"write_file\" status=\"ok\">{\"path\": \"mixins.scss\", \"bytes_written\": 752, \"mode\": \"overwrite\"}</tool_result><think>HTML usando o grid responsivo e os dois botões de variante.</think><tool_call name=\"write_file\">{\"path\": \"index.html\", \"content\": \"<!doctype html><html lang=\\\"pt-br\\\"><head><meta charset=\\\"utf-8\\\"><title>Mixins</title><link rel=\\\"stylesheet\\\" href=\\\"mixins.css\\\"></head><body>\\n<div class=\\\"grid\\\">\\n<button class=\\\"btn-primary\\\">Confirmar</button>\\n<button class=\\\"btn-danger\\\">Excluir</button>\\n</div>\\n</body></html>\\n\"}</tool_call><tool_result name=\"write_file\" status=\"ok\">{\"path\": \"index.html\", \"bytes_written\": 270, \"mode\": \"overwrite\"}</tool_result><think>Vou compilar e renderizar de verdade pra confirmar que a função, os dois mixins (com @content) e os parâmetros com padrão funcionam.</think><tool_call name=\"checker\">{\"language\": \"scss\", \"operation\": \"run\", \"files\": [{\"path\": \"mixins.scss\", \"content\": \"@use 'sass:math';\\n\\n$space-unit: 0.5rem;\\n$breakpoint-md: 768px;\\n\\n@function space($multiplier) {\\n  @return $space-unit * $multiplier;\\n}\\n\\n@mixin responsive($min-width) {\\n  @media (min-width: $min-width) {\\n    @content;\\n  }\\n}\\n\\n@mixin button-variant($bg, $fg: #fff) {\\n  background: $bg;\\n  color: $fg;\\n  border: none;\\n  border-radius: 980px;\\n  padding: space(1) space(3);\\n  font-weight: 500;\\n  cursor: pointer;\\n}\\n\\nbody { margin: 0; font-family: -apple-system, sans-serif; padding: space(4); }\\n\\n.grid {\\n  display: grid;\\n  gap: space(2);\\n  grid-template-columns: 1fr;\\n\\n  @include responsive($breakpoint-md) {\\n    grid-template-columns: repeat(3, 1fr);\\n  }\\n}\\n\\n.btn-primary { @include button-variant(#3d7bff); }\\n.btn-danger { @include button-variant(#ff453a); }\\n\"}, {\"path\": \"index.html\", \"content\": \"<!doctype html><html lang=\\\"pt-br\\\"><head><meta charset=\\\"utf-8\\\"><title>Mixins</title><link rel=\\\"stylesheet\\\" href=\\\"mixins.css\\\"></head><body>\\n<div class=\\\"grid\\\">\\n<button class=\\\"btn-primary\\\">Confirmar</button>\\n<button class=\\\"btn-danger\\\">Excluir</button>\\n</div>\\n</body></html>\\n\"}], \"entrypoint\": \"index.html\", \"timeout_ms\": 30000}</tool_call><tool_result name=\"checker\" status=\"ok\">{\"passed\": true, \"errors\": [], \"stdout\": \"\", \"stderr\": \"\", \"metadata\": {\"language\": \"scss\", \"duration_ms\": 1860, \"console_warnings\": []}}</tool_result><final>Criei o sistema de tokens: a função space() centraliza a escala de espaçamento, o mixin responsive() usa @content pra tornar o breakpoint reutilizável sem repetir @media, e button-variant($bg, $fg: #fff) tem um parâmetro com valor padrão. Apliquei os três num grid responsivo e em dois botões de variante. Confirmei compilando e renderizando de verdade — sem erro de console.</final>"
+  }
+}
