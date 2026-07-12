@@ -100,8 +100,15 @@ def run_command(cmd: list[str], cwd: Path, timeout_ms: int) -> CommandResult:
 
 
 def materialize_files(base_dir: Path, files: list) -> None:
-    """Escreve CheckFile(path, content) em disco sob base_dir, criando subdiretórios."""
+    """Escreve CheckFile(path, content) em disco sob base_dir, criando subdiretórios.
+
+    `newline=""` desliga a tradução de \\n -> \\r\\n do Windows (universal newlines do modo
+    texto padrão) — sem isso, um `content` com só `\\n` (ex.: produzido por um programa Go, que
+    não traduz newline sozinho) ganha um `\\r` espúrio ao ser materializado aqui, divergindo do
+    conteúdo real que outra linguagem já executou/leu antes (achado real gerando
+    D-crosslayer-dataset-fase-f, docs/PLAN.md — um CSV gerado por Go, embutido como fixture
+    numa chamada de checker Node, ganhava um `\\r` que não existia no arquivo real do Go)."""
     for f in files:
         dest = base_dir / f.path
         dest.parent.mkdir(parents=True, exist_ok=True)
-        dest.write_text(f.content, encoding="utf-8")
+        dest.write_text(f.content, encoding="utf-8", newline="")

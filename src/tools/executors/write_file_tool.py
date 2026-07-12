@@ -29,7 +29,13 @@ def execute(args: dict[str, Any], sandbox) -> ToolExecutionResult:
 
     content = args["content"]
     path.parent.mkdir(parents=True, exist_ok=True)
-    path.write_text(content, encoding="utf-8")
+    # newline="" desliga a tradução de \n -> \r\n do Windows (universal newlines do modo texto
+    # padrão) — sem isso, `bytes_written` abaixo (calculado sobre o `content` original) diverge
+    # do tamanho REAL do arquivo escrito em disco no Windows sempre que `content` tem alguma
+    # quebra de linha, um mismatch real encontrado gerando D-crosslayer-dataset-fase-f (docs/
+    # PLAN.md) — ironicamente o mesmo tipo de bug (tamanho declarado != tamanho real) que esse
+    # lote de dataset ensina o modelo a diagnosticar.
+    path.write_text(content, encoding="utf-8", newline="")
 
     return ToolExecutionResult(
         passed=True,

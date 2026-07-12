@@ -69,6 +69,16 @@ secrets:
     - "HOME"
     - "GOPATH"
     - "GOCACHE"
+    # D-crosslayer-dataset-fase-f (achado real, docs/PLAN.md): sem TEMP/TMP nem USERPROFILE
+    # repassados, `go run`/`go build` no Windows falha com "mkdir C:\WINDOWS\go-build...:
+    # Access is denied" — o Go resolve seu diretório de cache via os.UserCacheDir(), que no
+    # Windows cai pra GetWindowsDirectory() (C:\Windows, sem permissão de escrita) quando
+    # TEMP/TMP/USERPROFILE estão todos ausentes do ambiente do subprocess. Reproduzido de
+    # verdade rodando `shell` com binary="go" antes de decidir a correção.
+    - "TEMP"
+    - "TMP"
+    - "USERPROFILE"
+    - "LOCALAPPDATA"
   redaction_patterns:
     - "sk-[A-Za-z0-9]{20,}"
     - "gh[pousr]_[A-Za-z0-9]{20,}"
