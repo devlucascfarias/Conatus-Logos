@@ -1,0 +1,43 @@
+{
+  "metadata": {
+    "id": "gen-mtdeep-investig-code-windows-t3",
+    "domain": "multi_turno_cli",
+    "language": "shell",
+    "difficulty": "hard",
+    "tools_used": [
+      "shell"
+    ],
+    "num_steps": 1,
+    "task_type": "shell_command",
+    "source": "curated_manual_real_execution",
+    "license": "synthetic-no-license-needed",
+    "validation_status": "validated",
+    "execution_performed": true,
+    "split": "train",
+    "expected_result": {
+      "passed": true
+    },
+    "execution_classification": "interpreted",
+    "num_history_turns": 3,
+    "conversation_length": 5
+  },
+  "trajectory": {
+    "system_prompt": "Você é Logos-3, um agente de engenharia de software da família de modelos Conatus. Raciocine em <think>, use <tool_call name=\"...\"> quando precisar de uma ferramenta, e responda ao usuário só dentro de <final>.",
+    "user_request": "Naquele primeiro arquivo que você listou, o main.py, mostra a primeira linha (o comentário TODO).",
+    "raw_text": "<think>Callback ao main.py. Primeira linha.</think><tool_call name=\"shell\">{\"binary\": \"powershell\", \"args\": [\"-NoProfile\", \"-Command\", \"Get-Content main.py -TotalCount 1\"]}</tool_call><tool_result name=\"shell\" status=\"ok\">{\"stdout\": \"# TODO: tratar erro de conexao\\n\", \"stderr\": \"\", \"returncode\": 0}</tool_result><final>A primeira linha do main.py:\n\n# TODO: tratar erro de conexao</final>",
+    "history": [
+      {
+        "user_request": "Estou no Windows. Me lista os arquivos .py deste projeto.",
+        "raw_text": "<think>Listagem dos módulos Python.</think><tool_call name=\"shell\">{\"binary\": \"powershell\", \"args\": [\"-NoProfile\", \"-Command\", \"Get-ChildItem -Filter *.py -Name\"]}</tool_call><tool_result name=\"shell\" status=\"ok\">{\"stdout\": \"db.py\\nhelpers.py\\nmain.py\\n\", \"stderr\": \"\", \"returncode\": 0}</tool_result><final>Arquivos .py:\n\ndb.py\nhelpers.py\nmain.py</final>"
+      },
+      {
+        "user_request": "Onde tem TODO no código?",
+        "raw_text": "<think>Busco os marcadores TODO. No Windows isso é PowerShell.</think><tool_call name=\"shell\">{\"binary\": \"powershell\", \"args\": [\"-NoProfile\", \"-Command\", \"Select-String -Path *.py -Pattern 'TODO'\"]}</tool_call><tool_result name=\"shell\" status=\"ok\">{\"stdout\": \"\\ndb.py:1:# TODO: pool de conexoes\\nmain.py:1:# TODO: tratar erro de conexao\\n\\n\\n\", \"stderr\": \"\", \"returncode\": 0}</tool_result><final>TODOs encontrados:\n\ndb.py:1:# TODO: pool de conexoes\nmain.py:1:# TODO: tratar erro de conexao</final>"
+      },
+      {
+        "user_request": "Quantas funções (linhas com 'def ') tem no main.py e no db.py juntos?",
+        "raw_text": "<think>Concateno os dois arquivos e conto as linhas com 'def '.</think><tool_call name=\"shell\">{\"binary\": \"powershell\", \"args\": [\"-NoProfile\", \"-Command\", \"(Select-String -Path main.py,db.py -Pattern 'def ').Count\"]}</tool_call><tool_result name=\"shell\" status=\"ok\">{\"stdout\": \"2\\n\", \"stderr\": \"\", \"returncode\": 0}</tool_result><final>Ao todo há 2 funções entre main.py e db.py.</final>"
+      }
+    ]
+  }
+}

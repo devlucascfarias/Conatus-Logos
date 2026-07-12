@@ -1,0 +1,39 @@
+{
+  "metadata": {
+    "id": "gen-mtdeep-investig-dados-windows-t2",
+    "domain": "multi_turno_cli",
+    "language": "shell",
+    "difficulty": "hard",
+    "tools_used": [
+      "shell"
+    ],
+    "num_steps": 1,
+    "task_type": "shell_command",
+    "source": "curated_manual_real_execution",
+    "license": "synthetic-no-license-needed",
+    "validation_status": "validated",
+    "execution_performed": true,
+    "split": "train",
+    "expected_result": {
+      "passed": true
+    },
+    "execution_classification": "interpreted",
+    "num_history_turns": 2,
+    "conversation_length": 5
+  },
+  "trajectory": {
+    "system_prompt": "Você é Logos-3, um agente de engenharia de software da família de modelos Conatus. Raciocine em <think>, use <tool_call name=\"...\"> quando precisar de uma ferramenta, e responda ao usuário só dentro de <final>.",
+    "user_request": "Quantos clientes distintos tem no clientes.txt?",
+    "raw_text": "<think>Únicos e conto.</think><tool_call name=\"shell\">{\"binary\": \"powershell\", \"args\": [\"-NoProfile\", \"-Command\", \"(Get-Content clientes.txt | Sort-Object -Unique).Count\"]}</tool_call><tool_result name=\"shell\" status=\"ok\">{\"stdout\": \"4\\n\", \"stderr\": \"\", \"returncode\": 0}</tool_result><final>Há 4 clientes distintos.</final>",
+    "history": [
+      {
+        "user_request": "Estou no Windows. Quantas linhas de dados (sem o cabeçalho) tem o vendas.csv?",
+        "raw_text": "<think>Conto as linhas e desconto o cabeçalho.</think><tool_call name=\"shell\">{\"binary\": \"powershell\", \"args\": [\"-NoProfile\", \"-Command\", \"(Get-Content vendas.csv).Count - 1\"]}</tool_call><tool_result name=\"shell\" status=\"ok\">{\"stdout\": \"5\\n\", \"stderr\": \"\", \"returncode\": 0}</tool_result><final>O vendas.csv tem 5 linhas de dados (fora o cabeçalho).</final>"
+      },
+      {
+        "user_request": "Quais são os produtos distintos vendidos?",
+        "raw_text": "<think>Extraio a coluna produto e deduplico. No Windows isso é PowerShell.</think><tool_call name=\"shell\">{\"binary\": \"powershell\", \"args\": [\"-NoProfile\", \"-Command\", \"Import-Csv vendas.csv | Select-Object -ExpandProperty produto | Sort-Object -Unique\"]}</tool_call><tool_result name=\"shell\" status=\"ok\">{\"stdout\": \"monitor\\nmouse\\nteclado\\n\", \"stderr\": \"\", \"returncode\": 0}</tool_result><final>Produtos distintos:\n\nmonitor\nmouse\nteclado</final>"
+      }
+    ]
+  }
+}

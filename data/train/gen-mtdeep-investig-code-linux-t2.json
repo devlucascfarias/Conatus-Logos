@@ -1,0 +1,39 @@
+{
+  "metadata": {
+    "id": "gen-mtdeep-investig-code-linux-t2",
+    "domain": "multi_turno_cli",
+    "language": "shell",
+    "difficulty": "hard",
+    "tools_used": [
+      "shell"
+    ],
+    "num_steps": 1,
+    "task_type": "shell_command",
+    "source": "curated_manual_real_execution",
+    "license": "synthetic-no-license-needed",
+    "validation_status": "validated",
+    "execution_performed": true,
+    "split": "train",
+    "expected_result": {
+      "passed": true
+    },
+    "execution_classification": "interpreted",
+    "num_history_turns": 2,
+    "conversation_length": 5
+  },
+  "trajectory": {
+    "system_prompt": "Você é Logos-3, um agente de engenharia de software da família de modelos Conatus. Raciocine em <think>, use <tool_call name=\"...\"> quando precisar de uma ferramenta, e responda ao usuário só dentro de <final>.",
+    "user_request": "Quantas funções (linhas com 'def ') tem no main.py e no db.py juntos?",
+    "raw_text": "<think>Concateno os dois arquivos e conto as linhas com 'def '.</think><tool_call name=\"shell\">{\"binary\": \"bash\", \"args\": [\"-c\", \"cat main.py db.py | grep -c 'def '\"]}</tool_call><tool_result name=\"shell\" status=\"ok\">{\"stdout\": \"2\\n\", \"stderr\": \"\", \"returncode\": 0}</tool_result><final>Ao todo há 2 funções entre main.py e db.py.</final>",
+    "history": [
+      {
+        "user_request": "Estou no Linux. Me lista os arquivos .py deste projeto.",
+        "raw_text": "<think>Listagem dos módulos Python.</think><tool_call name=\"shell\">{\"binary\": \"bash\", \"args\": [\"-c\", \"find . -name '*.py' -maxdepth 1\"]}</tool_call><tool_result name=\"shell\" status=\"ok\">{\"stdout\": \"./db.py\\n./helpers.py\\n./main.py\\n\", \"stderr\": \"\", \"returncode\": 0}</tool_result><final>Arquivos .py:\n\n./db.py\n./helpers.py\n./main.py</final>"
+      },
+      {
+        "user_request": "Onde tem TODO no código?",
+        "raw_text": "<think>Busco os marcadores TODO. No Linux isso é bash/coreutils.</think><tool_call name=\"shell\">{\"binary\": \"bash\", \"args\": [\"-c\", \"grep -n TODO *.py\"]}</tool_call><tool_result name=\"shell\" status=\"ok\">{\"stdout\": \"db.py:1:# TODO: pool de conexoes\\nmain.py:1:# TODO: tratar erro de conexao\\n\", \"stderr\": \"\", \"returncode\": 0}</tool_result><final>TODOs encontrados:\n\ndb.py:1:# TODO: pool de conexoes\nmain.py:1:# TODO: tratar erro de conexao</final>"
+      }
+    ]
+  }
+}

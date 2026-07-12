@@ -1,0 +1,39 @@
+{
+  "metadata": {
+    "id": "gen-mtdeep-evolve-temperatura-t2",
+    "domain": "multi_turno_projeto",
+    "language": "python",
+    "difficulty": "hard",
+    "tools_used": [
+      "read_file"
+    ],
+    "num_steps": 1,
+    "task_type": "code_explanation",
+    "source": "curated_manual_real_execution",
+    "license": "synthetic-no-license-needed",
+    "validation_status": "validated",
+    "execution_performed": true,
+    "split": "train",
+    "expected_result": {
+      "passed": true
+    },
+    "execution_classification": "interpreted",
+    "num_history_turns": 2,
+    "conversation_length": 6
+  },
+  "trajectory": {
+    "system_prompt": "Você é Logos-3, um agente de engenharia de software da família de modelos Conatus. Raciocine em <think>, use <tool_call name=\"...\"> quando precisar de uma ferramenta, e responda ao usuário só dentro de <final>.",
+    "user_request": "Quantas funções tem no temperatura.py agora e quais os nomes?",
+    "raw_text": "<think>Inspeção — leio e conto os def.</think><tool_call name=\"read_file\">{\"path\": \"temperatura.py\"}</tool_call><tool_result name=\"read_file\" status=\"ok\">{\"content\": \"def c_para_f(c):\\n    return c * 9 / 5 + 32\\n\\n\\ndef f_para_c(f):\\n    return (f - 32) * 5 / 9\\n\", \"start_line\": 1, \"end_line\": 6, \"total_lines\": 6}</tool_result><final>O temperatura.py tem 2 funções: c_para_f e f_para_c.</final>",
+    "history": [
+      {
+        "user_request": "Cria um módulo temperatura.py com a função c_para_f descrita assim: c_para_f(c) converte Celsius pra Fahrenheit.",
+        "raw_text": "<think>Começo pelo módulo com a primeira função.</think><tool_call name=\"write_file\">{\"path\": \"temperatura.py\", \"content\": \"def c_para_f(c):\\n    return c * 9 / 5 + 32\\n\"}</tool_call><tool_result name=\"write_file\" status=\"ok\">{\"path\": \"temperatura.py\", \"bytes_written\": 43, \"mode\": \"overwrite\"}</tool_result><think>Valido a sintaxe.</think><tool_call name=\"checker\">{\"language\": \"python\", \"operation\": \"syntax_check\", \"files\": [{\"path\": \"temperatura.py\", \"content\": \"def c_para_f(c):\\n    return c * 9 / 5 + 32\\n\"}], \"timeout_ms\": 60000}</tool_call><tool_result name=\"checker\" status=\"ok\">{\"passed\": true, \"errors\": [], \"stdout\": \"\", \"stderr\": \"\", \"metadata\": {\"language\": \"python\", \"duration_ms\": 1218}}</tool_result><final>Criei temperatura.py com c_para_f. Sintaxe validada de verdade.</final>"
+      },
+      {
+        "user_request": "Agora adiciona f_para_c (converte Fahrenheit pra Celsius) e escreve testes pras duas funções.",
+        "raw_text": "<think>Leio o arquivo pra estender sem quebrar o que existe.</think><tool_call name=\"read_file\">{\"path\": \"temperatura.py\"}</tool_call><tool_result name=\"read_file\" status=\"ok\">{\"content\": \"def c_para_f(c):\\n    return c * 9 / 5 + 32\\n\", \"start_line\": 1, \"end_line\": 2, \"total_lines\": 2}</tool_result><think>Adiciono a segunda função.</think><tool_call name=\"write_file\">{\"path\": \"temperatura.py\", \"content\": \"def c_para_f(c):\\n    return c * 9 / 5 + 32\\n\\n\\ndef f_para_c(f):\\n    return (f - 32) * 5 / 9\\n\"}</tool_call><tool_result name=\"write_file\" status=\"ok\">{\"path\": \"temperatura.py\", \"bytes_written\": 90, \"mode\": \"overwrite\"}</tool_result><think>Escrevo os testes das duas.</think><tool_call name=\"write_file\">{\"path\": \"test_temperatura.py\", \"content\": \"from temperatura import c_para_f, f_para_c\\n\\ndef test_c_para_f():\\n    assert c_para_f(100) == 212\\n\\n\\ndef test_f_para_c():\\n    assert f_para_c(32) == 0\\n\"}</tool_call><tool_result name=\"write_file\" status=\"ok\">{\"path\": \"test_temperatura.py\", \"bytes_written\": 149, \"mode\": \"overwrite\"}</tool_result><think>Rodo a suite.</think><tool_call name=\"checker\">{\"language\": \"python\", \"operation\": \"compile_and_test\", \"files\": [{\"path\": \"temperatura.py\", \"content\": \"def c_para_f(c):\\n    return c * 9 / 5 + 32\\n\\n\\ndef f_para_c(f):\\n    return (f - 32) * 5 / 9\\n\"}, {\"path\": \"test_temperatura.py\", \"content\": \"from temperatura import c_para_f, f_para_c\\n\\ndef test_c_para_f():\\n    assert c_para_f(100) == 212\\n\\n\\ndef test_f_para_c():\\n    assert f_para_c(32) == 0\\n\"}], \"timeout_ms\": 60000}</tool_call><tool_result name=\"checker\" status=\"ok\">{\"passed\": true, \"errors\": [], \"stdout\": \"..                                                                       [100%]\\n2 passed in 0.02s\\n\", \"stderr\": \"\", \"metadata\": {\"language\": \"python\", \"duration_ms\": 3171}}</tool_result><final>Adicionei f_para_c e criei test_temperatura.py testando as duas. Suite passou de verdade.</final>"
+      }
+    ]
+  }
+}

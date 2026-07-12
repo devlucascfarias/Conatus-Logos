@@ -1,0 +1,47 @@
+{
+  "metadata": {
+    "id": "gen-mtdeep-investig-config-windows-t4",
+    "domain": "multi_turno_cli",
+    "language": "shell",
+    "difficulty": "hard",
+    "tools_used": [
+      "shell"
+    ],
+    "num_steps": 1,
+    "task_type": "shell_command",
+    "source": "curated_manual_real_execution",
+    "license": "synthetic-no-license-needed",
+    "validation_status": "validated",
+    "execution_performed": true,
+    "split": "train",
+    "expected_result": {
+      "passed": true
+    },
+    "execution_classification": "interpreted",
+    "num_history_turns": 4,
+    "conversation_length": 5
+  },
+  "trajectory": {
+    "system_prompt": "Você é Logos-3, um agente de engenharia de software da família de modelos Conatus. Raciocine em <think>, use <tool_call name=\"...\"> quando precisar de uma ferramenta, e responda ao usuário só dentro de <final>.",
+    "user_request": "No hosts.txt, quantos hosts únicos de 'web' tem?",
+    "raw_text": "<think>Filtro os que começam com 'web', deduplico e conto. No Windows isso é PowerShell.</think><tool_call name=\"shell\">{\"binary\": \"powershell\", \"args\": [\"-NoProfile\", \"-Command\", \"(Get-Content hosts.txt | Where-Object { $_ -like 'web*' } | Sort-Object -Unique).Count\"]}</tool_call><tool_result name=\"shell\" status=\"ok\">{\"stdout\": \"2\\n\", \"stderr\": \"\", \"returncode\": 0}</tool_result><final>Há 2 hosts 'web' únicos.</final>",
+    "history": [
+      {
+        "user_request": "Estou no Windows. Me mostra o conteúdo do app.conf.",
+        "raw_text": "<think>Leio o arquivo de config inteiro.</think><tool_call name=\"shell\">{\"binary\": \"powershell\", \"args\": [\"-NoProfile\", \"-Command\", \"Get-Content app.conf\"]}</tool_call><tool_result name=\"shell\" status=\"ok\">{\"stdout\": \"port=8080\\ndebug=true\\nworkers=4\\nlog_level=info\\ndebug=true\\n\", \"stderr\": \"\", \"returncode\": 0}</tool_result><final>Conteúdo do app.conf:\n\nport=8080\ndebug=true\nworkers=4\nlog_level=info\ndebug=true</final>"
+      },
+      {
+        "user_request": "Tem alguma chave duplicada aí? Me diz quais linhas aparecem mais de uma vez.",
+        "raw_text": "<think>Linhas duplicadas: ordeno e uso `uniq -d` (só as repetidas). No Windows isso é PowerShell.</think><tool_call name=\"shell\">{\"binary\": \"powershell\", \"args\": [\"-NoProfile\", \"-Command\", \"Get-Content app.conf | Group-Object | Where-Object Count -gt 1 | ForEach-Object { $_.Name }\"]}</tool_call><tool_result name=\"shell\" status=\"ok\">{\"stdout\": \"debug=true\\n\", \"stderr\": \"\", \"returncode\": 0}</tool_result><final>Linhas duplicadas no app.conf:\n\ndebug=true</final>"
+      },
+      {
+        "user_request": "Qual o valor de log_level?",
+        "raw_text": "<think>Filtro a linha da chave e extraio o valor depois do `=`.</think><tool_call name=\"shell\">{\"binary\": \"powershell\", \"args\": [\"-NoProfile\", \"-Command\", \"Select-String -Path app.conf -Pattern '^log_level=' | ForEach-Object { ($_.Line -split '=')[1] }\"]}</tool_call><tool_result name=\"shell\" status=\"ok\">{\"stdout\": \"info\\n\", \"stderr\": \"\", \"returncode\": 0}</tool_result><final>O log_level está definido como: info</final>"
+      },
+      {
+        "user_request": "Volta no app.conf (o arquivo que a gente abriu primeiro) — quantas configurações DISTINTAS ele tem, ignorando as duplicatas?",
+        "raw_text": "<think>Callback ao app.conf. Linhas únicas contadas.</think><tool_call name=\"shell\">{\"binary\": \"powershell\", \"args\": [\"-NoProfile\", \"-Command\", \"(Get-Content app.conf | Sort-Object -Unique).Count\"]}</tool_call><tool_result name=\"shell\" status=\"ok\">{\"stdout\": \"4\\n\", \"stderr\": \"\", \"returncode\": 0}</tool_result><final>O app.conf — o primeiro arquivo que abrimos — tem 4 configurações distintas.</final>"
+      }
+    ]
+  }
+}
