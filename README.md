@@ -59,6 +59,13 @@ A operação `run` builda com `vite build` de verdade e renderiza o resultado nu
 real (servido por HTTP local, não `file://` — scripts `type="module"` são bloqueados por CORS ao
 carregar via `file://`), capturando erros de console genuínos, WebGL incluso.
 
+O backend `scss` (`src/checker/backends/scss_backend.py`, D-checker-scss-backend) usa o mesmo
+`node_modules` do template (precisa do `sass`, já incluído no `package.json`): compila `.scss →
+.css` com dart-sass de verdade (`compile`/`syntax_check`) e, na operação `run`, renderiza o CSS
+compilado no MESMO Chromium do backend `html`. CSS puro NÃO precisa deste backend — valida direto
+via `language: "html"` (um `.css` + um `.html` que o linke); SCSS e CSS compartilham o oráculo
+visual.
+
 ## Rodar os testes
 
 ```bash
