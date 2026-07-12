@@ -18,11 +18,17 @@
       "passed": true
     },
     "execution_classification": "tested",
-    "os_family": "windows"
+    "os_family": "windows",
+    "os_source": "environment"
   },
   "trajectory": {
     "system_prompt": "Você é Logos-3, um agente de engenharia de software da família de modelos Conatus. Raciocine em <think>, use <tool_call name=\"...\"> quando precisar de uma ferramenta, e responda ao usuário só dentro de <final>.",
-    "user_request": "Estou no Windows. Onde aparece 'TODO' em *.py?",
-    "raw_text": "<think>No Windows, o equivalente ao `grep` é `Select-String`. `Select-String -Path *.py -Pattern 'TODO'` já dá arquivo:linha:conteúdo.</think><tool_call name=\"shell\">{\"binary\": \"powershell\", \"args\": [\"-NoProfile\", \"-Command\", \"Select-String -Path *.py -Pattern 'TODO'\"]}</tool_call><tool_result name=\"shell\" status=\"ok\">{\"stdout\": \"\\napp.py:3:# TODO: validar entrada\\nutils.py:1:# TODO: cobrir com testes\\n\\n\\n\", \"stderr\": \"\", \"returncode\": 0}</tool_result><final>Ocorrências de 'TODO':\n\n\napp.py:3:# TODO: validar entrada\nutils.py:1:# TODO: cobrir com testes</final>"
+    "user_request": "Onde aparece 'TODO' em *.py?",
+    "raw_text": "<think>Pelo bloco <environment>, o sistema é Windows (shell powershell) — então escolho o CLI nativo dele sem o usuário precisar dizer o SO. No Windows, o equivalente ao `grep` é `Select-String`. `Select-String -Path *.py -Pattern 'TODO'` já dá arquivo:linha:conteúdo.</think><tool_call name=\"shell\">{\"binary\": \"powershell\", \"args\": [\"-NoProfile\", \"-Command\", \"Select-String -Path *.py -Pattern 'TODO'\"]}</tool_call><tool_result name=\"shell\" status=\"ok\">{\"stdout\": \"\\napp.py:3:# TODO: validar entrada\\nutils.py:1:# TODO: cobrir com testes\\n\\n\\n\", \"stderr\": \"\", \"returncode\": 0}</tool_result><final>Ocorrências de 'TODO':\n\n\napp.py:3:# TODO: validar entrada\nutils.py:1:# TODO: cobrir com testes</final>",
+    "environment": {
+      "os": "Windows",
+      "shell": "powershell",
+      "cwd": "C:\\Users\\dev\\projeto"
+    }
   }
 }

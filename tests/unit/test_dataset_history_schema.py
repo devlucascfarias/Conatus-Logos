@@ -203,3 +203,62 @@ def test_to_example_dict_output_passes_validate_trajectory():
         history=[HistoryTurn(user_request="primeiro", raw_text="<final>r1</final>")],
     )
     assert validate_trajectory(traj.to_example_dict()) == []
+
+
+# --- D-prompt-environment-block: bloco de ambiente (SO/shell) no prompt --------------
+
+
+def test_render_for_model_without_environment_matches_previous_behavior():
+    # Sem environment, o formato tem que ser byte-a-byte idêntico ao de antes (nenhum exemplo
+    # legado pode mudar de tokenização).
+    traj = Trajectory(system_prompt="SP", user_request="oi", raw_text="<final>ok</final>")
+    assert traj.render_for_model() == "SP\n\n[USER]\noi\n\n[ASSISTANT]\n<final>ok</final>"
+
+
+def test_render_for_model_inserts_environment_block_after_system_prompt():
+    traj = Trajectory(
+        system_prompt="SP", user_request="lista os arquivos", raw_text="<final>ok</final>",
+        environment={"os": "Windows", "shell": "powershell"},
+    )
+    expected = (
+        "SP"
+        "\n\n<environment>\nos: Windows\nshell: powershell\n</environment>"
+        "\n\n[USER]\nlista os arquivos\n\n[ASSISTANT]\n<final>ok</final>"
+    )
+    assert traj.render_for_model() == expected
+
+
+def test_render_for_model_environment_comes_before_history():
+    traj = Trajectory(
+        system_prompt="SP", user_request="segundo", raw_text="<final>r2</final>",
+        environment={"os": "Linux"},
+        history=[HistoryTurn(user_request="primeiro", raw_text="<final>r1</final>")],
+    )
+    rendered = traj.render_for_model()
+    assert rendered.index("<environment>") < rendered.index("primeiro") < rendered.index("segundo")
+
+
+def test_to_example_dict_includes_environment_when_present():
+    traj = Trajectory(
+        system_prompt="SP", user_request="oi", raw_text="<final>ok</final>",
+        environment={"os": "macOS", "shell": "bash"},
+    )
+    body = traj.to_example_dict()
+    assert body["environment"] == {"os": "macOS", "shell": "bash"}
+    assert validate_trajectory(body) == []
+
+
+def test_to_example_dict_omits_environment_when_absent():
+    traj = Trajectory(system_prompt="SP", user_request="oi", raw_text="<final>ok</final>")
+    assert "environment" not in traj.to_example_dict()
+
+
+def test_environment_block_is_in_masked_prefix_not_trained_tokens():
+    # O bloco de ambiente é contexto: deve entrar no PREFIXO (mascarado), nunca nos tokens
+    # treinados do turno atual. `_render_prefix` (data_collator) reusa render_for_model com
+    # raw_text vazio, então o env fica antes do ponto onde raw_text começaria.
+    from src.training.data_collator import _render_prefix
+
+    prefix = _render_prefix("SP", "oi", history=None, environment={"os": "Windows"})
+    assert "<environment>\nos: Windows\n</environment>" in prefix
+    assert prefix.endswith("[ASSISTANT]\n")  # raw_text (treinado) começa DEPOIS do prefixo

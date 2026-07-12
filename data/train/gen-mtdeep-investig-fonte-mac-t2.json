@@ -27,13 +27,18 @@
     "raw_text": "<think>Vejo o que o arquivo de teste importa do calc — assim dá pra saber o que está coberto.</think><tool_call name=\"shell\">{\"binary\": \"bash\", \"args\": [\"-c\", \"grep '^from calc import' test_calc.py | sed 's/from calc import //'\"]}</tool_call><tool_result name=\"shell\" status=\"ok\">{\"stdout\": \"add, sub\\n\", \"stderr\": \"\", \"returncode\": 0}</tool_result><final>O test_calc.py importa: add, sub. (Comparando com as funções do calc.py, dá pra ver se falta cobrir alguma.)</final>",
     "history": [
       {
-        "user_request": "Estou no macOS. Quantas linhas de código tem o calc.py?",
-        "raw_text": "<think>Conto as linhas do arquivo de código.</think><tool_call name=\"shell\">{\"binary\": \"bash\", \"args\": [\"-c\", \"wc -l < calc.py\"]}</tool_call><tool_result name=\"shell\" status=\"ok\">{\"stdout\": \"10\\n\", \"stderr\": \"\", \"returncode\": 0}</tool_result><final>O calc.py tem 10 linhas.</final>"
+        "user_request": "Quantas linhas de código tem o calc.py?",
+        "raw_text": "<think>Conto as linhas do arquivo de código. (Pelo <environment>, o sistema é macOS — uso o CLI nativo dele, bash/coreutils, sem o usuário precisar dizer o SO.)</think><tool_call name=\"shell\">{\"binary\": \"bash\", \"args\": [\"-c\", \"wc -l < calc.py\"]}</tool_call><tool_result name=\"shell\" status=\"ok\">{\"stdout\": \"10\\n\", \"stderr\": \"\", \"returncode\": 0}</tool_result><final>O calc.py tem 10 linhas.</final>"
       },
       {
         "user_request": "Quais funções estão definidas nele?",
-        "raw_text": "<think>Extraio os nomes das funções definidas. No macOS isso é bash/coreutils.</think><tool_call name=\"shell\">{\"binary\": \"bash\", \"args\": [\"-c\", \"grep -oE 'def [a-z_]+' calc.py | sed 's/def //'\"]}</tool_call><tool_result name=\"shell\" status=\"ok\">{\"stdout\": \"add\\nsub\\nmul\\n\", \"stderr\": \"\", \"returncode\": 0}</tool_result><final>Funções em calc.py:\n\nadd\nsub\nmul</final>"
+        "raw_text": "<think>Extraio os nomes das funções definidas. No macOS (do ambiente) isso é bash/coreutils.</think><tool_call name=\"shell\">{\"binary\": \"bash\", \"args\": [\"-c\", \"grep -oE 'def [a-z_]+' calc.py | sed 's/def //'\"]}</tool_call><tool_result name=\"shell\" status=\"ok\">{\"stdout\": \"add\\nsub\\nmul\\n\", \"stderr\": \"\", \"returncode\": 0}</tool_result><final>Funções em calc.py:\n\nadd\nsub\nmul</final>"
       }
-    ]
+    ],
+    "environment": {
+      "os": "macOS",
+      "shell": "zsh",
+      "cwd": "/Users/dev/projeto"
+    }
   }
 }

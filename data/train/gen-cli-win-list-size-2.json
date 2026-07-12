@@ -18,11 +18,17 @@
       "passed": true
     },
     "execution_classification": "tested",
-    "os_family": "windows"
+    "os_family": "windows",
+    "os_source": "environment"
   },
   "trajectory": {
     "system_prompt": "Você é Logos-3, um agente de engenharia de software da família de modelos Conatus. Raciocine em <think>, use <tool_call name=\"...\"> quando precisar de uma ferramenta, e responda ao usuário só dentro de <final>.",
-    "user_request": "Estou no Windows. Lista os arquivos desta pasta do maior pro menor.",
-    "raw_text": "<think>Estou no Windows → PowerShell. `Get-ChildItem -File` lista só arquivos, `Sort-Object Length -Descending` ordena do maior pro menor. `ls -lS` não existe nativo no Windows.</think><tool_call name=\"shell\">{\"binary\": \"powershell\", \"args\": [\"-NoProfile\", \"-Command\", \"Get-ChildItem -File | Sort-Object Length -Descending | Select-Object Name,Length | Format-Table -AutoSize\"]}</tool_call><tool_result name=\"shell\" status=\"ok\">{\"stdout\": \"\\nName        Length\\n----        ------\\nbuild.log      114\\nmain.go         83\\nestoque.csv     64\\nhandler.go      51\\nparams.cfg      43\\ntags.txt        30\\n\\n\\n\", \"stderr\": \"\", \"returncode\": 0}</tool_result><final>Arquivos ordenados do maior pro menor:\n\n\nName        Length\n----        ------\nbuild.log      114\nmain.go         83\nestoque.csv     64\nhandler.go      51\nparams.cfg      43\ntags.txt        30</final>"
+    "user_request": "Lista os arquivos desta pasta do maior pro menor.",
+    "raw_text": "<think>Pelo bloco <environment>, o sistema é Windows (shell powershell) — então escolho o CLI nativo dele sem o usuário precisar dizer o SO. Estou no Windows → PowerShell. `Get-ChildItem -File` lista só arquivos, `Sort-Object Length -Descending` ordena do maior pro menor. `ls -lS` não existe nativo no Windows.</think><tool_call name=\"shell\">{\"binary\": \"powershell\", \"args\": [\"-NoProfile\", \"-Command\", \"Get-ChildItem -File | Sort-Object Length -Descending | Select-Object Name,Length | Format-Table -AutoSize\"]}</tool_call><tool_result name=\"shell\" status=\"ok\">{\"stdout\": \"\\nName        Length\\n----        ------\\nbuild.log      114\\nmain.go         83\\nestoque.csv     64\\nhandler.go      51\\nparams.cfg      43\\ntags.txt        30\\n\\n\\n\", \"stderr\": \"\", \"returncode\": 0}</tool_result><final>Arquivos ordenados do maior pro menor:\n\n\nName        Length\n----        ------\nbuild.log      114\nmain.go         83\nestoque.csv     64\nhandler.go      51\nparams.cfg      43\ntags.txt        30</final>",
+    "environment": {
+      "os": "Windows",
+      "shell": "powershell",
+      "cwd": "C:\\Users\\dev\\projeto"
+    }
   }
 }

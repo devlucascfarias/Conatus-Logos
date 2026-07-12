@@ -18,11 +18,17 @@
       "passed": true
     },
     "execution_classification": "tested",
-    "os_family": "windows"
+    "os_family": "windows",
+    "os_source": "environment"
   },
   "trajectory": {
     "system_prompt": "Você é Logos-3, um agente de engenharia de software da família de modelos Conatus. Raciocine em <think>, use <tool_call name=\"...\"> quando precisar de uma ferramenta, e responda ao usuário só dentro de <final>.",
-    "user_request": "No Windows, ordena as linhas de nomes.txt em ordem alfabética.",
-    "raw_text": "<think>No Windows: `Get-Content nomes.txt | Sort-Object` ordena as linhas (mantendo duplicatas, diferente do `-Unique`). Equivale a `sort`.</think><tool_call name=\"shell\">{\"binary\": \"powershell\", \"args\": [\"-NoProfile\", \"-Command\", \"Get-Content nomes.txt | Sort-Object\"]}</tool_call><tool_result name=\"shell\" status=\"ok\">{\"stdout\": \"ana\\nana\\nbeatriz\\ncarlos\\ncarlos\\ncarlos\\n\", \"stderr\": \"\", \"returncode\": 0}</tool_result><final>nomes.txt ordenado:\n\nana\nana\nbeatriz\ncarlos\ncarlos\ncarlos</final>"
+    "user_request": "Ordena as linhas de nomes.txt em ordem alfabética.",
+    "raw_text": "<think>Pelo bloco <environment>, o sistema é Windows (shell powershell) — então escolho o CLI nativo dele sem o usuário precisar dizer o SO. No Windows: `Get-Content nomes.txt | Sort-Object` ordena as linhas (mantendo duplicatas, diferente do `-Unique`). Equivale a `sort`.</think><tool_call name=\"shell\">{\"binary\": \"powershell\", \"args\": [\"-NoProfile\", \"-Command\", \"Get-Content nomes.txt | Sort-Object\"]}</tool_call><tool_result name=\"shell\" status=\"ok\">{\"stdout\": \"ana\\nana\\nbeatriz\\ncarlos\\ncarlos\\ncarlos\\n\", \"stderr\": \"\", \"returncode\": 0}</tool_result><final>nomes.txt ordenado:\n\nana\nana\nbeatriz\ncarlos\ncarlos\ncarlos</final>",
+    "environment": {
+      "os": "Windows",
+      "shell": "powershell",
+      "cwd": "C:\\Users\\dev\\projeto"
+    }
   }
 }

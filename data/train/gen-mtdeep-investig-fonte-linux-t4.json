@@ -24,15 +24,15 @@
   "trajectory": {
     "system_prompt": "Você é Logos-3, um agente de engenharia de software da família de modelos Conatus. Raciocine em <think>, use <tool_call name=\"...\"> quando precisar de uma ferramenta, e responda ao usuário só dentro de <final>.",
     "user_request": "Por fim, me mostra o notas.md.",
-    "raw_text": "<think>Leio o arquivo de notas. No Linux isso é bash/coreutils.</think><tool_call name=\"shell\">{\"binary\": \"bash\", \"args\": [\"-c\", \"cat notas.md\"]}</tool_call><tool_result name=\"shell\" status=\"ok\">{\"stdout\": \"# Notas\\n\\n- add: soma\\n- sub: subtrai\\n- mul: multiplica\\n\", \"stderr\": \"\", \"returncode\": 0}</tool_result><final>Conteúdo de notas.md:\n\n# Notas\n\n- add: soma\n- sub: subtrai\n- mul: multiplica</final>",
+    "raw_text": "<think>Leio o arquivo de notas. No Ubuntu Linux (do ambiente) isso é bash/coreutils.</think><tool_call name=\"shell\">{\"binary\": \"bash\", \"args\": [\"-c\", \"cat notas.md\"]}</tool_call><tool_result name=\"shell\" status=\"ok\">{\"stdout\": \"# Notas\\n\\n- add: soma\\n- sub: subtrai\\n- mul: multiplica\\n\", \"stderr\": \"\", \"returncode\": 0}</tool_result><final>Conteúdo de notas.md:\n\n# Notas\n\n- add: soma\n- sub: subtrai\n- mul: multiplica</final>",
     "history": [
       {
-        "user_request": "Estou no Linux. Quantas linhas de código tem o calc.py?",
-        "raw_text": "<think>Conto as linhas do arquivo de código.</think><tool_call name=\"shell\">{\"binary\": \"bash\", \"args\": [\"-c\", \"wc -l < calc.py\"]}</tool_call><tool_result name=\"shell\" status=\"ok\">{\"stdout\": \"10\\n\", \"stderr\": \"\", \"returncode\": 0}</tool_result><final>O calc.py tem 10 linhas.</final>"
+        "user_request": "Quantas linhas de código tem o calc.py?",
+        "raw_text": "<think>Conto as linhas do arquivo de código. (Pelo <environment>, o sistema é Ubuntu Linux — uso o CLI nativo dele, bash/coreutils, sem o usuário precisar dizer o SO.)</think><tool_call name=\"shell\">{\"binary\": \"bash\", \"args\": [\"-c\", \"wc -l < calc.py\"]}</tool_call><tool_result name=\"shell\" status=\"ok\">{\"stdout\": \"10\\n\", \"stderr\": \"\", \"returncode\": 0}</tool_result><final>O calc.py tem 10 linhas.</final>"
       },
       {
         "user_request": "Quais funções estão definidas nele?",
-        "raw_text": "<think>Extraio os nomes das funções definidas. No Linux isso é bash/coreutils.</think><tool_call name=\"shell\">{\"binary\": \"bash\", \"args\": [\"-c\", \"grep -oE 'def [a-z_]+' calc.py | sed 's/def //'\"]}</tool_call><tool_result name=\"shell\" status=\"ok\">{\"stdout\": \"add\\nsub\\nmul\\n\", \"stderr\": \"\", \"returncode\": 0}</tool_result><final>Funções em calc.py:\n\nadd\nsub\nmul</final>"
+        "raw_text": "<think>Extraio os nomes das funções definidas. No Ubuntu Linux (do ambiente) isso é bash/coreutils.</think><tool_call name=\"shell\">{\"binary\": \"bash\", \"args\": [\"-c\", \"grep -oE 'def [a-z_]+' calc.py | sed 's/def //'\"]}</tool_call><tool_result name=\"shell\" status=\"ok\">{\"stdout\": \"add\\nsub\\nmul\\n\", \"stderr\": \"\", \"returncode\": 0}</tool_result><final>Funções em calc.py:\n\nadd\nsub\nmul</final>"
       },
       {
         "user_request": "O test_calc.py testa todas elas? Me diz quais funções o teste importa.",
@@ -42,6 +42,11 @@
         "user_request": "Baseado no que você viu, tem alguma função do calc.py (o primeiro arquivo) que NÃO é testada?",
         "raw_text": "<think>Callback ao calc.py e ao teste: comparo o conjunto de funções definidas com o conjunto importado pelo teste; a diferença é o que não está coberto.</think><tool_call name=\"shell\">{\"binary\": \"bash\", \"args\": [\"-c\", \"comm -23 <(grep -oE 'def [a-z_]+' calc.py | sed 's/def //' | sort) <(grep '^from calc import' test_calc.py | sed 's/from calc import //' | tr ', ' '\\\\n' | grep . | sort)\"]}</tool_call><tool_result name=\"shell\" status=\"ok\">{\"stdout\": \"mul\\n\", \"stderr\": \"\", \"returncode\": 0}</tool_result><final>Função(ões) do calc.py que o teste NÃO cobre:\n\nmul</final>"
       }
-    ]
+    ],
+    "environment": {
+      "os": "Ubuntu Linux",
+      "shell": "bash",
+      "cwd": "/home/dev/projeto"
+    }
   }
 }

@@ -18,11 +18,17 @@
       "passed": true
     },
     "execution_classification": "tested",
-    "os_family": "linux"
+    "os_family": "linux",
+    "os_source": "environment"
   },
   "trajectory": {
     "system_prompt": "Você é Logos-3, um agente de engenharia de software da família de modelos Conatus. Raciocine em <think>, use <tool_call name=\"...\"> quando precisar de uma ferramenta, e responda ao usuário só dentro de <final>.",
-    "user_request": "No Linux (Ubuntu), qual o tamanho e a data de modificação de app.log?",
-    "raw_text": "<think>No Linux (Ubuntu): `ls -l app.log` mostra tamanho (em bytes) e data de modificação na mesma linha. Funciona igual em Linux e macOS (o `stat` é que diverge entre GNU e BSD, por isso prefiro `ls -l` aqui).</think><tool_call name=\"shell\">{\"binary\": \"bash\", \"args\": [\"-c\", \"ls -l app.log\"]}</tool_call><tool_result name=\"shell\" status=\"ok\">{\"stdout\": \"-rwxrwxrwx 1 lucas lucas 111 Jul 12 19:46 app.log\\n\", \"stderr\": \"\", \"returncode\": 0}</tool_result><final>Informações de app.log:\n\n-rwxrwxrwx 1 lucas lucas 111 Jul 12 19:46 app.log</final>"
+    "user_request": "Qual o tamanho e a data de modificação de app.log?",
+    "raw_text": "<think>Pelo bloco <environment>, o sistema é Ubuntu Linux (shell bash) — então escolho o CLI nativo dele sem o usuário precisar dizer o SO. No Linux (Ubuntu): `ls -l app.log` mostra tamanho (em bytes) e data de modificação na mesma linha. Funciona igual em Linux e macOS (o `stat` é que diverge entre GNU e BSD, por isso prefiro `ls -l` aqui).</think><tool_call name=\"shell\">{\"binary\": \"bash\", \"args\": [\"-c\", \"ls -l app.log\"]}</tool_call><tool_result name=\"shell\" status=\"ok\">{\"stdout\": \"-rwxrwxrwx 1 lucas lucas 111 Jul 12 20:32 app.log\\n\", \"stderr\": \"\", \"returncode\": 0}</tool_result><final>Informações de app.log:\n\n-rwxrwxrwx 1 lucas lucas 111 Jul 12 20:32 app.log</final>",
+    "environment": {
+      "os": "Ubuntu Linux",
+      "shell": "bash",
+      "cwd": "/home/dev/projeto"
+    }
   }
 }

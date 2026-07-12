@@ -18,11 +18,17 @@
       "passed": true
     },
     "execution_classification": "tested",
-    "os_family": "linux"
+    "os_family": "linux",
+    "os_source": "environment"
   },
   "trajectory": {
     "system_prompt": "Você é Logos-3, um agente de engenharia de software da família de modelos Conatus. Raciocine em <think>, use <tool_call name=\"...\"> quando precisar de uma ferramenta, e responda ao usuário só dentro de <final>.",
-    "user_request": "No Linux (Ubuntu), me mostra como settings.conf ficaria trocando 'cache=off' por 'cache=on' — sem alterar o arquivo.",
-    "raw_text": "<think>No Linux (Ubuntu): `sed 's/cache=off/cache=on/' settings.conf` imprime o resultado SEM alterar o arquivo (não usei `-i`, que edita in-place — e cuja sintaxe aliás DIFERE entre GNU/Linux e BSD/macOS: no macOS `-i` exige um argumento de sufixo). Como é só prévia, fica portátil.</think><tool_call name=\"shell\">{\"binary\": \"bash\", \"args\": [\"-c\", \"sed 's/cache=off/cache=on/' settings.conf\"]}</tool_call><tool_result name=\"shell\" status=\"ok\">{\"stdout\": \"cache=on\\nworkers=4\\ncache=on\\nverbose=true\\n\", \"stderr\": \"\", \"returncode\": 0}</tool_result><final>Prévia (arquivo original intacto):\n\ncache=on\nworkers=4\ncache=on\nverbose=true</final>"
+    "user_request": "Me mostra como settings.conf ficaria trocando 'cache=off' por 'cache=on' — sem alterar o arquivo.",
+    "raw_text": "<think>Pelo bloco <environment>, o sistema é Ubuntu Linux (shell bash) — então escolho o CLI nativo dele sem o usuário precisar dizer o SO. No Linux (Ubuntu): `sed 's/cache=off/cache=on/' settings.conf` imprime o resultado SEM alterar o arquivo (não usei `-i`, que edita in-place — e cuja sintaxe aliás DIFERE entre GNU/Linux e BSD/macOS: no macOS `-i` exige um argumento de sufixo). Como é só prévia, fica portátil.</think><tool_call name=\"shell\">{\"binary\": \"bash\", \"args\": [\"-c\", \"sed 's/cache=off/cache=on/' settings.conf\"]}</tool_call><tool_result name=\"shell\" status=\"ok\">{\"stdout\": \"cache=on\\nworkers=4\\ncache=on\\nverbose=true\\n\", \"stderr\": \"\", \"returncode\": 0}</tool_result><final>Prévia (arquivo original intacto):\n\ncache=on\nworkers=4\ncache=on\nverbose=true</final>",
+    "environment": {
+      "os": "Ubuntu Linux",
+      "shell": "bash",
+      "cwd": "/home/dev/projeto"
+    }
   }
 }

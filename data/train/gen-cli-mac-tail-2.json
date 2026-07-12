@@ -18,11 +18,17 @@
       "passed": true
     },
     "execution_classification": "tested",
-    "os_family": "mac"
+    "os_family": "mac",
+    "os_source": "environment"
   },
   "trajectory": {
     "system_prompt": "Você é Logos-3, um agente de engenharia de software da família de modelos Conatus. Raciocine em <think>, use <tool_call name=\"...\"> quando precisar de uma ferramenta, e responda ao usuário só dentro de <final>.",
-    "user_request": "No macOS, mostra as últimas 2 linhas de build.log.",
-    "raw_text": "<think>No macOS: `tail -n 2 build.log`, as últimas 2 linhas. Idêntico Linux/macOS.</think><tool_call name=\"shell\">{\"binary\": \"bash\", \"args\": [\"-c\", \"tail -n 2 build.log\"]}</tool_call><tool_result name=\"shell\" status=\"ok\">{\"stdout\": \"link ok\\nERRO permissao negada\\n\", \"stderr\": \"\", \"returncode\": 0}</tool_result><final>Últimas 2 linhas de build.log:\n\nlink ok\nERRO permissao negada</final>"
+    "user_request": "Mostra as últimas 2 linhas de build.log.",
+    "raw_text": "<think>Pelo bloco <environment>, o sistema é macOS (shell zsh) — então escolho o CLI nativo dele sem o usuário precisar dizer o SO. No macOS: `tail -n 2 build.log`, as últimas 2 linhas. Idêntico Linux/macOS.</think><tool_call name=\"shell\">{\"binary\": \"bash\", \"args\": [\"-c\", \"tail -n 2 build.log\"]}</tool_call><tool_result name=\"shell\" status=\"ok\">{\"stdout\": \"link ok\\nERRO permissao negada\\n\", \"stderr\": \"\", \"returncode\": 0}</tool_result><final>Últimas 2 linhas de build.log:\n\nlink ok\nERRO permissao negada</final>",
+    "environment": {
+      "os": "macOS",
+      "shell": "zsh",
+      "cwd": "/Users/dev/projeto"
+    }
   }
 }

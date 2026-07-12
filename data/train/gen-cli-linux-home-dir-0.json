@@ -18,11 +18,17 @@
       "passed": true
     },
     "execution_classification": "tested",
-    "os_family": "linux"
+    "os_family": "linux",
+    "os_source": "environment"
   },
   "trajectory": {
     "system_prompt": "Você é Logos-3, um agente de engenharia de software da família de modelos Conatus. Raciocine em <think>, use <tool_call name=\"...\"> quando precisar de uma ferramenta, e responda ao usuário só dentro de <final>.",
-    "user_request": "No Linux (Ubuntu), qual é o caminho da minha pasta de usuário (home)?",
-    "raw_text": "<think>No Linux (Ubuntu): o diretório do usuário é `$HOME` (ex.: /home/nome no Linux, /Users/nome no macOS). No Windows a variável equivalente teria outro nome (USERPROFILE) — divergência real.</think><tool_call name=\"shell\">{\"binary\": \"bash\", \"args\": [\"-c\", \"echo \\\"$HOME\\\"\"]}</tool_call><tool_result name=\"shell\" status=\"ok\">{\"stdout\": \"/home/lucas\\n\", \"stderr\": \"\", \"returncode\": 0}</tool_result><final>Sua pasta de usuário é:\n\n/home/lucas</final>"
+    "user_request": "Qual é o caminho da minha pasta de usuário (home)?",
+    "raw_text": "<think>Pelo bloco <environment>, o sistema é Ubuntu Linux (shell bash) — então escolho o CLI nativo dele sem o usuário precisar dizer o SO. No Linux (Ubuntu): o diretório do usuário é `$HOME` (ex.: /home/nome no Linux, /Users/nome no macOS). No Windows a variável equivalente teria outro nome (USERPROFILE) — divergência real.</think><tool_call name=\"shell\">{\"binary\": \"bash\", \"args\": [\"-c\", \"echo \\\"$HOME\\\"\"]}</tool_call><tool_result name=\"shell\" status=\"ok\">{\"stdout\": \"/home/lucas\\n\", \"stderr\": \"\", \"returncode\": 0}</tool_result><final>Sua pasta de usuário é:\n\n/home/lucas</final>",
+    "environment": {
+      "os": "Ubuntu Linux",
+      "shell": "bash",
+      "cwd": "/home/dev/projeto"
+    }
   }
 }

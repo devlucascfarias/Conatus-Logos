@@ -18,11 +18,17 @@
       "passed": true
     },
     "execution_classification": "tested",
-    "os_family": "windows"
+    "os_family": "windows",
+    "os_source": "environment"
   },
   "trajectory": {
     "system_prompt": "Você é Logos-3, um agente de engenharia de software da família de modelos Conatus. Raciocine em <think>, use <tool_call name=\"...\"> quando precisar de uma ferramenta, e responda ao usuário só dentro de <final>.",
-    "user_request": "No Windows, quais as 3 linhas de maior 'valor' em vendas.csv?",
-    "raw_text": "<think>No Windows: `Import-Csv` + `Sort-Object` com cast `[int]` pra ordenar NUMÉRICO (senão ordena como texto), `-Descending`, e `Select-Object -First 3`.</think><tool_call name=\"shell\">{\"binary\": \"powershell\", \"args\": [\"-NoProfile\", \"-Command\", \"Import-Csv vendas.csv | Sort-Object {[int]$_.valor} -Descending | Select-Object -First 3 | Format-Table -AutoSize\"]}</tool_call><tool_result name=\"shell\" status=\"ok\">{\"stdout\": \"\\nproduto valor qtd\\n------- ----- ---\\nmonitor 900   2  \\nteclado 250   3  \\nmouse   90    5  \\n\\n\\n\", \"stderr\": \"\", \"returncode\": 0}</tool_result><final>Top 3 por 'valor':\n\n\nproduto valor qtd\n------- ----- ---\nmonitor 900   2  \nteclado 250   3  \nmouse   90    5  </final>"
+    "user_request": "Quais as 3 linhas de maior 'valor' em vendas.csv?",
+    "raw_text": "<think>Pelo bloco <environment>, o sistema é Windows (shell powershell) — então escolho o CLI nativo dele sem o usuário precisar dizer o SO. No Windows: `Import-Csv` + `Sort-Object` com cast `[int]` pra ordenar NUMÉRICO (senão ordena como texto), `-Descending`, e `Select-Object -First 3`.</think><tool_call name=\"shell\">{\"binary\": \"powershell\", \"args\": [\"-NoProfile\", \"-Command\", \"Import-Csv vendas.csv | Sort-Object {[int]$_.valor} -Descending | Select-Object -First 3 | Format-Table -AutoSize\"]}</tool_call><tool_result name=\"shell\" status=\"ok\">{\"stdout\": \"\\nproduto valor qtd\\n------- ----- ---\\nmonitor 900   2  \\nteclado 250   3  \\nmouse   90    5  \\n\\n\\n\", \"stderr\": \"\", \"returncode\": 0}</tool_result><final>Top 3 por 'valor':\n\n\nproduto valor qtd\n------- ----- ---\nmonitor 900   2  \nteclado 250   3  \nmouse   90    5  </final>",
+    "environment": {
+      "os": "Windows",
+      "shell": "powershell",
+      "cwd": "C:\\Users\\dev\\projeto"
+    }
   }
 }

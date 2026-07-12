@@ -27,17 +27,22 @@
     "raw_text": "<think>Callback ao vendas.csv. Ordeno por valor numérico decrescente e pego o topo.</think><tool_call name=\"shell\">{\"binary\": \"bash\", \"args\": [\"-c\", \"tail -n +2 vendas.csv | sort -t, -k2 -nr | head -n 1\"]}</tool_call><tool_result name=\"shell\" status=\"ok\">{\"stdout\": \"monitor,900,2\\n\", \"stderr\": \"\", \"returncode\": 0}</tool_result><final>A linha de maior valor no vendas.csv:\n\nmonitor,900,2</final>",
     "history": [
       {
-        "user_request": "Estou no macOS. Quantas linhas de dados (sem o cabeçalho) tem o vendas.csv?",
-        "raw_text": "<think>Conto as linhas e desconto o cabeçalho.</think><tool_call name=\"shell\">{\"binary\": \"bash\", \"args\": [\"-c\", \"echo $(($(wc -l < vendas.csv) - 1))\"]}</tool_call><tool_result name=\"shell\" status=\"ok\">{\"stdout\": \"5\\n\", \"stderr\": \"\", \"returncode\": 0}</tool_result><final>O vendas.csv tem 5 linhas de dados (fora o cabeçalho).</final>"
+        "user_request": "Quantas linhas de dados (sem o cabeçalho) tem o vendas.csv?",
+        "raw_text": "<think>Conto as linhas e desconto o cabeçalho. (Pelo <environment>, o sistema é macOS — uso o CLI nativo dele, bash/coreutils, sem o usuário precisar dizer o SO.)</think><tool_call name=\"shell\">{\"binary\": \"bash\", \"args\": [\"-c\", \"echo $(($(wc -l < vendas.csv) - 1))\"]}</tool_call><tool_result name=\"shell\" status=\"ok\">{\"stdout\": \"5\\n\", \"stderr\": \"\", \"returncode\": 0}</tool_result><final>O vendas.csv tem 5 linhas de dados (fora o cabeçalho).</final>"
       },
       {
         "user_request": "Quais são os produtos distintos vendidos?",
-        "raw_text": "<think>Extraio a coluna produto e deduplico. No macOS isso é bash/coreutils.</think><tool_call name=\"shell\">{\"binary\": \"bash\", \"args\": [\"-c\", \"cut -d, -f1 vendas.csv | tail -n +2 | sort -u\"]}</tool_call><tool_result name=\"shell\" status=\"ok\">{\"stdout\": \"monitor\\nmouse\\nteclado\\n\", \"stderr\": \"\", \"returncode\": 0}</tool_result><final>Produtos distintos:\n\nmonitor\nmouse\nteclado</final>"
+        "raw_text": "<think>Extraio a coluna produto e deduplico. No macOS (do ambiente) isso é bash/coreutils.</think><tool_call name=\"shell\">{\"binary\": \"bash\", \"args\": [\"-c\", \"cut -d, -f1 vendas.csv | tail -n +2 | sort -u\"]}</tool_call><tool_result name=\"shell\" status=\"ok\">{\"stdout\": \"monitor\\nmouse\\nteclado\\n\", \"stderr\": \"\", \"returncode\": 0}</tool_result><final>Produtos distintos:\n\nmonitor\nmouse\nteclado</final>"
       },
       {
         "user_request": "Quantos clientes distintos tem no clientes.txt?",
         "raw_text": "<think>Únicos e conto.</think><tool_call name=\"shell\">{\"binary\": \"bash\", \"args\": [\"-c\", \"sort -u clientes.txt | wc -l\"]}</tool_call><tool_result name=\"shell\" status=\"ok\">{\"stdout\": \"4\\n\", \"stderr\": \"\", \"returncode\": 0}</tool_result><final>Há 4 clientes distintos.</final>"
       }
-    ]
+    ],
+    "environment": {
+      "os": "macOS",
+      "shell": "zsh",
+      "cwd": "/Users/dev/projeto"
+    }
   }
 }

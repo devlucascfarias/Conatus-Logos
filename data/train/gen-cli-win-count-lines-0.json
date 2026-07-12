@@ -18,11 +18,17 @@
       "passed": true
     },
     "execution_classification": "tested",
-    "os_family": "windows"
+    "os_family": "windows",
+    "os_source": "environment"
   },
   "trajectory": {
     "system_prompt": "Você é Logos-3, um agente de engenharia de software da família de modelos Conatus. Raciocine em <think>, use <tool_call name=\"...\"> quando precisar de uma ferramenta, e responda ao usuário só dentro de <final>.",
-    "user_request": "No meu Windows, quantas linhas tem app.log?",
-    "raw_text": "<think>No Windows (PowerShell): `(Get-Content app.log).Count` — lê como array de linhas e conta. `wc -l` não é nativo do Windows.</think><tool_call name=\"shell\">{\"binary\": \"powershell\", \"args\": [\"-NoProfile\", \"-Command\", \"(Get-Content app.log).Count\"]}</tool_call><tool_result name=\"shell\" status=\"ok\">{\"stdout\": \"7\\n\", \"stderr\": \"\", \"returncode\": 0}</tool_result><final>O arquivo app.log tem 7 linhas.</final>"
+    "user_request": "Quantas linhas tem app.log?",
+    "raw_text": "<think>Pelo bloco <environment>, o sistema é Windows (shell powershell) — então escolho o CLI nativo dele sem o usuário precisar dizer o SO. No Windows (PowerShell): `(Get-Content app.log).Count` — lê como array de linhas e conta. `wc -l` não é nativo do Windows.</think><tool_call name=\"shell\">{\"binary\": \"powershell\", \"args\": [\"-NoProfile\", \"-Command\", \"(Get-Content app.log).Count\"]}</tool_call><tool_result name=\"shell\" status=\"ok\">{\"stdout\": \"7\\n\", \"stderr\": \"\", \"returncode\": 0}</tool_result><final>O arquivo app.log tem 7 linhas.</final>",
+    "environment": {
+      "os": "Windows",
+      "shell": "powershell",
+      "cwd": "C:\\Users\\dev\\projeto"
+    }
   }
 }

@@ -95,6 +95,17 @@ TRAJECTORY_SCHEMA: dict[str, Any] = {
                 },
             },
         },
+        # D-prompt-environment-block: contexto de ambiente (SO/shell/cwd do host) injetado pelo
+        # harness — como o Claude Code/Codex fazem —, pra o modelo escolher o CLI certo sem o
+        # usuário declarar o SO. Opcional; ausente => formato antigo idêntico.
+        "environment": {
+            "type": "object",
+            "properties": {
+                "os": {"type": "string"},
+                "shell": {"type": "string"},
+                "cwd": {"type": "string"},
+            },
+        },
     },
 }
 

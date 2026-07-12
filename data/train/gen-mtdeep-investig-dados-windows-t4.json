@@ -24,15 +24,15 @@
   "trajectory": {
     "system_prompt": "Você é Logos-3, um agente de engenharia de software da família de modelos Conatus. Raciocine em <think>, use <tool_call name=\"...\"> quando precisar de uma ferramenta, e responda ao usuário só dentro de <final>.",
     "user_request": "Qual cliente aparece mais vezes no clientes.txt?",
-    "raw_text": "<think>Agrupo por valor (`uniq -c`), ordeno por frequência, pego o topo e removo o número da contagem com `sed`. No Windows isso é PowerShell.</think><tool_call name=\"shell\">{\"binary\": \"powershell\", \"args\": [\"-NoProfile\", \"-Command\", \"Get-Content clientes.txt | Group-Object | Sort-Object Count -Descending | Select-Object -First 1 -ExpandProperty Name\"]}</tool_call><tool_result name=\"shell\" status=\"ok\">{\"stdout\": \"ana\\n\", \"stderr\": \"\", \"returncode\": 0}</tool_result><final>O cliente que mais aparece é: ana</final>",
+    "raw_text": "<think>Agrupo por valor (`uniq -c`), ordeno por frequência, pego o topo e removo o número da contagem com `sed`. No Windows (do ambiente) isso é PowerShell.</think><tool_call name=\"shell\">{\"binary\": \"powershell\", \"args\": [\"-NoProfile\", \"-Command\", \"Get-Content clientes.txt | Group-Object | Sort-Object Count -Descending | Select-Object -First 1 -ExpandProperty Name\"]}</tool_call><tool_result name=\"shell\" status=\"ok\">{\"stdout\": \"ana\\n\", \"stderr\": \"\", \"returncode\": 0}</tool_result><final>O cliente que mais aparece é: ana</final>",
     "history": [
       {
-        "user_request": "Estou no Windows. Quantas linhas de dados (sem o cabeçalho) tem o vendas.csv?",
-        "raw_text": "<think>Conto as linhas e desconto o cabeçalho.</think><tool_call name=\"shell\">{\"binary\": \"powershell\", \"args\": [\"-NoProfile\", \"-Command\", \"(Get-Content vendas.csv).Count - 1\"]}</tool_call><tool_result name=\"shell\" status=\"ok\">{\"stdout\": \"5\\n\", \"stderr\": \"\", \"returncode\": 0}</tool_result><final>O vendas.csv tem 5 linhas de dados (fora o cabeçalho).</final>"
+        "user_request": "Quantas linhas de dados (sem o cabeçalho) tem o vendas.csv?",
+        "raw_text": "<think>Conto as linhas e desconto o cabeçalho. (Pelo <environment>, o sistema é Windows — uso o CLI nativo dele, PowerShell, sem o usuário precisar dizer o SO.)</think><tool_call name=\"shell\">{\"binary\": \"powershell\", \"args\": [\"-NoProfile\", \"-Command\", \"(Get-Content vendas.csv).Count - 1\"]}</tool_call><tool_result name=\"shell\" status=\"ok\">{\"stdout\": \"5\\n\", \"stderr\": \"\", \"returncode\": 0}</tool_result><final>O vendas.csv tem 5 linhas de dados (fora o cabeçalho).</final>"
       },
       {
         "user_request": "Quais são os produtos distintos vendidos?",
-        "raw_text": "<think>Extraio a coluna produto e deduplico. No Windows isso é PowerShell.</think><tool_call name=\"shell\">{\"binary\": \"powershell\", \"args\": [\"-NoProfile\", \"-Command\", \"Import-Csv vendas.csv | Select-Object -ExpandProperty produto | Sort-Object -Unique\"]}</tool_call><tool_result name=\"shell\" status=\"ok\">{\"stdout\": \"monitor\\nmouse\\nteclado\\n\", \"stderr\": \"\", \"returncode\": 0}</tool_result><final>Produtos distintos:\n\nmonitor\nmouse\nteclado</final>"
+        "raw_text": "<think>Extraio a coluna produto e deduplico. No Windows (do ambiente) isso é PowerShell.</think><tool_call name=\"shell\">{\"binary\": \"powershell\", \"args\": [\"-NoProfile\", \"-Command\", \"Import-Csv vendas.csv | Select-Object -ExpandProperty produto | Sort-Object -Unique\"]}</tool_call><tool_result name=\"shell\" status=\"ok\">{\"stdout\": \"monitor\\nmouse\\nteclado\\n\", \"stderr\": \"\", \"returncode\": 0}</tool_result><final>Produtos distintos:\n\nmonitor\nmouse\nteclado</final>"
       },
       {
         "user_request": "Quantos clientes distintos tem no clientes.txt?",
@@ -42,6 +42,11 @@
         "user_request": "Volta no vendas.csv (o primeiro arquivo) — qual a linha de maior valor?",
         "raw_text": "<think>Callback ao vendas.csv. Ordeno por valor numérico decrescente e pego o topo.</think><tool_call name=\"shell\">{\"binary\": \"powershell\", \"args\": [\"-NoProfile\", \"-Command\", \"Import-Csv vendas.csv | Sort-Object {[int]$_.valor} -Descending | Select-Object -First 1 | ForEach-Object { \\\"$($_.produto),$($_.valor),$($_.qtd)\\\" }\"]}</tool_call><tool_result name=\"shell\" status=\"ok\">{\"stdout\": \"monitor,900,2\\n\", \"stderr\": \"\", \"returncode\": 0}</tool_result><final>A linha de maior valor no vendas.csv:\n\nmonitor,900,2</final>"
       }
-    ]
+    ],
+    "environment": {
+      "os": "Windows",
+      "shell": "powershell",
+      "cwd": "C:\\Users\\dev\\projeto"
+    }
   }
 }

@@ -27,17 +27,22 @@
     "raw_text": "<think>Callback ao app.log dos primeiros turnos. Conto as linhas totais.</think><tool_call name=\"shell\">{\"binary\": \"bash\", \"args\": [\"-c\", \"wc -l < app.log\"]}</tool_call><tool_result name=\"shell\" status=\"ok\">{\"stdout\": \"7\\n\", \"stderr\": \"\", \"returncode\": 0}</tool_result><final>O app.log — o primeiro log que investigamos — tem 7 linhas no total.</final>",
     "history": [
       {
-        "user_request": "Estou no Linux. Lista os arquivos desta pasta pra eu ver o que tem.",
-        "raw_text": "<think>Listagem inicial de orientação.</think><tool_call name=\"shell\">{\"binary\": \"bash\", \"args\": [\"-c\", \"ls -1\"]}</tool_call><tool_result name=\"shell\" status=\"ok\">{\"stdout\": \"app.log\\nnotas.txt\\nrequests.log\\n\", \"stderr\": \"\", \"returncode\": 0}</tool_result><final>Arquivos na pasta:\n\napp.log\nnotas.txt\nrequests.log</final>"
+        "user_request": "Lista os arquivos desta pasta pra eu ver o que tem.",
+        "raw_text": "<think>Listagem inicial de orientação. (Pelo <environment>, o sistema é Ubuntu Linux — uso o CLI nativo dele, bash/coreutils, sem o usuário precisar dizer o SO.)</think><tool_call name=\"shell\">{\"binary\": \"bash\", \"args\": [\"-c\", \"ls -1\"]}</tool_call><tool_result name=\"shell\" status=\"ok\">{\"stdout\": \"app.log\\nnotas.txt\\nrequests.log\\n\", \"stderr\": \"\", \"returncode\": 0}</tool_result><final>Arquivos na pasta:\n\napp.log\nnotas.txt\nrequests.log</final>"
       },
       {
         "user_request": "Quantos ERROR tem no app.log?",
-        "raw_text": "<think>Conto ocorrências de ERROR. No Linux isso é bash/coreutils.</think><tool_call name=\"shell\">{\"binary\": \"bash\", \"args\": [\"-c\", \"grep -c ERROR app.log\"]}</tool_call><tool_result name=\"shell\" status=\"ok\">{\"stdout\": \"3\\n\", \"stderr\": \"\", \"returncode\": 0}</tool_result><final>O app.log tem 3 linhas com ERROR.</final>"
+        "raw_text": "<think>Conto ocorrências de ERROR. No Ubuntu Linux (do ambiente) isso é bash/coreutils.</think><tool_call name=\"shell\">{\"binary\": \"bash\", \"args\": [\"-c\", \"grep -c ERROR app.log\"]}</tool_call><tool_result name=\"shell\" status=\"ok\">{\"stdout\": \"3\\n\", \"stderr\": \"\", \"returncode\": 0}</tool_result><final>O app.log tem 3 linhas com ERROR.</final>"
       },
       {
         "user_request": "E quantos 500 no requests.log?",
         "raw_text": "<think>Mesma contagem, agora no requests.log.</think><tool_call name=\"shell\">{\"binary\": \"bash\", \"args\": [\"-c\", \"grep -c 500 requests.log\"]}</tool_call><tool_result name=\"shell\" status=\"ok\">{\"stdout\": \"3\\n\", \"stderr\": \"\", \"returncode\": 0}</tool_result><final>O requests.log tem 3 respostas 500.</final>"
       }
-    ]
+    ],
+    "environment": {
+      "os": "Ubuntu Linux",
+      "shell": "bash",
+      "cwd": "/home/dev/projeto"
+    }
   }
 }

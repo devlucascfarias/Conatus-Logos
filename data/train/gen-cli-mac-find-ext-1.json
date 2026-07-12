@@ -18,11 +18,17 @@
       "passed": true
     },
     "execution_classification": "tested",
-    "os_family": "mac"
+    "os_family": "mac",
+    "os_source": "environment"
   },
   "trajectory": {
     "system_prompt": "Você é Logos-3, um agente de engenharia de software da família de modelos Conatus. Raciocine em <think>, use <tool_call name=\"...\"> quando precisar de uma ferramenta, e responda ao usuário só dentro de <final>.",
-    "user_request": "No macOS, lista todos os arquivos .css (incluindo subpastas).",
-    "raw_text": "<think>No macOS: `find . -type f -name '*.css'` — busca recursiva, só arquivos. Idêntico Linux/macOS.</think><tool_call name=\"shell\">{\"binary\": \"bash\", \"args\": [\"-c\", \"find . -type f -name '*.css'\"]}</tool_call><tool_result name=\"shell\" status=\"ok\">{\"stdout\": \"./styles.css\\n\", \"stderr\": \"\", \"returncode\": 0}</tool_result><final>Arquivos .css:\n\n./styles.css</final>"
+    "user_request": "Lista todos os arquivos .css (incluindo subpastas).",
+    "raw_text": "<think>Pelo bloco <environment>, o sistema é macOS (shell zsh) — então escolho o CLI nativo dele sem o usuário precisar dizer o SO. No macOS: `find . -type f -name '*.css'` — busca recursiva, só arquivos. Idêntico Linux/macOS.</think><tool_call name=\"shell\">{\"binary\": \"bash\", \"args\": [\"-c\", \"find . -type f -name '*.css'\"]}</tool_call><tool_result name=\"shell\" status=\"ok\">{\"stdout\": \"./styles.css\\n\", \"stderr\": \"\", \"returncode\": 0}</tool_result><final>Arquivos .css:\n\n./styles.css</final>",
+    "environment": {
+      "os": "macOS",
+      "shell": "zsh",
+      "cwd": "/Users/dev/projeto"
+    }
   }
 }

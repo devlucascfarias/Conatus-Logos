@@ -24,15 +24,15 @@
   "trajectory": {
     "system_prompt": "Você é Logos-3, um agente de engenharia de software da família de modelos Conatus. Raciocine em <think>, use <tool_call name=\"...\"> quando precisar de uma ferramenta, e responda ao usuário só dentro de <final>.",
     "user_request": "Lista os nomes das funções definidas no helpers.py.",
-    "raw_text": "<think>Extraio os nomes das funções do helpers.py. No Linux isso é bash/coreutils.</think><tool_call name=\"shell\">{\"binary\": \"bash\", \"args\": [\"-c\", \"grep -oE 'def [a-z_]+' helpers.py\"]}</tool_call><tool_result name=\"shell\" status=\"ok\">{\"stdout\": \"def fmt\\ndef parse\\n\", \"stderr\": \"\", \"returncode\": 0}</tool_result><final>Funções em helpers.py:\n\ndef fmt\ndef parse</final>",
+    "raw_text": "<think>Extraio os nomes das funções do helpers.py. No Ubuntu Linux (do ambiente) isso é bash/coreutils.</think><tool_call name=\"shell\">{\"binary\": \"bash\", \"args\": [\"-c\", \"grep -oE 'def [a-z_]+' helpers.py\"]}</tool_call><tool_result name=\"shell\" status=\"ok\">{\"stdout\": \"def fmt\\ndef parse\\n\", \"stderr\": \"\", \"returncode\": 0}</tool_result><final>Funções em helpers.py:\n\ndef fmt\ndef parse</final>",
     "history": [
       {
-        "user_request": "Estou no Linux. Me lista os arquivos .py deste projeto.",
-        "raw_text": "<think>Listagem dos módulos Python.</think><tool_call name=\"shell\">{\"binary\": \"bash\", \"args\": [\"-c\", \"find . -name '*.py' -maxdepth 1\"]}</tool_call><tool_result name=\"shell\" status=\"ok\">{\"stdout\": \"./db.py\\n./helpers.py\\n./main.py\\n\", \"stderr\": \"\", \"returncode\": 0}</tool_result><final>Arquivos .py:\n\n./db.py\n./helpers.py\n./main.py</final>"
+        "user_request": "Me lista os arquivos .py deste projeto.",
+        "raw_text": "<think>Listagem dos módulos Python. (Pelo <environment>, o sistema é Ubuntu Linux — uso o CLI nativo dele, bash/coreutils, sem o usuário precisar dizer o SO.)</think><tool_call name=\"shell\">{\"binary\": \"bash\", \"args\": [\"-c\", \"find . -name '*.py' -maxdepth 1\"]}</tool_call><tool_result name=\"shell\" status=\"ok\">{\"stdout\": \"./db.py\\n./helpers.py\\n./main.py\\n\", \"stderr\": \"\", \"returncode\": 0}</tool_result><final>Arquivos .py:\n\n./db.py\n./helpers.py\n./main.py</final>"
       },
       {
         "user_request": "Onde tem TODO no código?",
-        "raw_text": "<think>Busco os marcadores TODO. No Linux isso é bash/coreutils.</think><tool_call name=\"shell\">{\"binary\": \"bash\", \"args\": [\"-c\", \"grep -n TODO *.py\"]}</tool_call><tool_result name=\"shell\" status=\"ok\">{\"stdout\": \"db.py:1:# TODO: pool de conexoes\\nmain.py:1:# TODO: tratar erro de conexao\\n\", \"stderr\": \"\", \"returncode\": 0}</tool_result><final>TODOs encontrados:\n\ndb.py:1:# TODO: pool de conexoes\nmain.py:1:# TODO: tratar erro de conexao</final>"
+        "raw_text": "<think>Busco os marcadores TODO. No Ubuntu Linux (do ambiente) isso é bash/coreutils.</think><tool_call name=\"shell\">{\"binary\": \"bash\", \"args\": [\"-c\", \"grep -n TODO *.py\"]}</tool_call><tool_result name=\"shell\" status=\"ok\">{\"stdout\": \"db.py:1:# TODO: pool de conexoes\\nmain.py:1:# TODO: tratar erro de conexao\\n\", \"stderr\": \"\", \"returncode\": 0}</tool_result><final>TODOs encontrados:\n\ndb.py:1:# TODO: pool de conexoes\nmain.py:1:# TODO: tratar erro de conexao</final>"
       },
       {
         "user_request": "Quantas funções (linhas com 'def ') tem no main.py e no db.py juntos?",
@@ -42,6 +42,11 @@
         "user_request": "Naquele primeiro arquivo que você listou, o main.py, mostra a primeira linha (o comentário TODO).",
         "raw_text": "<think>Callback ao main.py. Primeira linha.</think><tool_call name=\"shell\">{\"binary\": \"bash\", \"args\": [\"-c\", \"head -n 1 main.py\"]}</tool_call><tool_result name=\"shell\" status=\"ok\">{\"stdout\": \"# TODO: tratar erro de conexao\\n\", \"stderr\": \"\", \"returncode\": 0}</tool_result><final>A primeira linha do main.py:\n\n# TODO: tratar erro de conexao</final>"
       }
-    ]
+    ],
+    "environment": {
+      "os": "Ubuntu Linux",
+      "shell": "bash",
+      "cwd": "/home/dev/projeto"
+    }
   }
 }

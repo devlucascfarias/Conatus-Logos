@@ -1,0 +1,34 @@
+{
+  "metadata": {
+    "id": "gen-cli-override-mac-list-size-1",
+    "domain": "cli_shell",
+    "language": "shell",
+    "difficulty": "medium",
+    "tools_used": [
+      "shell"
+    ],
+    "num_steps": 1,
+    "task_type": "shell_command",
+    "source": "curated_manual_real_execution",
+    "license": "synthetic-no-license-needed",
+    "validation_status": "validated",
+    "execution_performed": true,
+    "split": "train",
+    "expected_result": {
+      "passed": true
+    },
+    "execution_classification": "tested",
+    "os_family": "mac",
+    "os_source": "user_override"
+  },
+  "trajectory": {
+    "system_prompt": "Você é Logos-3, um agente de engenharia de software da família de modelos Conatus. Raciocine em <think>, use <tool_call name=\"...\"> quando precisar de uma ferramenta, e responda ao usuário só dentro de <final>.",
+    "user_request": "Lista os arquivos desta pasta do maior pro menor. Preciso do comando pra macOS, não pro sistema atual.",
+    "raw_text": "<think>O bloco <environment> diz que estou em Windows, MAS o usuário pediu explicitamente o comando de macOS. Instrução explícita do usuário tem prioridade sobre o padrão do ambiente, então gero o comando de macOS. No macOS o shell é POSIX. `ls -lS` já ordena por tamanho decrescente — a flag `-S` existe tanto no GNU (Linux) quanto no BSD ls (macOS). `grep -v /` remove diretórios da saída `-p`.</think><tool_call name=\"shell\">{\"binary\": \"bash\", \"args\": [\"-c\", \"ls -lS -p | grep -v /\"]}</tool_call><tool_result name=\"shell\" status=\"ok\">{\"stdout\": \"total 0\\n-rwxrwxrwx 1 lucas lucas 105 Jul 12 20:31 access.log\\n-rwxrwxrwx 1 lucas lucas 105 Jul 12 20:31 server.js\\n-rwxrwxrwx 1 lucas lucas  88 Jul 12 20:31 index.html\\n-rwxrwxrwx 1 lucas lucas  69 Jul 12 20:31 vendas.csv\\n-rwxrwxrwx 1 lucas lucas  68 Jul 12 20:31 styles.css\\n-rwxrwxrwx 1 lucas lucas  43 Jul 12 20:31 settings.conf\\n-rwxrwxrwx 1 lucas lucas  37 Jul 12 20:31 nomes.txt\\n\", \"stderr\": \"\", \"returncode\": 0}</tool_result><final>Arquivos ordenados do maior pro menor:\n\ntotal 0\n-rwxrwxrwx 1 lucas lucas 105 Jul 12 20:31 access.log\n-rwxrwxrwx 1 lucas lucas 105 Jul 12 20:31 server.js\n-rwxrwxrwx 1 lucas lucas  88 Jul 12 20:31 index.html\n-rwxrwxrwx 1 lucas lucas  69 Jul 12 20:31 vendas.csv\n-rwxrwxrwx 1 lucas lucas  68 Jul 12 20:31 styles.css\n-rwxrwxrwx 1 lucas lucas  43 Jul 12 20:31 settings.conf\n-rwxrwxrwx 1 lucas lucas  37 Jul 12 20:31 nomes.txt</final>",
+    "environment": {
+      "os": "Windows",
+      "shell": "powershell",
+      "cwd": "C:\\Users\\dev\\projeto"
+    }
+  }
+}

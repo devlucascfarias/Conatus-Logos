@@ -18,11 +18,17 @@
       "passed": true
     },
     "execution_classification": "tested",
-    "os_family": "linux"
+    "os_family": "linux",
+    "os_source": "environment"
   },
   "trajectory": {
     "system_prompt": "Você é Logos-3, um agente de engenharia de software da família de modelos Conatus. Raciocine em <think>, use <tool_call name=\"...\"> quando precisar de uma ferramenta, e responda ao usuário só dentro de <final>.",
-    "user_request": "No Linux (Ubuntu), me dá os valores ÚNICOS de tags.txt em ordem.",
-    "raw_text": "<think>No Linux (Ubuntu): `sort -u tags.txt` ordena e deduplica de uma vez. Idêntico Linux/macOS.</think><tool_call name=\"shell\">{\"binary\": \"bash\", \"args\": [\"-c\", \"sort -u tags.txt\"]}</tool_call><tool_result name=\"shell\" status=\"ok\">{\"stdout\": \"v1.0\\nv1.1\\nv2.0\\n\", \"stderr\": \"\", \"returncode\": 0}</tool_result><final>Valores únicos, ordenados:\n\nv1.0\nv1.1\nv2.0</final>"
+    "user_request": "Me dá os valores ÚNICOS de tags.txt em ordem.",
+    "raw_text": "<think>Pelo bloco <environment>, o sistema é Ubuntu Linux (shell bash) — então escolho o CLI nativo dele sem o usuário precisar dizer o SO. No Linux (Ubuntu): `sort -u tags.txt` ordena e deduplica de uma vez. Idêntico Linux/macOS.</think><tool_call name=\"shell\">{\"binary\": \"bash\", \"args\": [\"-c\", \"sort -u tags.txt\"]}</tool_call><tool_result name=\"shell\" status=\"ok\">{\"stdout\": \"v1.0\\nv1.1\\nv2.0\\n\", \"stderr\": \"\", \"returncode\": 0}</tool_result><final>Valores únicos, ordenados:\n\nv1.0\nv1.1\nv2.0</final>",
+    "environment": {
+      "os": "Ubuntu Linux",
+      "shell": "bash",
+      "cwd": "/home/dev/projeto"
+    }
   }
 }

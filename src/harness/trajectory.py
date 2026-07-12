@@ -32,6 +32,29 @@ class HistoryTurn:
     raw_text: str
 
 
+def render_environment(environment: Optional[dict]) -> str:
+    """Bloco de contexto de ambiente (D-prompt-environment-block) — SO, shell, cwd do host,
+    injetado pelo harness (não digitado pelo usuário), igual ao `<env>`/`Platform:` que o Claude
+    Code e o Codex colocam no contexto. É isso que permite o modelo escolher o CLI certo (ex.:
+    PowerShell no Windows) SEM o usuário declarar o SO. Renderizado logo após o system prompt,
+    então entra no PREFIXO mascarado do treino (contexto, nunca tokens treinados) — ver
+    `_render_prefix` em src/training/data_collator.py. Chaves conhecidas saem em ordem estável;
+    ausente/vazio => string vazia, mantendo o formato antigo idêntico para exemplos sem env."""
+    if not environment:
+        return ""
+    lines = []
+    for key in ("os", "shell", "cwd"):
+        val = environment.get(key)
+        if val:
+            lines.append(f"{key}: {val}")
+    for key in sorted(environment):
+        if key not in ("os", "shell", "cwd") and environment.get(key):
+            lines.append(f"{key}: {environment[key]}")
+    if not lines:
+        return ""
+    return "\n\n<environment>\n" + "\n".join(lines) + "\n</environment>"
+
+
 @dataclass
 class Trajectory:
     system_prompt: str
@@ -39,6 +62,7 @@ class Trajectory:
     raw_text: str = ""
     forced_final_reason: Optional[str] = None
     history: list[HistoryTurn] = field(default_factory=list)
+    environment: Optional[dict] = None
 
     def render_for_model(self) -> str:
         """Texto completo que vira o prompt de continuação para o Model Runner (seção 3.6/6).
@@ -46,11 +70,14 @@ class Trajectory:
         Modela a decisão D2: tool calling multi-etapa é UMA mensagem assistant contínua — o
         harness nunca monta múltiplos turnos de chat com role 'tool', só concatena texto.
         Turnos de `history` (se houver) entram ANTES do turno atual, no mesmo formato
-        `[USER]/[ASSISTANT]` — espelha `agent.Run`'s `historyPrefix` byte a byte."""
+        `[USER]/[ASSISTANT]` — espelha `agent.Run`'s `historyPrefix` byte a byte. O bloco de
+        `<environment>` (se houver) entra logo após o system prompt, antes do histórico
+        (D-prompt-environment-block)."""
+        env_block = render_environment(self.environment)
         history_prefix = "".join(
             f"\n\n[USER]\n{turn.user_request}\n\n[ASSISTANT]\n{turn.raw_text}" for turn in self.history
         )
-        return f"{self.system_prompt}{history_prefix}\n\n[USER]\n{self.user_request}\n\n[ASSISTANT]\n{self.raw_text}"
+        return f"{self.system_prompt}{env_block}{history_prefix}\n\n[USER]\n{self.user_request}\n\n[ASSISTANT]\n{self.raw_text}"
 
     def append_raw(self, text: str) -> None:
         self.raw_text += text
@@ -79,4 +106,6 @@ class Trajectory:
         }
         if self.history:
             body["history"] = [{"user_request": t.user_request, "raw_text": t.raw_text} for t in self.history]
+        if self.environment:
+            body["environment"] = dict(self.environment)
         return body

@@ -18,11 +18,17 @@
       "passed": true
     },
     "execution_classification": "tested",
-    "os_family": "windows"
+    "os_family": "windows",
+    "os_source": "environment"
   },
   "trajectory": {
     "system_prompt": "Você é Logos-3, um agente de engenharia de software da família de modelos Conatus. Raciocine em <think>, use <tool_call name=\"...\"> quando precisar de uma ferramenta, e responda ao usuário só dentro de <final>.",
-    "user_request": "No Windows, qual o tamanho e a data de modificação de main.go?",
-    "raw_text": "<think>No Windows: `Get-Item main.go` traz os metadados; projeto Nome/Length/LastWriteTime. `Length` é o tamanho em bytes. Equivale a um `ls -l`/`stat` do Unix.</think><tool_call name=\"shell\">{\"binary\": \"powershell\", \"args\": [\"-NoProfile\", \"-Command\", \"Get-Item main.go | Select-Object Name,Length,LastWriteTime | Format-List\"]}</tool_call><tool_result name=\"shell\" status=\"ok\">{\"stdout\": \"\\n\\nName          : main.go\\nLength        : 83\\nLastWriteTime : 12/07/2026 19:46:16\\n\\n\\n\\n\", \"stderr\": \"\", \"returncode\": 0}</tool_result><final>Informações de main.go:\n\n\n\nName          : main.go\nLength        : 83\nLastWriteTime : 12/07/2026 19:46:16</final>"
+    "user_request": "Qual o tamanho e a data de modificação de main.go?",
+    "raw_text": "<think>Pelo bloco <environment>, o sistema é Windows (shell powershell) — então escolho o CLI nativo dele sem o usuário precisar dizer o SO. No Windows: `Get-Item main.go` traz os metadados; projeto Nome/Length/LastWriteTime. `Length` é o tamanho em bytes. Equivale a um `ls -l`/`stat` do Unix.</think><tool_call name=\"shell\">{\"binary\": \"powershell\", \"args\": [\"-NoProfile\", \"-Command\", \"Get-Item main.go | Select-Object Name,Length,LastWriteTime | Format-List\"]}</tool_call><tool_result name=\"shell\" status=\"ok\">{\"stdout\": \"\\n\\nName          : main.go\\nLength        : 83\\nLastWriteTime : 12/07/2026 20:32:26\\n\\n\\n\\n\", \"stderr\": \"\", \"returncode\": 0}</tool_result><final>Informações de main.go:\n\n\n\nName          : main.go\nLength        : 83\nLastWriteTime : 12/07/2026 20:32:26</final>",
+    "environment": {
+      "os": "Windows",
+      "shell": "powershell",
+      "cwd": "C:\\Users\\dev\\projeto"
+    }
   }
 }

@@ -18,11 +18,17 @@
       "passed": true
     },
     "execution_classification": "tested",
-    "os_family": "mac"
+    "os_family": "mac",
+    "os_source": "environment"
   },
   "trajectory": {
     "system_prompt": "Você é Logos-3, um agente de engenharia de software da família de modelos Conatus. Raciocine em <think>, use <tool_call name=\"...\"> quando precisar de uma ferramenta, e responda ao usuário só dentro de <final>.",
-    "user_request": "No macOS, junta o conteúdo de app.py e utils.py numa saída só.",
-    "raw_text": "<think>No macOS: `cat app.py utils.py` concatena os dois na ordem. Idêntico Linux/macOS.</think><tool_call name=\"shell\">{\"binary\": \"bash\", \"args\": [\"-c\", \"cat app.py utils.py\"]}</tool_call><tool_result name=\"shell\" status=\"ok\">{\"stdout\": \"import sys\\n\\n# TODO: validar entrada\\ndef main():\\n    print('rodando')\\n\\nif __name__ == '__main__':\\n    main()\\n# TODO: cobrir com testes\\ndef soma(a, b):\\n    return a + b\\n\", \"stderr\": \"\", \"returncode\": 0}</tool_result><final>Conteúdo de app.py + utils.py:\n\nimport sys\n\n# TODO: validar entrada\ndef main():\n    print('rodando')\n\nif __name__ == '__main__':\n    main()\n# TODO: cobrir com testes\ndef soma(a, b):\n    return a + b</final>"
+    "user_request": "Junta o conteúdo de app.py e utils.py numa saída só.",
+    "raw_text": "<think>Pelo bloco <environment>, o sistema é macOS (shell zsh) — então escolho o CLI nativo dele sem o usuário precisar dizer o SO. No macOS: `cat app.py utils.py` concatena os dois na ordem. Idêntico Linux/macOS.</think><tool_call name=\"shell\">{\"binary\": \"bash\", \"args\": [\"-c\", \"cat app.py utils.py\"]}</tool_call><tool_result name=\"shell\" status=\"ok\">{\"stdout\": \"import sys\\n\\n# TODO: validar entrada\\ndef main():\\n    print('rodando')\\n\\nif __name__ == '__main__':\\n    main()\\n# TODO: cobrir com testes\\ndef soma(a, b):\\n    return a + b\\n\", \"stderr\": \"\", \"returncode\": 0}</tool_result><final>Conteúdo de app.py + utils.py:\n\nimport sys\n\n# TODO: validar entrada\ndef main():\n    print('rodando')\n\nif __name__ == '__main__':\n    main()\n# TODO: cobrir com testes\ndef soma(a, b):\n    return a + b</final>",
+    "environment": {
+      "os": "macOS",
+      "shell": "zsh",
+      "cwd": "/Users/dev/projeto"
+    }
   }
 }

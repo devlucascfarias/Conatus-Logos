@@ -18,11 +18,17 @@
       "passed": true
     },
     "execution_classification": "tested",
-    "os_family": "windows"
+    "os_family": "windows",
+    "os_source": "environment"
   },
   "trajectory": {
     "system_prompt": "Você é Logos-3, um agente de engenharia de software da família de modelos Conatus. Raciocine em <think>, use <tool_call name=\"...\"> quando precisar de uma ferramenta, e responda ao usuário só dentro de <final>.",
-    "user_request": "No Windows, quantas palavras tem main.go?",
-    "raw_text": "<think>No Windows: `Get-Content main.go -Raw` lê o arquivo inteiro como uma string, e `Measure-Object -Word` conta as palavras — `.Words` extrai o número. Equivale a `wc -w`.</think><tool_call name=\"shell\">{\"binary\": \"powershell\", \"args\": [\"-NoProfile\", \"-Command\", \"(Get-Content main.go -Raw | Measure-Object -Word).Words\"]}</tool_call><tool_result name=\"shell\" status=\"ok\">{\"stdout\": \"13\\n\", \"stderr\": \"\", \"returncode\": 0}</tool_result><final>O arquivo main.go tem 13 palavras.</final>"
+    "user_request": "Quantas palavras tem main.go?",
+    "raw_text": "<think>Pelo bloco <environment>, o sistema é Windows (shell powershell) — então escolho o CLI nativo dele sem o usuário precisar dizer o SO. No Windows: `Get-Content main.go -Raw` lê o arquivo inteiro como uma string, e `Measure-Object -Word` conta as palavras — `.Words` extrai o número. Equivale a `wc -w`.</think><tool_call name=\"shell\">{\"binary\": \"powershell\", \"args\": [\"-NoProfile\", \"-Command\", \"(Get-Content main.go -Raw | Measure-Object -Word).Words\"]}</tool_call><tool_result name=\"shell\" status=\"ok\">{\"stdout\": \"13\\n\", \"stderr\": \"\", \"returncode\": 0}</tool_result><final>O arquivo main.go tem 13 palavras.</final>",
+    "environment": {
+      "os": "Windows",
+      "shell": "powershell",
+      "cwd": "C:\\Users\\dev\\projeto"
+    }
   }
 }

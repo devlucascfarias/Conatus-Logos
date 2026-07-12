@@ -45,18 +45,25 @@ from typing import Any
 from .loss_masking import IGNORE_INDEX, apply_loss_mask, compute_loss_mask
 
 
-def _render_prefix(system_prompt: str, user_request: str, history: list[dict[str, str]] | None = None) -> str:
+def _render_prefix(
+    system_prompt: str,
+    user_request: str,
+    history: list[dict[str, str]] | None = None,
+    environment: dict | None = None,
+) -> str:
     """Mesmo template de `Trajectory.render_for_model()` (harness/trajectory.py), até o ponto
     onde `raw_text` do turno ATUAL começaria — reaproveitado aqui via uma trajetória com
     `raw_text=""` para garantir que treino e inferência NUNCA divirjam nesse formato
     (D-train-prompt-mask). `history` (se houver) entra ANTES do turno atual, no prefixo — ver
     D-dataset-history-loss-mask acima para por que isso é suficiente pra mascarar o histórico
-    inteiro sem lógica extra de máscara."""
+    inteiro sem lógica extra de máscara. `environment` (D-prompt-environment-block) entra logo
+    após o system prompt, também no prefixo — então o bloco de SO/shell é contexto mascarado,
+    nunca tokens treinados."""
     from src.harness.trajectory import HistoryTurn, Trajectory
 
     history_turns = [HistoryTurn(user_request=h["user_request"], raw_text=h["raw_text"]) for h in (history or [])]
     return Trajectory(
-        system_prompt=system_prompt, user_request=user_request, history=history_turns
+        system_prompt=system_prompt, user_request=user_request, history=history_turns, environment=environment
     ).render_for_model()
 
 
@@ -75,7 +82,7 @@ def build_pretokenized_dataset(trajectories: list[dict[str, Any]], tokenizer: An
     records = []
     for traj in trajectories:
         raw_text = traj["raw_text"]
-        prefix = _render_prefix(traj["system_prompt"], traj["user_request"], traj.get("history"))
+        prefix = _render_prefix(traj["system_prompt"], traj["user_request"], traj.get("history"), traj.get("environment"))
         full_text = prefix + raw_text
 
         encoded = tokenizer(full_text, truncation=True, max_length=max_length, return_offsets_mapping=True)

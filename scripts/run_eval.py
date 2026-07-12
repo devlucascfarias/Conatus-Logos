@@ -103,6 +103,20 @@ def _build_scenarios() -> list:
                 "<final>função e teste criados, suite passou</final>",
             ],
         ),
+        # probe_os_awareness (D-prompt-environment-block): ambiente Windows + pedido de CLI
+        # neutro de SO — o modelo deve escolher PowerShell a partir do <environment>.
+        (
+            probes.probe_os_awareness,
+            dict(user_request="lista os arquivos desta pasta", environment={"os": "Windows", "shell": "powershell"}, expect_family="windows"),
+            ['<tool_call name="shell">{"binary": "powershell", "args": ["-NoProfile", "-Command", "Get-ChildItem -Name"]}</tool_call>',
+             "<final>listei os arquivos</final>"],
+        ),
+        (
+            probes.probe_os_awareness,
+            dict(user_request="conta quantas linhas tem o app.log", environment={"os": "Ubuntu Linux", "shell": "bash"}, expect_family="posix"),
+            ['<tool_call name="shell">{"binary": "bash", "args": ["-c", "wc -l < app.log"]}</tool_call>',
+             "<final>contei as linhas</final>"],
+        ),
         # probe_frontend_checker_language_choice (D-eval-fase-g-probes): sintaxe SCSS real
         # (variável + mixin) só valida com language="scss" — html/css sozinho rejeitaria.
         (

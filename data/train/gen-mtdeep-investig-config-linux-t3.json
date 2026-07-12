@@ -27,17 +27,22 @@
     "raw_text": "<think>Callback ao app.conf. Linhas únicas contadas.</think><tool_call name=\"shell\">{\"binary\": \"bash\", \"args\": [\"-c\", \"sort -u app.conf | wc -l\"]}</tool_call><tool_result name=\"shell\" status=\"ok\">{\"stdout\": \"4\\n\", \"stderr\": \"\", \"returncode\": 0}</tool_result><final>O app.conf — o primeiro arquivo que abrimos — tem 4 configurações distintas.</final>",
     "history": [
       {
-        "user_request": "Estou no Linux. Me mostra o conteúdo do app.conf.",
-        "raw_text": "<think>Leio o arquivo de config inteiro.</think><tool_call name=\"shell\">{\"binary\": \"bash\", \"args\": [\"-c\", \"cat app.conf\"]}</tool_call><tool_result name=\"shell\" status=\"ok\">{\"stdout\": \"port=8080\\ndebug=true\\nworkers=4\\nlog_level=info\\ndebug=true\\n\", \"stderr\": \"\", \"returncode\": 0}</tool_result><final>Conteúdo do app.conf:\n\nport=8080\ndebug=true\nworkers=4\nlog_level=info\ndebug=true</final>"
+        "user_request": "Me mostra o conteúdo do app.conf.",
+        "raw_text": "<think>Leio o arquivo de config inteiro. (Pelo <environment>, o sistema é Ubuntu Linux — uso o CLI nativo dele, bash/coreutils, sem o usuário precisar dizer o SO.)</think><tool_call name=\"shell\">{\"binary\": \"bash\", \"args\": [\"-c\", \"cat app.conf\"]}</tool_call><tool_result name=\"shell\" status=\"ok\">{\"stdout\": \"port=8080\\ndebug=true\\nworkers=4\\nlog_level=info\\ndebug=true\\n\", \"stderr\": \"\", \"returncode\": 0}</tool_result><final>Conteúdo do app.conf:\n\nport=8080\ndebug=true\nworkers=4\nlog_level=info\ndebug=true</final>"
       },
       {
         "user_request": "Tem alguma chave duplicada aí? Me diz quais linhas aparecem mais de uma vez.",
-        "raw_text": "<think>Linhas duplicadas: ordeno e uso `uniq -d` (só as repetidas). No Linux isso é bash/coreutils.</think><tool_call name=\"shell\">{\"binary\": \"bash\", \"args\": [\"-c\", \"sort app.conf | uniq -d\"]}</tool_call><tool_result name=\"shell\" status=\"ok\">{\"stdout\": \"debug=true\\n\", \"stderr\": \"\", \"returncode\": 0}</tool_result><final>Linhas duplicadas no app.conf:\n\ndebug=true</final>"
+        "raw_text": "<think>Linhas duplicadas: ordeno e uso `uniq -d` (só as repetidas). No Ubuntu Linux (do ambiente) isso é bash/coreutils.</think><tool_call name=\"shell\">{\"binary\": \"bash\", \"args\": [\"-c\", \"sort app.conf | uniq -d\"]}</tool_call><tool_result name=\"shell\" status=\"ok\">{\"stdout\": \"debug=true\\n\", \"stderr\": \"\", \"returncode\": 0}</tool_result><final>Linhas duplicadas no app.conf:\n\ndebug=true</final>"
       },
       {
         "user_request": "Qual o valor de log_level?",
         "raw_text": "<think>Filtro a linha da chave e extraio o valor depois do `=`.</think><tool_call name=\"shell\">{\"binary\": \"bash\", \"args\": [\"-c\", \"grep '^log_level=' app.conf | cut -d= -f2\"]}</tool_call><tool_result name=\"shell\" status=\"ok\">{\"stdout\": \"info\\n\", \"stderr\": \"\", \"returncode\": 0}</tool_result><final>O log_level está definido como: info</final>"
       }
-    ]
+    ],
+    "environment": {
+      "os": "Ubuntu Linux",
+      "shell": "bash",
+      "cwd": "/home/dev/projeto"
+    }
   }
 }

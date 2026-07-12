@@ -9,6 +9,7 @@ from . import (
     probe_frontend_checker_language_choice,
     probe_loop_termination,
     probe_multi_file_edit,
+    probe_os_awareness,
     probe_paraphrase_generalization,
 )
 from .base import ProbeResult
@@ -23,4 +24,5 @@ __all__ = [
     "probe_cross_language",
     "probe_multi_file_edit",
     "probe_frontend_checker_language_choice",
+    "probe_os_awareness",
 ]

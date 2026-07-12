@@ -24,15 +24,15 @@
   "trajectory": {
     "system_prompt": "Você é Logos-3, um agente de engenharia de software da família de modelos Conatus. Raciocine em <think>, use <tool_call name=\"...\"> quando precisar de uma ferramenta, e responda ao usuário só dentro de <final>.",
     "user_request": "Por fim, me dá os valores únicos do notas.txt em ordem.",
-    "raw_text": "<think>Únicos ordenados. No Windows isso é PowerShell.</think><tool_call name=\"shell\">{\"binary\": \"powershell\", \"args\": [\"-NoProfile\", \"-Command\", \"Get-Content notas.txt | Sort-Object -Unique\"]}</tool_call><tool_result name=\"shell\" status=\"ok\">{\"stdout\": \"alpha\\nbeta\\ngamma\\n\", \"stderr\": \"\", \"returncode\": 0}</tool_result><final>Valores únicos de notas.txt:\n\nalpha\nbeta\ngamma</final>",
+    "raw_text": "<think>Únicos ordenados. No Windows (do ambiente) isso é PowerShell.</think><tool_call name=\"shell\">{\"binary\": \"powershell\", \"args\": [\"-NoProfile\", \"-Command\", \"Get-Content notas.txt | Sort-Object -Unique\"]}</tool_call><tool_result name=\"shell\" status=\"ok\">{\"stdout\": \"alpha\\nbeta\\ngamma\\n\", \"stderr\": \"\", \"returncode\": 0}</tool_result><final>Valores únicos de notas.txt:\n\nalpha\nbeta\ngamma</final>",
     "history": [
       {
-        "user_request": "Estou no Windows. Lista os arquivos desta pasta pra eu ver o que tem.",
-        "raw_text": "<think>Listagem inicial de orientação.</think><tool_call name=\"shell\">{\"binary\": \"powershell\", \"args\": [\"-NoProfile\", \"-Command\", \"Get-ChildItem -Name\"]}</tool_call><tool_result name=\"shell\" status=\"ok\">{\"stdout\": \"app.log\\nnotas.txt\\nrequests.log\\n\", \"stderr\": \"\", \"returncode\": 0}</tool_result><final>Arquivos na pasta:\n\napp.log\nnotas.txt\nrequests.log</final>"
+        "user_request": "Lista os arquivos desta pasta pra eu ver o que tem.",
+        "raw_text": "<think>Listagem inicial de orientação. (Pelo <environment>, o sistema é Windows — uso o CLI nativo dele, PowerShell, sem o usuário precisar dizer o SO.)</think><tool_call name=\"shell\">{\"binary\": \"powershell\", \"args\": [\"-NoProfile\", \"-Command\", \"Get-ChildItem -Name\"]}</tool_call><tool_result name=\"shell\" status=\"ok\">{\"stdout\": \"app.log\\nnotas.txt\\nrequests.log\\n\", \"stderr\": \"\", \"returncode\": 0}</tool_result><final>Arquivos na pasta:\n\napp.log\nnotas.txt\nrequests.log</final>"
       },
       {
         "user_request": "Quantos ERROR tem no app.log?",
-        "raw_text": "<think>Conto ocorrências de ERROR. No Windows isso é PowerShell.</think><tool_call name=\"shell\">{\"binary\": \"powershell\", \"args\": [\"-NoProfile\", \"-Command\", \"(Select-String -Path app.log -Pattern 'ERROR').Count\"]}</tool_call><tool_result name=\"shell\" status=\"ok\">{\"stdout\": \"3\\n\", \"stderr\": \"\", \"returncode\": 0}</tool_result><final>O app.log tem 3 linhas com ERROR.</final>"
+        "raw_text": "<think>Conto ocorrências de ERROR. No Windows (do ambiente) isso é PowerShell.</think><tool_call name=\"shell\">{\"binary\": \"powershell\", \"args\": [\"-NoProfile\", \"-Command\", \"(Select-String -Path app.log -Pattern 'ERROR').Count\"]}</tool_call><tool_result name=\"shell\" status=\"ok\">{\"stdout\": \"3\\n\", \"stderr\": \"\", \"returncode\": 0}</tool_result><final>O app.log tem 3 linhas com ERROR.</final>"
       },
       {
         "user_request": "E quantos 500 no requests.log?",
@@ -42,6 +42,11 @@
         "user_request": "Volta lá no app.log que a gente olhou primeiro — quantas linhas ele tem no total?",
         "raw_text": "<think>Callback ao app.log dos primeiros turnos. Conto as linhas totais.</think><tool_call name=\"shell\">{\"binary\": \"powershell\", \"args\": [\"-NoProfile\", \"-Command\", \"(Get-Content app.log).Count\"]}</tool_call><tool_result name=\"shell\" status=\"ok\">{\"stdout\": \"7\\n\", \"stderr\": \"\", \"returncode\": 0}</tool_result><final>O app.log — o primeiro log que investigamos — tem 7 linhas no total.</final>"
       }
-    ]
+    ],
+    "environment": {
+      "os": "Windows",
+      "shell": "powershell",
+      "cwd": "C:\\Users\\dev\\projeto"
+    }
   }
 }

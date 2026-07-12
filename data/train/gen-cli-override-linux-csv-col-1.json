@@ -1,0 +1,34 @@
+{
+  "metadata": {
+    "id": "gen-cli-override-linux-csv-col-1",
+    "domain": "cli_shell",
+    "language": "shell",
+    "difficulty": "medium",
+    "tools_used": [
+      "shell"
+    ],
+    "num_steps": 1,
+    "task_type": "shell_command",
+    "source": "curated_manual_real_execution",
+    "license": "synthetic-no-license-needed",
+    "validation_status": "validated",
+    "execution_performed": true,
+    "split": "train",
+    "expected_result": {
+      "passed": true
+    },
+    "execution_classification": "tested",
+    "os_family": "linux",
+    "os_source": "user_override"
+  },
+  "trajectory": {
+    "system_prompt": "Você é Logos-3, um agente de engenharia de software da família de modelos Conatus. Raciocine em <think>, use <tool_call name=\"...\"> quando precisar de uma ferramenta, e responda ao usuário só dentro de <final>.",
+    "user_request": "Extrai a coluna 'produto' de vendas.csv (sem o cabeçalho). Preciso do comando pra Linux (Ubuntu), não pro sistema atual.",
+    "raw_text": "<think>O bloco <environment> diz que estou em macOS, MAS o usuário pediu explicitamente o comando de Linux (Ubuntu). Instrução explícita do usuário tem prioridade sobre o padrão do ambiente, então gero o comando de Linux (Ubuntu). No Linux (Ubuntu): `cut -d, -f1 vendas.csv` pega a coluna 1 (delimitador vírgula), `tail -n +2` pula o cabeçalho. Idêntico Linux/macOS.</think><tool_call name=\"shell\">{\"binary\": \"bash\", \"args\": [\"-c\", \"cut -d, -f1 vendas.csv | tail -n +2\"]}</tool_call><tool_result name=\"shell\" status=\"ok\">{\"stdout\": \"teclado\\nmouse\\nmonitor\\nmouse\\n\", \"stderr\": \"\", \"returncode\": 0}</tool_result><final>Valores da coluna 'produto':\n\nteclado\nmouse\nmonitor\nmouse</final>",
+    "environment": {
+      "os": "macOS",
+      "shell": "zsh",
+      "cwd": "/Users/dev/projeto"
+    }
+  }
+}

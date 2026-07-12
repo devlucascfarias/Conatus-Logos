@@ -18,11 +18,17 @@
       "passed": true
     },
     "execution_classification": "tested",
-    "os_family": "windows"
+    "os_family": "windows",
+    "os_source": "environment"
   },
   "trajectory": {
     "system_prompt": "Você é Logos-3, um agente de engenharia de software da família de modelos Conatus. Raciocine em <think>, use <tool_call name=\"...\"> quando precisar de uma ferramenta, e responda ao usuário só dentro de <final>.",
-    "user_request": "No Windows, extrai a coluna 'valor' de vendas.csv (sem o cabeçalho).",
-    "raw_text": "<think>No Windows: `Import-Csv vendas.csv` entende o cabeçalho e vira objetos; `-ExpandProperty valor` extrai só a coluna. Mais robusto que fatiar por vírgula na mão.</think><tool_call name=\"shell\">{\"binary\": \"powershell\", \"args\": [\"-NoProfile\", \"-Command\", \"Import-Csv vendas.csv | Select-Object -ExpandProperty valor\"]}</tool_call><tool_result name=\"shell\" status=\"ok\">{\"stdout\": \"250\\n90\\n900\\n90\\n\", \"stderr\": \"\", \"returncode\": 0}</tool_result><final>Valores da coluna 'valor':\n\n250\n90\n900\n90</final>"
+    "user_request": "Extrai a coluna 'valor' de vendas.csv (sem o cabeçalho).",
+    "raw_text": "<think>Pelo bloco <environment>, o sistema é Windows (shell powershell) — então escolho o CLI nativo dele sem o usuário precisar dizer o SO. No Windows: `Import-Csv vendas.csv` entende o cabeçalho e vira objetos; `-ExpandProperty valor` extrai só a coluna. Mais robusto que fatiar por vírgula na mão.</think><tool_call name=\"shell\">{\"binary\": \"powershell\", \"args\": [\"-NoProfile\", \"-Command\", \"Import-Csv vendas.csv | Select-Object -ExpandProperty valor\"]}</tool_call><tool_result name=\"shell\" status=\"ok\">{\"stdout\": \"250\\n90\\n900\\n90\\n\", \"stderr\": \"\", \"returncode\": 0}</tool_result><final>Valores da coluna 'valor':\n\n250\n90\n900\n90</final>",
+    "environment": {
+      "os": "Windows",
+      "shell": "powershell",
+      "cwd": "C:\\Users\\dev\\projeto"
+    }
   }
 }

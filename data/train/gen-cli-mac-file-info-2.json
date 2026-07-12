@@ -18,11 +18,17 @@
       "passed": true
     },
     "execution_classification": "tested",
-    "os_family": "mac"
+    "os_family": "mac",
+    "os_source": "environment"
   },
   "trajectory": {
     "system_prompt": "Você é Logos-3, um agente de engenharia de software da família de modelos Conatus. Raciocine em <think>, use <tool_call name=\"...\"> quando precisar de uma ferramenta, e responda ao usuário só dentro de <final>.",
-    "user_request": "No macOS, qual o tamanho e a data de modificação de main.go?",
-    "raw_text": "<think>No macOS: `ls -l main.go` mostra tamanho (em bytes) e data de modificação na mesma linha. Funciona igual em Linux e macOS (o `stat` é que diverge entre GNU e BSD, por isso prefiro `ls -l` aqui).</think><tool_call name=\"shell\">{\"binary\": \"bash\", \"args\": [\"-c\", \"ls -l main.go\"]}</tool_call><tool_result name=\"shell\" status=\"ok\">{\"stdout\": \"-rwxrwxrwx 1 lucas lucas 83 Jul 12 19:46 main.go\\n\", \"stderr\": \"\", \"returncode\": 0}</tool_result><final>Informações de main.go:\n\n-rwxrwxrwx 1 lucas lucas 83 Jul 12 19:46 main.go</final>"
+    "user_request": "Qual o tamanho e a data de modificação de main.go?",
+    "raw_text": "<think>Pelo bloco <environment>, o sistema é macOS (shell zsh) — então escolho o CLI nativo dele sem o usuário precisar dizer o SO. No macOS: `ls -l main.go` mostra tamanho (em bytes) e data de modificação na mesma linha. Funciona igual em Linux e macOS (o `stat` é que diverge entre GNU e BSD, por isso prefiro `ls -l` aqui).</think><tool_call name=\"shell\">{\"binary\": \"bash\", \"args\": [\"-c\", \"ls -l main.go\"]}</tool_call><tool_result name=\"shell\" status=\"ok\">{\"stdout\": \"-rwxrwxrwx 1 lucas lucas 83 Jul 12 20:32 main.go\\n\", \"stderr\": \"\", \"returncode\": 0}</tool_result><final>Informações de main.go:\n\n-rwxrwxrwx 1 lucas lucas 83 Jul 12 20:32 main.go</final>",
+    "environment": {
+      "os": "macOS",
+      "shell": "zsh",
+      "cwd": "/Users/dev/projeto"
+    }
   }
 }

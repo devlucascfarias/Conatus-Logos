@@ -87,9 +87,10 @@ def run_agent_loop(
     tool_registry: ToolExecutorRegistry,
     sandbox,
     config: Optional[AgentLoopConfig] = None,
+    environment: Optional[dict] = None,
 ) -> AgentLoopResult:
     config = config or AgentLoopConfig()
-    trajectory = Trajectory(system_prompt=system_prompt, user_request=user_request)
+    trajectory = Trajectory(system_prompt=system_prompt, user_request=user_request, environment=environment)
     seen_calls: set = set()
     forced_final = False
     steps_taken = 0

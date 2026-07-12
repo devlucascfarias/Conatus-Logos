@@ -18,11 +18,17 @@
       "passed": true
     },
     "execution_classification": "tested",
-    "os_family": "mac"
+    "os_family": "mac",
+    "os_source": "environment"
   },
   "trajectory": {
     "system_prompt": "Você é Logos-3, um agente de engenharia de software da família de modelos Conatus. Raciocine em <think>, use <tool_call name=\"...\"> quando precisar de uma ferramenta, e responda ao usuário só dentro de <final>.",
-    "user_request": "No macOS, mostra as primeiras 3 linhas de estoque.csv.",
-    "raw_text": "<think>No macOS: `head -n 3 estoque.csv`. Idêntico Linux/macOS.</think><tool_call name=\"shell\">{\"binary\": \"bash\", \"args\": [\"-c\", \"head -n 3 estoque.csv\"]}</tool_call><tool_result name=\"shell\" status=\"ok\">{\"stdout\": \"sku,nome,preco\\n001,cabo,15\\n002,fonte,80\\n\", \"stderr\": \"\", \"returncode\": 0}</tool_result><final>Primeiras 3 linhas de estoque.csv:\n\nsku,nome,preco\n001,cabo,15\n002,fonte,80</final>"
+    "user_request": "Mostra as primeiras 3 linhas de estoque.csv.",
+    "raw_text": "<think>Pelo bloco <environment>, o sistema é macOS (shell zsh) — então escolho o CLI nativo dele sem o usuário precisar dizer o SO. No macOS: `head -n 3 estoque.csv`. Idêntico Linux/macOS.</think><tool_call name=\"shell\">{\"binary\": \"bash\", \"args\": [\"-c\", \"head -n 3 estoque.csv\"]}</tool_call><tool_result name=\"shell\" status=\"ok\">{\"stdout\": \"sku,nome,preco\\n001,cabo,15\\n002,fonte,80\\n\", \"stderr\": \"\", \"returncode\": 0}</tool_result><final>Primeiras 3 linhas de estoque.csv:\n\nsku,nome,preco\n001,cabo,15\n002,fonte,80</final>",
+    "environment": {
+      "os": "macOS",
+      "shell": "zsh",
+      "cwd": "/Users/dev/projeto"
+    }
   }
 }

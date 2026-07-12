@@ -18,11 +18,17 @@
       "passed": true
     },
     "execution_classification": "tested",
-    "os_family": "linux"
+    "os_family": "linux",
+    "os_source": "environment"
   },
   "trajectory": {
     "system_prompt": "Você é Logos-3, um agente de engenharia de software da família de modelos Conatus. Raciocine em <think>, use <tool_call name=\"...\"> quando precisar de uma ferramenta, e responda ao usuário só dentro de <final>.",
-    "user_request": "No Linux (Ubuntu), quais as 3 linhas de maior 'valor' em vendas.csv?",
-    "raw_text": "<think>No Linux (Ubuntu): pipeline — `tail -n +2` pula o cabeçalho, `sort -t, -k2 -nr` ordena pela coluna 2 numérica (`-n`) decrescente (`-r`), `head -n 3` pega o topo. Idêntico Linux/macOS.</think><tool_call name=\"shell\">{\"binary\": \"bash\", \"args\": [\"-c\", \"tail -n +2 vendas.csv | sort -t, -k2 -nr | head -n 3\"]}</tool_call><tool_result name=\"shell\" status=\"ok\">{\"stdout\": \"monitor,900,2\\nteclado,250,3\\nmouse,90,5\\n\", \"stderr\": \"\", \"returncode\": 0}</tool_result><final>Top 3 por 'valor':\n\nmonitor,900,2\nteclado,250,3\nmouse,90,5</final>"
+    "user_request": "Quais as 3 linhas de maior 'valor' em vendas.csv?",
+    "raw_text": "<think>Pelo bloco <environment>, o sistema é Ubuntu Linux (shell bash) — então escolho o CLI nativo dele sem o usuário precisar dizer o SO. No Linux (Ubuntu): pipeline — `tail -n +2` pula o cabeçalho, `sort -t, -k2 -nr` ordena pela coluna 2 numérica (`-n`) decrescente (`-r`), `head -n 3` pega o topo. Idêntico Linux/macOS.</think><tool_call name=\"shell\">{\"binary\": \"bash\", \"args\": [\"-c\", \"tail -n +2 vendas.csv | sort -t, -k2 -nr | head -n 3\"]}</tool_call><tool_result name=\"shell\" status=\"ok\">{\"stdout\": \"monitor,900,2\\nteclado,250,3\\nmouse,90,5\\n\", \"stderr\": \"\", \"returncode\": 0}</tool_result><final>Top 3 por 'valor':\n\nmonitor,900,2\nteclado,250,3\nmouse,90,5</final>",
+    "environment": {
+      "os": "Ubuntu Linux",
+      "shell": "bash",
+      "cwd": "/home/dev/projeto"
+    }
   }
 }

@@ -18,11 +18,17 @@
       "passed": true
     },
     "execution_classification": "tested",
-    "os_family": "linux"
+    "os_family": "linux",
+    "os_source": "environment"
   },
   "trajectory": {
     "system_prompt": "Você é Logos-3, um agente de engenharia de software da família de modelos Conatus. Raciocine em <think>, use <tool_call name=\"...\"> quando precisar de uma ferramenta, e responda ao usuário só dentro de <final>.",
-    "user_request": "No Linux (Ubuntu), quantas palavras tem utils.py?",
-    "raw_text": "<think>No Linux (Ubuntu): `wc -w < utils.py` conta as palavras; o `<` faz imprimir só o número. Idêntico Linux/macOS.</think><tool_call name=\"shell\">{\"binary\": \"bash\", \"args\": [\"-c\", \"wc -w < utils.py\"]}</tool_call><tool_result name=\"shell\" status=\"ok\">{\"stdout\": \"12\\n\", \"stderr\": \"\", \"returncode\": 0}</tool_result><final>O arquivo utils.py tem 12 palavras.</final>"
+    "user_request": "Quantas palavras tem utils.py?",
+    "raw_text": "<think>Pelo bloco <environment>, o sistema é Ubuntu Linux (shell bash) — então escolho o CLI nativo dele sem o usuário precisar dizer o SO. No Linux (Ubuntu): `wc -w < utils.py` conta as palavras; o `<` faz imprimir só o número. Idêntico Linux/macOS.</think><tool_call name=\"shell\">{\"binary\": \"bash\", \"args\": [\"-c\", \"wc -w < utils.py\"]}</tool_call><tool_result name=\"shell\" status=\"ok\">{\"stdout\": \"12\\n\", \"stderr\": \"\", \"returncode\": 0}</tool_result><final>O arquivo utils.py tem 12 palavras.</final>",
+    "environment": {
+      "os": "Ubuntu Linux",
+      "shell": "bash",
+      "cwd": "/home/dev/projeto"
+    }
   }
 }

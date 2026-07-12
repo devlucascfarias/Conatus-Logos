@@ -12,6 +12,7 @@ from src.evaluation.probes import (
     probe_frontend_checker_language_choice,
     probe_loop_termination,
     probe_multi_file_edit,
+    probe_os_awareness,
     probe_paraphrase_generalization,
 )
 from src.harness import PRAXIS_SYSTEM_PROMPT
@@ -313,6 +314,65 @@ def test_probe_frontend_language_choice_fails_when_no_checker_called(sandbox, re
         runner, registry, sandbox, "crie um tema scss", expected_language="scss"
     )
     assert result.category == categories.FAIL
+
+
+# --- probe_os_awareness (D-prompt-environment-block) --------------------------------------
+
+
+def test_probe_os_awareness_passes_when_windows_env_gets_powershell(sandbox, registry):
+    runner = ScriptedModelRunner(
+        [
+            '<tool_call name="shell">{"binary": "powershell", "args": ["-NoProfile", "-Command", "Get-ChildItem -Name"]}</tool_call>',
+            "<final>ok</final>",
+        ]
+    )
+    result = probe_os_awareness.run(
+        runner, registry, sandbox, "lista os arquivos",
+        environment={"os": "Windows", "shell": "powershell"}, expect_family="windows",
+    )
+    assert result.category == categories.TOOL_PASS
+
+
+def test_probe_os_awareness_passes_when_posix_env_gets_bash(sandbox, registry):
+    runner = ScriptedModelRunner(
+        [
+            '<tool_call name="shell">{"binary": "bash", "args": ["-c", "ls -1"]}</tool_call>',
+            "<final>ok</final>",
+        ]
+    )
+    result = probe_os_awareness.run(
+        runner, registry, sandbox, "lista os arquivos",
+        environment={"os": "Ubuntu Linux", "shell": "bash"}, expect_family="posix",
+    )
+    assert result.category == categories.TOOL_PASS
+
+
+def test_probe_os_awareness_fails_when_wrong_family_for_environment(sandbox, registry):
+    # Ambiente diz Windows, mas o modelo usou bash — família errada pro SO.
+    runner = ScriptedModelRunner(
+        [
+            '<tool_call name="shell">{"binary": "bash", "args": ["-c", "ls -1"]}</tool_call>',
+            "<final>ok</final>",
+        ]
+    )
+    result = probe_os_awareness.run(
+        runner, registry, sandbox, "lista os arquivos",
+        environment={"os": "Windows", "shell": "powershell"}, expect_family="windows",
+    )
+    assert result.category == categories.FAIL
+
+
+def test_probe_os_awareness_passes_environment_into_prompt(sandbox, registry):
+    # Confirma que o bloco <environment> chega de fato no prompt renderizado (via run_agent_loop).
+    runner = _RecordingRunner(
+        ['<tool_call name="shell">{"binary": "powershell", "args": ["-NoProfile", "-Command", "Get-ChildItem"]}</tool_call>', "<final>ok</final>"]
+    )
+    probe_os_awareness.run(
+        runner, registry, sandbox, "lista os arquivos",
+        environment={"os": "Windows", "shell": "powershell"}, expect_family="windows",
+    )
+    assert "<environment>" in runner.prompts_seen[0]
+    assert "os: Windows" in runner.prompts_seen[0]
 
 
 # --- system_prompt usado pelos probes ----------------------------------------------------

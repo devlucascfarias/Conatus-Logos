@@ -18,11 +18,17 @@
       "passed": true
     },
     "execution_classification": "tested",
-    "os_family": "mac"
+    "os_family": "mac",
+    "os_source": "environment"
   },
   "trajectory": {
     "system_prompt": "Você é Logos-3, um agente de engenharia de software da família de modelos Conatus. Raciocine em <think>, use <tool_call name=\"...\"> quando precisar de uma ferramenta, e responda ao usuário só dentro de <final>.",
-    "user_request": "No macOS, me mostra como config.ini ficaria trocando 'debug=true' por 'debug=false' — sem alterar o arquivo.",
-    "raw_text": "<think>No macOS: `sed 's/debug=true/debug=false/' config.ini` imprime o resultado SEM alterar o arquivo (não usei `-i`, que edita in-place — e cuja sintaxe aliás DIFERE entre GNU/Linux e BSD/macOS: no macOS `-i` exige um argumento de sufixo). Como é só prévia, fica portátil.</think><tool_call name=\"shell\">{\"binary\": \"bash\", \"args\": [\"-c\", \"sed 's/debug=true/debug=false/' config.ini\"]}</tool_call><tool_result name=\"shell\" status=\"ok\">{\"stdout\": \"[app]\\ndebug=false\\nport=8080\\n\", \"stderr\": \"\", \"returncode\": 0}</tool_result><final>Prévia (arquivo original intacto):\n\n[app]\ndebug=false\nport=8080</final>"
+    "user_request": "Me mostra como config.ini ficaria trocando 'debug=true' por 'debug=false' — sem alterar o arquivo.",
+    "raw_text": "<think>Pelo bloco <environment>, o sistema é macOS (shell zsh) — então escolho o CLI nativo dele sem o usuário precisar dizer o SO. No macOS: `sed 's/debug=true/debug=false/' config.ini` imprime o resultado SEM alterar o arquivo (não usei `-i`, que edita in-place — e cuja sintaxe aliás DIFERE entre GNU/Linux e BSD/macOS: no macOS `-i` exige um argumento de sufixo). Como é só prévia, fica portátil.</think><tool_call name=\"shell\">{\"binary\": \"bash\", \"args\": [\"-c\", \"sed 's/debug=true/debug=false/' config.ini\"]}</tool_call><tool_result name=\"shell\" status=\"ok\">{\"stdout\": \"[app]\\ndebug=false\\nport=8080\\n\", \"stderr\": \"\", \"returncode\": 0}</tool_result><final>Prévia (arquivo original intacto):\n\n[app]\ndebug=false\nport=8080</final>",
+    "environment": {
+      "os": "macOS",
+      "shell": "zsh",
+      "cwd": "/Users/dev/projeto"
+    }
   }
 }

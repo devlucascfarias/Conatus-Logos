@@ -24,15 +24,15 @@
   "trajectory": {
     "system_prompt": "Você é Logos-3, um agente de engenharia de software da família de modelos Conatus. Raciocine em <think>, use <tool_call name=\"...\"> quando precisar de uma ferramenta, e responda ao usuário só dentro de <final>.",
     "user_request": "No hosts.txt, quantos hosts únicos de 'web' tem?",
-    "raw_text": "<think>Filtro os que começam com 'web', deduplico e conto. No macOS isso é bash/coreutils.</think><tool_call name=\"shell\">{\"binary\": \"bash\", \"args\": [\"-c\", \"grep '^web' hosts.txt | sort -u | wc -l\"]}</tool_call><tool_result name=\"shell\" status=\"ok\">{\"stdout\": \"2\\n\", \"stderr\": \"\", \"returncode\": 0}</tool_result><final>Há 2 hosts 'web' únicos.</final>",
+    "raw_text": "<think>Filtro os que começam com 'web', deduplico e conto. No macOS (do ambiente) isso é bash/coreutils.</think><tool_call name=\"shell\">{\"binary\": \"bash\", \"args\": [\"-c\", \"grep '^web' hosts.txt | sort -u | wc -l\"]}</tool_call><tool_result name=\"shell\" status=\"ok\">{\"stdout\": \"2\\n\", \"stderr\": \"\", \"returncode\": 0}</tool_result><final>Há 2 hosts 'web' únicos.</final>",
     "history": [
       {
-        "user_request": "Estou no macOS. Me mostra o conteúdo do app.conf.",
-        "raw_text": "<think>Leio o arquivo de config inteiro.</think><tool_call name=\"shell\">{\"binary\": \"bash\", \"args\": [\"-c\", \"cat app.conf\"]}</tool_call><tool_result name=\"shell\" status=\"ok\">{\"stdout\": \"port=8080\\ndebug=true\\nworkers=4\\nlog_level=info\\ndebug=true\\n\", \"stderr\": \"\", \"returncode\": 0}</tool_result><final>Conteúdo do app.conf:\n\nport=8080\ndebug=true\nworkers=4\nlog_level=info\ndebug=true</final>"
+        "user_request": "Me mostra o conteúdo do app.conf.",
+        "raw_text": "<think>Leio o arquivo de config inteiro. (Pelo <environment>, o sistema é macOS — uso o CLI nativo dele, bash/coreutils, sem o usuário precisar dizer o SO.)</think><tool_call name=\"shell\">{\"binary\": \"bash\", \"args\": [\"-c\", \"cat app.conf\"]}</tool_call><tool_result name=\"shell\" status=\"ok\">{\"stdout\": \"port=8080\\ndebug=true\\nworkers=4\\nlog_level=info\\ndebug=true\\n\", \"stderr\": \"\", \"returncode\": 0}</tool_result><final>Conteúdo do app.conf:\n\nport=8080\ndebug=true\nworkers=4\nlog_level=info\ndebug=true</final>"
       },
       {
         "user_request": "Tem alguma chave duplicada aí? Me diz quais linhas aparecem mais de uma vez.",
-        "raw_text": "<think>Linhas duplicadas: ordeno e uso `uniq -d` (só as repetidas). No macOS isso é bash/coreutils.</think><tool_call name=\"shell\">{\"binary\": \"bash\", \"args\": [\"-c\", \"sort app.conf | uniq -d\"]}</tool_call><tool_result name=\"shell\" status=\"ok\">{\"stdout\": \"debug=true\\n\", \"stderr\": \"\", \"returncode\": 0}</tool_result><final>Linhas duplicadas no app.conf:\n\ndebug=true</final>"
+        "raw_text": "<think>Linhas duplicadas: ordeno e uso `uniq -d` (só as repetidas). No macOS (do ambiente) isso é bash/coreutils.</think><tool_call name=\"shell\">{\"binary\": \"bash\", \"args\": [\"-c\", \"sort app.conf | uniq -d\"]}</tool_call><tool_result name=\"shell\" status=\"ok\">{\"stdout\": \"debug=true\\n\", \"stderr\": \"\", \"returncode\": 0}</tool_result><final>Linhas duplicadas no app.conf:\n\ndebug=true</final>"
       },
       {
         "user_request": "Qual o valor de log_level?",
@@ -42,6 +42,11 @@
         "user_request": "Volta no app.conf (o arquivo que a gente abriu primeiro) — quantas configurações DISTINTAS ele tem, ignorando as duplicatas?",
         "raw_text": "<think>Callback ao app.conf. Linhas únicas contadas.</think><tool_call name=\"shell\">{\"binary\": \"bash\", \"args\": [\"-c\", \"sort -u app.conf | wc -l\"]}</tool_call><tool_result name=\"shell\" status=\"ok\">{\"stdout\": \"4\\n\", \"stderr\": \"\", \"returncode\": 0}</tool_result><final>O app.conf — o primeiro arquivo que abrimos — tem 4 configurações distintas.</final>"
       }
-    ]
+    ],
+    "environment": {
+      "os": "macOS",
+      "shell": "zsh",
+      "cwd": "/Users/dev/projeto"
+    }
   }
 }

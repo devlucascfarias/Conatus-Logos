@@ -18,11 +18,17 @@
       "passed": true
     },
     "execution_classification": "tested",
-    "os_family": "linux"
+    "os_family": "linux",
+    "os_source": "environment"
   },
   "trajectory": {
     "system_prompt": "Você é Logos-3, um agente de engenharia de software da família de modelos Conatus. Raciocine em <think>, use <tool_call name=\"...\"> quando precisar de uma ferramenta, e responda ao usuário só dentro de <final>.",
-    "user_request": "No Linux (Ubuntu), mostra as primeiras entradas do meu PATH, uma por linha.",
-    "raw_text": "<think>No Linux (Ubuntu): o PATH é `$PATH` e o separador é dois-pontos (`:`), NÃO `;` como no Windows — divergência real entre os SOs. `tr ':' '\\n'` quebra em linhas.</think><tool_call name=\"shell\">{\"binary\": \"bash\", \"args\": [\"-c\", \"echo \\\"$PATH\\\" | tr \\\":\\\" \\\"\\\\n\\\" | head -n 5\"]}</tool_call><tool_result name=\"shell\" status=\"ok\">{\"stdout\": \"/usr/local/sbin\\n/usr/local/bin\\n/usr/sbin\\n/usr/bin\\n/sbin\\n\", \"stderr\": \"\", \"returncode\": 0}</tool_result><final>Primeiras entradas do PATH:\n\n/usr/local/sbin\n/usr/local/bin\n/usr/sbin\n/usr/bin\n/sbin</final>"
+    "user_request": "Mostra as primeiras entradas do meu PATH, uma por linha.",
+    "raw_text": "<think>Pelo bloco <environment>, o sistema é Ubuntu Linux (shell bash) — então escolho o CLI nativo dele sem o usuário precisar dizer o SO. No Linux (Ubuntu): o PATH é `$PATH` e o separador é dois-pontos (`:`), NÃO `;` como no Windows — divergência real entre os SOs. `tr ':' '\\n'` quebra em linhas.</think><tool_call name=\"shell\">{\"binary\": \"bash\", \"args\": [\"-c\", \"echo \\\"$PATH\\\" | tr \\\":\\\" \\\"\\\\n\\\" | head -n 5\"]}</tool_call><tool_result name=\"shell\" status=\"ok\">{\"stdout\": \"/usr/local/sbin\\n/usr/local/bin\\n/usr/sbin\\n/usr/bin\\n/sbin\\n\", \"stderr\": \"\", \"returncode\": 0}</tool_result><final>Primeiras entradas do PATH:\n\n/usr/local/sbin\n/usr/local/bin\n/usr/sbin\n/usr/bin\n/sbin</final>",
+    "environment": {
+      "os": "Ubuntu Linux",
+      "shell": "bash",
+      "cwd": "/home/dev/projeto"
+    }
   }
 }

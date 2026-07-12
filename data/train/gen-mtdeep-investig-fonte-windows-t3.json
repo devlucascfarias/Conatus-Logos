@@ -27,17 +27,22 @@
     "raw_text": "<think>Callback ao calc.py e ao teste: comparo o conjunto de funções definidas com o conjunto importado pelo teste; a diferença é o que não está coberto.</think><tool_call name=\"shell\">{\"binary\": \"powershell\", \"args\": [\"-NoProfile\", \"-Command\", \"$funcs = (Select-String -Path calc.py -Pattern 'def (\\\\w+)' | ForEach-Object { $_.Matches.Groups[1].Value }); $imp = (Select-String -Path test_calc.py -Pattern 'import (.+)').Matches.Groups[1].Value; $funcs | Where-Object { $imp -notlike \\\"*$_*\\\" }\"]}</tool_call><tool_result name=\"shell\" status=\"ok\">{\"stdout\": \"mul\\n\", \"stderr\": \"\", \"returncode\": 0}</tool_result><final>Função(ões) do calc.py que o teste NÃO cobre:\n\nmul</final>",
     "history": [
       {
-        "user_request": "Estou no Windows. Quantas linhas de código tem o calc.py?",
-        "raw_text": "<think>Conto as linhas do arquivo de código.</think><tool_call name=\"shell\">{\"binary\": \"powershell\", \"args\": [\"-NoProfile\", \"-Command\", \"(Get-Content calc.py).Count\"]}</tool_call><tool_result name=\"shell\" status=\"ok\">{\"stdout\": \"10\\n\", \"stderr\": \"\", \"returncode\": 0}</tool_result><final>O calc.py tem 10 linhas.</final>"
+        "user_request": "Quantas linhas de código tem o calc.py?",
+        "raw_text": "<think>Conto as linhas do arquivo de código. (Pelo <environment>, o sistema é Windows — uso o CLI nativo dele, PowerShell, sem o usuário precisar dizer o SO.)</think><tool_call name=\"shell\">{\"binary\": \"powershell\", \"args\": [\"-NoProfile\", \"-Command\", \"(Get-Content calc.py).Count\"]}</tool_call><tool_result name=\"shell\" status=\"ok\">{\"stdout\": \"10\\n\", \"stderr\": \"\", \"returncode\": 0}</tool_result><final>O calc.py tem 10 linhas.</final>"
       },
       {
         "user_request": "Quais funções estão definidas nele?",
-        "raw_text": "<think>Extraio os nomes das funções definidas. No Windows isso é PowerShell.</think><tool_call name=\"shell\">{\"binary\": \"powershell\", \"args\": [\"-NoProfile\", \"-Command\", \"Select-String -Path calc.py -Pattern 'def (\\\\w+)' | ForEach-Object { $_.Matches.Groups[1].Value }\"]}</tool_call><tool_result name=\"shell\" status=\"ok\">{\"stdout\": \"add\\nsub\\nmul\\n\", \"stderr\": \"\", \"returncode\": 0}</tool_result><final>Funções em calc.py:\n\nadd\nsub\nmul</final>"
+        "raw_text": "<think>Extraio os nomes das funções definidas. No Windows (do ambiente) isso é PowerShell.</think><tool_call name=\"shell\">{\"binary\": \"powershell\", \"args\": [\"-NoProfile\", \"-Command\", \"Select-String -Path calc.py -Pattern 'def (\\\\w+)' | ForEach-Object { $_.Matches.Groups[1].Value }\"]}</tool_call><tool_result name=\"shell\" status=\"ok\">{\"stdout\": \"add\\nsub\\nmul\\n\", \"stderr\": \"\", \"returncode\": 0}</tool_result><final>Funções em calc.py:\n\nadd\nsub\nmul</final>"
       },
       {
         "user_request": "O test_calc.py testa todas elas? Me diz quais funções o teste importa.",
         "raw_text": "<think>Vejo o que o arquivo de teste importa do calc — assim dá pra saber o que está coberto.</think><tool_call name=\"shell\">{\"binary\": \"powershell\", \"args\": [\"-NoProfile\", \"-Command\", \"Select-String -Path test_calc.py -Pattern 'import (.+)' | ForEach-Object { $_.Matches.Groups[1].Value }\"]}</tool_call><tool_result name=\"shell\" status=\"ok\">{\"stdout\": \"add, sub\\n\", \"stderr\": \"\", \"returncode\": 0}</tool_result><final>O test_calc.py importa: add, sub. (Comparando com as funções do calc.py, dá pra ver se falta cobrir alguma.)</final>"
       }
-    ]
+    ],
+    "environment": {
+      "os": "Windows",
+      "shell": "powershell",
+      "cwd": "C:\\Users\\dev\\projeto"
+    }
   }
 }
