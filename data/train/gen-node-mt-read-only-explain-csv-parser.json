@@ -1,0 +1,34 @@
+{
+  "metadata": {
+    "id": "gen-node-mt-read-only-explain-csv-parser",
+    "domain": "backend",
+    "language": "typescript",
+    "difficulty": "easy",
+    "tools_used": [
+      "read_file"
+    ],
+    "num_steps": 1,
+    "task_type": "code_explanation",
+    "source": "curated_manual_real_execution",
+    "license": "synthetic-no-license-needed",
+    "validation_status": "validated",
+    "execution_performed": true,
+    "split": "train",
+    "checker_used": "checker-typescript-1.0",
+    "expected_result": {
+      "passed": true
+    },
+    "execution_classification": "interpreted"
+  },
+  "trajectory": {
+    "system_prompt": "Você é Logos-3, um agente de engenharia de software da família de modelos Conatus. Raciocine em <think>, use <tool_call name=\"...\"> quando precisar de uma ferramenta, e responda ao usuário só dentro de <final>.",
+    "user_request": "Antes de eu usar isso em produção, me explica exatamente o que essa função faz e quais os limites dela, sem mudar nada no código.",
+    "raw_text": "<think>Pedido é só explicação — vou ler o arquivo de novo pra descrever com precisão o que está escrito, sem editar nada nem rodar o checker de novo (o código já foi verificado no turno anterior, e o pedido aqui não envolve mudança nenhuma).</think><tool_call name=\"read_file\">{\"path\": \"csv.ts\"}</tool_call><tool_result name=\"read_file\" status=\"ok\">{\"content\": \"export type Row = Record<string, string>;\\n\\nexport function parseCSV(content: string): Row[] {\\n  const lines = content.trim().split(\\\"\\\\n\\\");\\n  const [headerLine, ...rowLines] = lines;\\n  const headers = headerLine.split(\\\",\\\").map((h) => h.trim());\\n  return rowLines.map((line) => {\\n    const values = line.split(\\\",\\\").map((v) => v.trim());\\n    const row: Row = {};\\n    headers.forEach((header, i) => {\\n      row[header] = values[i] ?? \\\"\\\";\\n    });\\n    return row;\\n  });\\n}\\n\", \"start_line\": 1, \"end_line\": 15, \"total_lines\": 15}</tool_result><final>A função parseCSV: (1) remove espaço/quebra nas pontas do texto e separa em linhas; (2) trata a PRIMEIRA linha como cabeçalho, separando por vírgula e removendo espaços de cada nome de coluna; (3) para cada linha restante, separa por vírgula na mesma posição e monta um objeto `{ header: valor }`, usando string vazia se faltar algum valor. Limites importantes pra produção: NÃO trata vírgulas dentro de campos entre aspas (um campo `\"Silva, João\"` quebraria em dois), não faz nenhuma conversão de tipo (números e datas ficam como string), e não valida se todas as linhas têm o mesmo número de colunas que o cabeçalho. Não fiz nenhuma alteração no código, como pedido — só reli o arquivo pra confirmar a descrição.</final>",
+    "history": [
+      {
+        "user_request": "Crie uma função parseCSV(content) simples em TypeScript que transforma um texto CSV (com cabeçalho) numa lista de objetos.",
+        "raw_text": "<think>Parser simples: primeira linha é cabeçalho, cada linha seguinte vira um objeto mapeando header→valor pela posição da vírgula. Sem suporte a CSV com vírgulas dentro de campos entre aspas — fora do escopo pedido.</think><tool_call name=\"write_file\">{\"path\": \"csv.ts\", \"content\": \"export type Row = Record<string, string>;\\n\\nexport function parseCSV(content: string): Row[] {\\n  const lines = content.trim().split(\\\"\\\\n\\\");\\n  const [headerLine, ...rowLines] = lines;\\n  const headers = headerLine.split(\\\",\\\").map((h) => h.trim());\\n  return rowLines.map((line) => {\\n    const values = line.split(\\\",\\\").map((v) => v.trim());\\n    const row: Row = {};\\n    headers.forEach((header, i) => {\\n      row[header] = values[i] ?? \\\"\\\";\\n    });\\n    return row;\\n  });\\n}\\n\"}</tool_call><tool_result name=\"write_file\" status=\"ok\">{\"path\": \"csv.ts\", \"bytes_written\": 465, \"mode\": \"overwrite\"}</tool_result><think>Teste com um CSV pequeno de exemplo.</think><tool_call name=\"write_file\">{\"path\": \"csv.test.ts\", \"content\": \"import { describe, it, expect } from \\\"vitest\\\";\\nimport { parseCSV } from \\\"./csv.ts\\\";\\n\\ndescribe(\\\"parseCSV\\\", () => {\\n  it(\\\"transforma CSV com cabeçalho em lista de objetos\\\", () => {\\n    const result = parseCSV(\\\"nome,idade\\\\nAna,30\\\\nBruno,25\\\");\\n    expect(result).toEqual([\\n      { nome: \\\"Ana\\\", idade: \\\"30\\\" },\\n      { nome: \\\"Bruno\\\", idade: \\\"25\\\" },\\n    ]);\\n  });\\n});\\n\"}</tool_call><tool_result name=\"write_file\" status=\"ok\">{\"path\": \"csv.test.ts\", \"bytes_written\": 362, \"mode\": \"overwrite\"}</tool_result><think>Vou rodar vitest de verdade pra confirmar.</think><tool_call name=\"checker\">{\"language\": \"node\", \"operation\": \"compile_and_test\", \"files\": [{\"path\": \"csv.ts\", \"content\": \"export type Row = Record<string, string>;\\n\\nexport function parseCSV(content: string): Row[] {\\n  const lines = content.trim().split(\\\"\\\\n\\\");\\n  const [headerLine, ...rowLines] = lines;\\n  const headers = headerLine.split(\\\",\\\").map((h) => h.trim());\\n  return rowLines.map((line) => {\\n    const values = line.split(\\\",\\\").map((v) => v.trim());\\n    const row: Row = {};\\n    headers.forEach((header, i) => {\\n      row[header] = values[i] ?? \\\"\\\";\\n    });\\n    return row;\\n  });\\n}\\n\"}, {\"path\": \"csv.test.ts\", \"content\": \"import { describe, it, expect } from \\\"vitest\\\";\\nimport { parseCSV } from \\\"./csv.ts\\\";\\n\\ndescribe(\\\"parseCSV\\\", () => {\\n  it(\\\"transforma CSV com cabeçalho em lista de objetos\\\", () => {\\n    const result = parseCSV(\\\"nome,idade\\\\nAna,30\\\\nBruno,25\\\");\\n    expect(result).toEqual([\\n      { nome: \\\"Ana\\\", idade: \\\"30\\\" },\\n      { nome: \\\"Bruno\\\", idade: \\\"25\\\" },\\n    ]);\\n  });\\n});\\n\"}], \"entrypoint\": \"csv.ts\", \"timeout_ms\": 60000}</tool_call><tool_result name=\"checker\" status=\"ok\">{\"passed\": true, \"errors\": [], \"stdout\": \"\\n\\u001b[1m\\u001b[7m\\u001b[36m RUN \\u001b[39m\\u001b[27m\\u001b[22m \\u001b[36mv2.1.9 \\u001b[39m\\u001b[90m\\u001b[39m\\n\\n \\u001b[32m✓\\u001b[39m csv.test.ts \\u001b[2m(\\u001b[22m\\u001b[2m1 test\\u001b[22m\\u001b[2m)\\u001b[22m\\u001b[90m 3\\u001b[2mms\\u001b[22m\\u001b[39m\\n\\n\\u001b[2m Test Files \\u001b[22m \\u001b[1m\\u001b[32m1 passed\\u001b[39m\\u001b[22m\\u001b[90m (1)\\u001b[39m\\n\\u001b[2m      Tests \\u001b[22m \\u001b[1m\\u001b[32m1 passed\\u001b[39m\\u001b[22m\\u001b[90m (1)\\u001b[39m\\n\\u001b[2m   Start at \\u001b[22m 16:23:17\\n\\u001b[2m   Duration \\u001b[22m 1.33s\\u001b[2m (transform 54ms, setup 0ms, collect 53ms, tests 3ms, environment 787ms, prepare 182ms)\\u001b[22m\\n\\n\", \"stderr\": \"\", \"metadata\": {\"language\": \"typescript\", \"duration_ms\": 1954}}</tool_result><final>Criei parseCSV, testado de verdade com vitest — passou.</final>"
+      }
+    ]
+  }
+}
