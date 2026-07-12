@@ -1,0 +1,30 @@
+{
+  "metadata": {
+    "id": "gen-scss-if-else-contrast-text",
+    "domain": "frontend",
+    "language": "scss",
+    "difficulty": "hard",
+    "tools_used": [
+      "write_file",
+      "write_file",
+      "checker"
+    ],
+    "num_steps": 3,
+    "task_type": "multi_tool_call",
+    "source": "curated_manual_real_execution",
+    "license": "synthetic-no-license-needed",
+    "validation_status": "validated",
+    "execution_performed": true,
+    "split": "train",
+    "checker_used": "checker-scss-1.0",
+    "expected_result": {
+      "passed": true
+    },
+    "execution_classification": "interpreted"
+  },
+  "trajectory": {
+    "system_prompt": "Você é Logos-3, um agente de engenharia de software da família de modelos Conatus. Raciocine em <think>, use <tool_call name=\"...\"> quando precisar de uma ferramenta, e responda ao usuário só dentro de <final>.",
+    "user_request": "Crie 4 cartões de amostra de cor (amarelo, azul-marinho, menta, roxo), cada um com o texto sempre legível — escuro sobre fundo claro, branco sobre fundo escuro — decidido automaticamente a partir da própria cor de fundo, não escolhido à mão em cada cartão.",
+    "raw_text": "<think>A decisão de legibilidade não pode ser 'à mão' por cartão — uso a função color.lightness() do módulo sass:color pra medir a luminosidade da cor de fundo, e uma função text-on($bg) com @if/@else que retorna texto escuro se a luminosidade for maior que 60% (fundo claro) ou branco caso contrário (fundo escuro). O mixin swatch($bg) aplica o fundo E chama text-on($bg) pra cor do texto — então cada cartão só precisa passar a cor de fundo, a legibilidade vem de graça e continua certa se a cor mudar.</think><tool_call name=\"write_file\">{\"path\": \"contrast.scss\", \"content\": \"@use 'sass:color';\\n\\n@function text-on($bg) {\\n  @if color.lightness($bg) > 60% {\\n    @return #1d1d1f;\\n  } @else {\\n    @return #ffffff;\\n  }\\n}\\n\\n@mixin swatch($bg) {\\n  background: $bg;\\n  color: text-on($bg);\\n  padding: 1rem;\\n  border-radius: 0.6rem;\\n  font-weight: 600;\\n  text-align: center;\\n}\\n\\nbody { margin: 0; font-family: -apple-system, sans-serif; padding: 2rem; display: grid; grid-template-columns: repeat(4, 1fr); gap: 0.75rem; }\\n\\n.swatch-yellow { @include swatch(#ffd166); }\\n.swatch-navy { @include swatch(#0d1b3d); }\\n.swatch-mint { @include swatch(#a7f0c0); }\\n.swatch-purple { @include swatch(#4b2a6b); }\\n\"}</tool_call><tool_result name=\"write_file\" status=\"ok\">{\"path\": \"contrast.scss\", \"bytes_written\": 611, \"mode\": \"overwrite\"}</tool_result><think>HTML com os 4 cartões de cor.</think><tool_call name=\"write_file\">{\"path\": \"index.html\", \"content\": \"<!doctype html><html lang=\\\"pt-br\\\"><head><meta charset=\\\"utf-8\\\"><title>Contraste</title><link rel=\\\"stylesheet\\\" href=\\\"contrast.css\\\"></head><body>\\n<div class=\\\"swatch-yellow\\\">Amarelo</div>\\n<div class=\\\"swatch-navy\\\">Azul-marinho</div>\\n<div class=\\\"swatch-mint\\\">Menta</div>\\n<div class=\\\"swatch-purple\\\">Roxo</div>\\n</body></html>\\n\"}</tool_call><tool_result name=\"write_file\" status=\"ok\">{\"path\": \"index.html\", \"bytes_written\": 318, \"mode\": \"overwrite\"}</tool_result><think>Vou compilar e renderizar de verdade pra confirmar que a função @if/@else escolheu a cor de texto certa em cada cartão.</think><tool_call name=\"checker\">{\"language\": \"scss\", \"operation\": \"run\", \"files\": [{\"path\": \"contrast.scss\", \"content\": \"@use 'sass:color';\\n\\n@function text-on($bg) {\\n  @if color.lightness($bg) > 60% {\\n    @return #1d1d1f;\\n  } @else {\\n    @return #ffffff;\\n  }\\n}\\n\\n@mixin swatch($bg) {\\n  background: $bg;\\n  color: text-on($bg);\\n  padding: 1rem;\\n  border-radius: 0.6rem;\\n  font-weight: 600;\\n  text-align: center;\\n}\\n\\nbody { margin: 0; font-family: -apple-system, sans-serif; padding: 2rem; display: grid; grid-template-columns: repeat(4, 1fr); gap: 0.75rem; }\\n\\n.swatch-yellow { @include swatch(#ffd166); }\\n.swatch-navy { @include swatch(#0d1b3d); }\\n.swatch-mint { @include swatch(#a7f0c0); }\\n.swatch-purple { @include swatch(#4b2a6b); }\\n\"}, {\"path\": \"index.html\", \"content\": \"<!doctype html><html lang=\\\"pt-br\\\"><head><meta charset=\\\"utf-8\\\"><title>Contraste</title><link rel=\\\"stylesheet\\\" href=\\\"contrast.css\\\"></head><body>\\n<div class=\\\"swatch-yellow\\\">Amarelo</div>\\n<div class=\\\"swatch-navy\\\">Azul-marinho</div>\\n<div class=\\\"swatch-mint\\\">Menta</div>\\n<div class=\\\"swatch-purple\\\">Roxo</div>\\n</body></html>\\n\"}], \"entrypoint\": \"index.html\", \"timeout_ms\": 30000}</tool_call><tool_result name=\"checker\" status=\"ok\">{\"passed\": true, \"errors\": [], \"stdout\": \"\", \"stderr\": \"\", \"metadata\": {\"language\": \"scss\", \"duration_ms\": 1828, \"console_warnings\": []}}</tool_result><final>Criei os 4 cartões com a legibilidade decidida automaticamente: a função text-on($bg) usa color.lightness() e @if/@else pra retornar texto escuro em fundos claros (>60% de luminosidade) ou branco em fundos escuros, e o mixin swatch($bg) aplica isso junto com o fundo — cada cartão só passa a cor, a legibilidade vem de graça. Confirmei compilando e renderizando de verdade — sem erro de console.</final>"
+  }
+}

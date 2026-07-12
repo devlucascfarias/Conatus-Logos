@@ -1,0 +1,30 @@
+{
+  "metadata": {
+    "id": "gen-css-keyframes-toast-lifecycle",
+    "domain": "frontend",
+    "language": "html",
+    "difficulty": "medium",
+    "tools_used": [
+      "write_file",
+      "write_file",
+      "checker"
+    ],
+    "num_steps": 3,
+    "task_type": "multi_tool_call",
+    "source": "curated_manual_real_execution",
+    "license": "synthetic-no-license-needed",
+    "validation_status": "validated",
+    "execution_performed": true,
+    "split": "train",
+    "checker_used": "checker-html-1.0",
+    "expected_result": {
+      "passed": true
+    },
+    "execution_classification": "interpreted"
+  },
+  "trajectory": {
+    "system_prompt": "Você é Logos-3, um agente de engenharia de software da família de modelos Conatus. Raciocine em <think>, use <tool_call name=\"...\"> quando precisar de uma ferramenta, e responda ao usuário só dentro de <final>.",
+    "user_request": "Crie uma notificação toast que entra deslizando pela direita, fica visível parada por um tempo, e depois sai deslizando de volta — tudo numa única animação CSS, sem JavaScript controlando os estados.",
+    "raw_text": "<think>Isso é um único @keyframes com quatro paradas percentuais em vez de só 0%/100%: 0% começa fora de vista e transparente; 10% já entrou (opacity 1, translateX 0) — a entrada rápida; 85% ainda no mesmo estado visível, criando o período parado entre 10% e 85% (a maior parte da duração); 100% volta a ficar transparente e deslocado, a saída. animation-fill-mode: forwards (via a keyword 'forwards' no shorthand) segura o estado final depois de acabar, em vez de voltar pro 0% assim que termina. Desligo sob prefers-reduced-motion.</think><tool_call name=\"write_file\">{\"path\": \"toast.css\", \"content\": \"* { box-sizing: border-box; }\\nbody { margin: 0; min-height: 100vh; background: #0d0f16; font-family: -apple-system, sans-serif; }\\n.toast {\\n  position: fixed;\\n  top: 1.5rem;\\n  right: 1.5rem;\\n  padding: 0.9rem 1.4rem;\\n  border-radius: 0.9rem;\\n  background: #1d1d1f;\\n  color: #f5f5f7;\\n  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);\\n  animation: toast-lifecycle 4s ease forwards;\\n}\\n@keyframes toast-lifecycle {\\n  0% { opacity: 0; transform: translateX(2rem); }\\n  10% { opacity: 1; transform: translateX(0); }\\n  85% { opacity: 1; transform: translateX(0); }\\n  100% { opacity: 0; transform: translateX(2rem); }\\n}\\n@media (prefers-reduced-motion: reduce) {\\n  .toast { animation: none; }\\n}\\n\"}</tool_call><tool_result name=\"write_file\" status=\"ok\">{\"path\": \"toast.css\", \"bytes_written\": 680, \"mode\": \"overwrite\"}</tool_result><think>HTML com o toast.</think><tool_call name=\"write_file\">{\"path\": \"index.html\", \"content\": \"<!doctype html><html lang=\\\"pt-br\\\"><head><meta charset=\\\"utf-8\\\"><title>Toast</title><link rel=\\\"stylesheet\\\" href=\\\"toast.css\\\"></head><body>\\n<div class=\\\"toast\\\">Alterações salvas com sucesso.</div>\\n</body></html>\\n\"}</tool_call><tool_result name=\"write_file\" status=\"ok\">{\"path\": \"index.html\", \"bytes_written\": 209, \"mode\": \"overwrite\"}</tool_result><think>Vou renderizar de verdade pra confirmar que a animação de 4 etapas monta sem erro de console.</think><tool_call name=\"checker\">{\"language\": \"html\", \"operation\": \"run\", \"files\": [{\"path\": \"toast.css\", \"content\": \"* { box-sizing: border-box; }\\nbody { margin: 0; min-height: 100vh; background: #0d0f16; font-family: -apple-system, sans-serif; }\\n.toast {\\n  position: fixed;\\n  top: 1.5rem;\\n  right: 1.5rem;\\n  padding: 0.9rem 1.4rem;\\n  border-radius: 0.9rem;\\n  background: #1d1d1f;\\n  color: #f5f5f7;\\n  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);\\n  animation: toast-lifecycle 4s ease forwards;\\n}\\n@keyframes toast-lifecycle {\\n  0% { opacity: 0; transform: translateX(2rem); }\\n  10% { opacity: 1; transform: translateX(0); }\\n  85% { opacity: 1; transform: translateX(0); }\\n  100% { opacity: 0; transform: translateX(2rem); }\\n}\\n@media (prefers-reduced-motion: reduce) {\\n  .toast { animation: none; }\\n}\\n\"}, {\"path\": \"index.html\", \"content\": \"<!doctype html><html lang=\\\"pt-br\\\"><head><meta charset=\\\"utf-8\\\"><title>Toast</title><link rel=\\\"stylesheet\\\" href=\\\"toast.css\\\"></head><body>\\n<div class=\\\"toast\\\">Alterações salvas com sucesso.</div>\\n</body></html>\\n\"}], \"entrypoint\": \"index.html\", \"timeout_ms\": 30000}</tool_call><tool_result name=\"checker\" status=\"ok\">{\"passed\": true, \"errors\": [], \"stdout\": \"\", \"stderr\": \"\", \"metadata\": {\"language\": \"html\", \"duration_ms\": 1438, \"console_warnings\": []}}</tool_result><final>Criei o toast com um único @keyframes de 4 paradas (0%/10%/85%/100%) — entra rápido até 10%, fica parado e visível até 85%, sai deslizando até 100% — com animation-fill-mode: forwards pra segurar o estado final. Nenhum JavaScript controla os estados, é uma timeline CSS só. Desligado sob prefers-reduced-motion. Confirmei renderizando de verdade — sem erro de console.</final>"
+  }
+}

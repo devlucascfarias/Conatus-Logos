@@ -1,0 +1,30 @@
+{
+  "metadata": {
+    "id": "gen-scss-placeholder-extend-buttons",
+    "domain": "frontend",
+    "language": "scss",
+    "difficulty": "medium",
+    "tools_used": [
+      "write_file",
+      "write_file",
+      "checker"
+    ],
+    "num_steps": 3,
+    "task_type": "multi_tool_call",
+    "source": "curated_manual_real_execution",
+    "license": "synthetic-no-license-needed",
+    "validation_status": "validated",
+    "execution_performed": true,
+    "split": "train",
+    "checker_used": "checker-scss-1.0",
+    "expected_result": {
+      "passed": true
+    },
+    "execution_classification": "interpreted"
+  },
+  "trajectory": {
+    "system_prompt": "Você é Logos-3, um agente de engenharia de software da família de modelos Conatus. Raciocine em <think>, use <tool_call name=\"...\"> quando precisar de uma ferramenta, e responda ao usuário só dentro de <final>.",
+    "user_request": "Crie dois estilos de botão (preenchido e contornado) que compartilham o mesmo formato base (padding, raio, peso da fonte), sem duplicar essas propriedades em cada um e sem gerar uma classe extra só pro estilo base no HTML.",
+    "raw_text": "<think>Um mixin resolveria a duplicação de código, mas duplicaria as propriedades no CSS final (cada @include copia o bloco inteiro). Um placeholder (%btn-base) com @extend é melhor aqui: o Sass agrupa .btn-primary e .btn-outline num único bloco de regra compartilhado pro CSS de saída (já que os dois estendem o mesmo placeholder), em vez de duplicar as propriedades — e como %btn-base começa com %, não com ., ele nunca vira uma classe própria no HTML, só existe como fonte de @extend.</think><tool_call name=\"write_file\">{\"path\": \"extend.scss\", \"content\": \"%btn-base {\\n  display: inline-block;\\n  padding: 0.6rem 1.4rem;\\n  border-radius: 980px;\\n  border: none;\\n  font-weight: 500;\\n  cursor: pointer;\\n  text-align: center;\\n}\\n\\nbody { margin: 0; font-family: -apple-system, sans-serif; padding: 2rem; display: flex; gap: 0.75rem; }\\n\\n.btn-primary {\\n  @extend %btn-base;\\n  background: #3d7bff;\\n  color: #fff;\\n}\\n\\n.btn-outline {\\n  @extend %btn-base;\\n  background: transparent;\\n  color: #1d1d1f;\\n  border: 1px solid #d5d5da;\\n}\\n\"}</tool_call><tool_result name=\"write_file\" status=\"ok\">{\"path\": \"extend.scss\", \"bytes_written\": 461, \"mode\": \"overwrite\"}</tool_result><think>HTML com os dois botões, sem nenhuma classe 'base' extra.</think><tool_call name=\"write_file\">{\"path\": \"index.html\", \"content\": \"<!doctype html><html lang=\\\"pt-br\\\"><head><meta charset=\\\"utf-8\\\"><title>Extend</title><link rel=\\\"stylesheet\\\" href=\\\"extend.css\\\"></head><body>\\n<button class=\\\"btn-primary\\\">Confirmar</button>\\n<button class=\\\"btn-outline\\\">Cancelar</button>\\n</body></html>\\n\"}</tool_call><tool_result name=\"write_file\" status=\"ok\">{\"path\": \"index.html\", \"bytes_written\": 246, \"mode\": \"overwrite\"}</tool_result><think>Vou compilar e renderizar de verdade pra confirmar que o @extend agrupou o CSS e os botões aparecem corretos.</think><tool_call name=\"checker\">{\"language\": \"scss\", \"operation\": \"run\", \"files\": [{\"path\": \"extend.scss\", \"content\": \"%btn-base {\\n  display: inline-block;\\n  padding: 0.6rem 1.4rem;\\n  border-radius: 980px;\\n  border: none;\\n  font-weight: 500;\\n  cursor: pointer;\\n  text-align: center;\\n}\\n\\nbody { margin: 0; font-family: -apple-system, sans-serif; padding: 2rem; display: flex; gap: 0.75rem; }\\n\\n.btn-primary {\\n  @extend %btn-base;\\n  background: #3d7bff;\\n  color: #fff;\\n}\\n\\n.btn-outline {\\n  @extend %btn-base;\\n  background: transparent;\\n  color: #1d1d1f;\\n  border: 1px solid #d5d5da;\\n}\\n\"}, {\"path\": \"index.html\", \"content\": \"<!doctype html><html lang=\\\"pt-br\\\"><head><meta charset=\\\"utf-8\\\"><title>Extend</title><link rel=\\\"stylesheet\\\" href=\\\"extend.css\\\"></head><body>\\n<button class=\\\"btn-primary\\\">Confirmar</button>\\n<button class=\\\"btn-outline\\\">Cancelar</button>\\n</body></html>\\n\"}], \"entrypoint\": \"index.html\", \"timeout_ms\": 30000}</tool_call><tool_result name=\"checker\" status=\"ok\">{\"passed\": true, \"errors\": [], \"stdout\": \"\", \"stderr\": \"\", \"metadata\": {\"language\": \"scss\", \"duration_ms\": 1812, \"console_warnings\": []}}</tool_result><final>Criei os dois botões com um placeholder %btn-base estendido por @extend em cada um — o Sass agrupa as duas classes no mesmo bloco de propriedades compartilhadas no CSS de saída, sem duplicar o formato base, e o placeholder nunca vira uma classe própria no HTML (não existe .btn-base pra usar por engano). Confirmei compilando e renderizando de verdade — sem erro de console.</final>"
+  }
+}

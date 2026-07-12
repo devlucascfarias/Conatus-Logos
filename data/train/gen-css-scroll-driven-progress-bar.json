@@ -1,0 +1,30 @@
+{
+  "metadata": {
+    "id": "gen-css-scroll-driven-progress-bar",
+    "domain": "frontend",
+    "language": "html",
+    "difficulty": "hard",
+    "tools_used": [
+      "write_file",
+      "write_file",
+      "checker"
+    ],
+    "num_steps": 3,
+    "task_type": "multi_tool_call",
+    "source": "curated_manual_real_execution",
+    "license": "synthetic-no-license-needed",
+    "validation_status": "validated",
+    "execution_performed": true,
+    "split": "train",
+    "checker_used": "checker-html-1.0",
+    "expected_result": {
+      "passed": true
+    },
+    "execution_classification": "interpreted"
+  },
+  "trajectory": {
+    "system_prompt": "Você é Logos-3, um agente de engenharia de software da família de modelos Conatus. Raciocine em <think>, use <tool_call name=\"...\"> quando precisar de uma ferramenta, e responda ao usuário só dentro de <final>.",
+    "user_request": "Crie uma barra de progresso fixa no topo da página que cresce da esquerda pra direita conforme o usuário rola a página inteira, sem usar nenhum JavaScript de scroll listener.",
+    "raw_text": "<think>Isso é o caso de uso exato de scroll-driven animations (animation-timeline: scroll()) — uma feature CSS nativa recente que liga o progresso de uma animação à posição de rolagem, em vez de tempo. Uso @keyframes normal (scaleX de 0 a 1) mas em vez de animation-duration em segundos, animation-timeline: scroll(root) faz o navegador avançar a animação conforme a rolagem do documento inteiro avança — 0% da keyframe é o topo da página, 100% é o fim. Como é uma feature progressiva (navegadores mais antigos não suportam), escondo a barra com @supports not (animation-timeline: scroll()) — degrada escondendo em vez de mostrar uma barra quebrada parada.</think><tool_call name=\"write_file\">{\"path\": \"scroll.css\", \"content\": \"* { box-sizing: border-box; }\\nbody { margin: 0; font-family: -apple-system, sans-serif; background: #0d0f16; color: #eef2fb; }\\n.progress-bar {\\n  position: fixed;\\n  top: 0; left: 0; right: 0;\\n  height: 4px;\\n  background: #3d7bff;\\n  transform-origin: left;\\n  transform: scaleX(0);\\n  animation: grow-progress linear;\\n  animation-timeline: scroll(root);\\n}\\n@keyframes grow-progress {\\n  from { transform: scaleX(0); }\\n  to { transform: scaleX(1); }\\n}\\n.section { min-height: 100vh; display: flex; align-items: center; justify-content: center; font-size: 2rem; border-bottom: 1px solid rgba(255,255,255,0.08); }\\n@supports not (animation-timeline: scroll()) {\\n  .progress-bar { display: none; }\\n}\\n\"}</tool_call><tool_result name=\"write_file\" status=\"ok\">{\"path\": \"scroll.css\", \"bytes_written\": 688, \"mode\": \"overwrite\"}</tool_result><think>HTML com 3 seções de altura de tela pra ter o que rolar.</think><tool_call name=\"write_file\">{\"path\": \"index.html\", \"content\": \"<!doctype html><html lang=\\\"pt-br\\\"><head><meta charset=\\\"utf-8\\\"><title>Scroll</title><link rel=\\\"stylesheet\\\" href=\\\"scroll.css\\\"></head><body>\\n<div class=\\\"progress-bar\\\"></div>\\n<section class=\\\"section\\\">Seção 1</section>\\n<section class=\\\"section\\\">Seção 2</section>\\n<section class=\\\"section\\\">Seção 3</section>\\n</body></html>\\n\"}</tool_call><tool_result name=\"write_file\" status=\"ok\">{\"path\": \"index.html\", \"bytes_written\": 321, \"mode\": \"overwrite\"}</tool_result><think>Vou renderizar de verdade pra confirmar que a página monta sem erro de console, com o fallback de @supports coberto.</think><tool_call name=\"checker\">{\"language\": \"html\", \"operation\": \"run\", \"files\": [{\"path\": \"scroll.css\", \"content\": \"* { box-sizing: border-box; }\\nbody { margin: 0; font-family: -apple-system, sans-serif; background: #0d0f16; color: #eef2fb; }\\n.progress-bar {\\n  position: fixed;\\n  top: 0; left: 0; right: 0;\\n  height: 4px;\\n  background: #3d7bff;\\n  transform-origin: left;\\n  transform: scaleX(0);\\n  animation: grow-progress linear;\\n  animation-timeline: scroll(root);\\n}\\n@keyframes grow-progress {\\n  from { transform: scaleX(0); }\\n  to { transform: scaleX(1); }\\n}\\n.section { min-height: 100vh; display: flex; align-items: center; justify-content: center; font-size: 2rem; border-bottom: 1px solid rgba(255,255,255,0.08); }\\n@supports not (animation-timeline: scroll()) {\\n  .progress-bar { display: none; }\\n}\\n\"}, {\"path\": \"index.html\", \"content\": \"<!doctype html><html lang=\\\"pt-br\\\"><head><meta charset=\\\"utf-8\\\"><title>Scroll</title><link rel=\\\"stylesheet\\\" href=\\\"scroll.css\\\"></head><body>\\n<div class=\\\"progress-bar\\\"></div>\\n<section class=\\\"section\\\">Seção 1</section>\\n<section class=\\\"section\\\">Seção 2</section>\\n<section class=\\\"section\\\">Seção 3</section>\\n</body></html>\\n\"}], \"entrypoint\": \"index.html\", \"timeout_ms\": 30000}</tool_call><tool_result name=\"checker\" status=\"ok\">{\"passed\": true, \"errors\": [], \"stdout\": \"\", \"stderr\": \"\", \"metadata\": {\"language\": \"html\", \"duration_ms\": 1485, \"console_warnings\": []}}</tool_result><final>Criei a barra de progresso com animation-timeline: scroll(root) — uma feature CSS nativa que liga o progresso da animação à posição de rolagem do documento, sem nenhum JavaScript de scroll listener. Como é uma feature progressiva, escondo a barra com @supports not (...) em navegadores sem suporte, em vez de deixar uma barra quebrada visível. Confirmei renderizando de verdade — sem erro de console.</final>"
+  }
+}

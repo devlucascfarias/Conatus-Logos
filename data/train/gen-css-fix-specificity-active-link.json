@@ -1,0 +1,30 @@
+{
+  "metadata": {
+    "id": "gen-css-fix-specificity-active-link",
+    "domain": "frontend",
+    "language": "html",
+    "difficulty": "medium",
+    "tools_used": [
+      "read_file",
+      "write_file",
+      "checker"
+    ],
+    "num_steps": 3,
+    "task_type": "model_fixes_after_error",
+    "source": "curated_manual_real_execution",
+    "license": "synthetic-no-license-needed",
+    "validation_status": "validated",
+    "execution_performed": true,
+    "split": "train",
+    "checker_used": "checker-html-1.0",
+    "expected_result": {
+      "passed": true
+    },
+    "execution_classification": "interpreted"
+  },
+  "trajectory": {
+    "system_prompt": "Você é Logos-3, um agente de engenharia de software da família de modelos Conatus. Raciocine em <think>, use <tool_call name=\"...\"> quando precisar de uma ferramenta, e responda ao usuário só dentro de <final>.",
+    "user_request": "O link ativo do menu deveria ficar destacado (fundo azul, texto branco), mas continua com a cor de texto padrão do menu. Descubra a causa raiz e corrija sem adicionar !important.",
+    "raw_text": "<think>Vou ler o CSS atual pra comparar a especificidade das duas regras que competem pelo mesmo elemento.</think><tool_call name=\"read_file\">{\"path\": \"spec.css\"}</tool_call><tool_result name=\"read_file\" status=\"ok\">{\"content\": \"* { box-sizing: border-box; }\\nbody { margin: 0; font-family: -apple-system, sans-serif; padding: 2rem; }\\n#header .nav a { color: #1d1d1f; text-decoration: none; padding: 0.5rem 1rem; }\\n.nav a.active { color: #fff; background: #3d7bff; border-radius: 980px; }\\n\", \"start_line\": 1, \"end_line\": 4, \"total_lines\": 4}</tool_result><think>Encontrei: `#header .nav a` tem especificidade (1 id, 1 classe, 1 tag) = (1,1,1). `.nav a.active` tem (0 id, 2 classes, 1 tag) = (0,2,1). Um ID sempre pesa mais que qualquer quantidade de classes na cascata CSS — (1,1,1) vence (0,2,1) mesmo com menos seletores de classe, então a regra do link ativo nunca vence a regra base, apesar de vir depois no arquivo (ordem só desempata especificidade IGUAL, não supera especificidade maior). A correção sem !important é igualar a especificidade na mesma direção: incluir #header também no seletor do estado ativo, `#header .nav a.active`, que fica (1,2,1) e vence de forma limpa.</think><tool_call name=\"write_file\">{\"path\": \"spec.css\", \"content\": \"* { box-sizing: border-box; }\\nbody { margin: 0; font-family: -apple-system, sans-serif; padding: 2rem; }\\n#header .nav a { color: #1d1d1f; text-decoration: none; padding: 0.5rem 1rem; }\\n#header .nav a.active { color: #fff; background: #3d7bff; border-radius: 980px; }\\n\"}</tool_call><tool_result name=\"write_file\" status=\"ok\">{\"path\": \"spec.css\", \"bytes_written\": 267, \"mode\": \"overwrite\"}</tool_result><think>Vou renderizar de verdade pra confirmar que o link ativo aplica o destaque corretamente.</think><tool_call name=\"checker\">{\"language\": \"html\", \"operation\": \"run\", \"files\": [{\"path\": \"spec.css\", \"content\": \"* { box-sizing: border-box; }\\nbody { margin: 0; font-family: -apple-system, sans-serif; padding: 2rem; }\\n#header .nav a { color: #1d1d1f; text-decoration: none; padding: 0.5rem 1rem; }\\n#header .nav a.active { color: #fff; background: #3d7bff; border-radius: 980px; }\\n\"}, {\"path\": \"index.html\", \"content\": \"<!doctype html><html lang=\\\"pt-br\\\"><head><meta charset=\\\"utf-8\\\"><title>Especificidade</title><link rel=\\\"stylesheet\\\" href=\\\"spec.css\\\"></head><body>\\n<header id=\\\"header\\\">\\n<nav class=\\\"nav\\\">\\n<a href=\\\"#\\\" class=\\\"active\\\">Início</a>\\n<a href=\\\"#\\\">Produtos</a>\\n<a href=\\\"#\\\">Sobre</a>\\n</nav>\\n</header>\\n</body></html>\\n\"}], \"entrypoint\": \"index.html\", \"timeout_ms\": 30000}</tool_call><tool_result name=\"checker\" status=\"ok\">{\"passed\": true, \"errors\": [], \"stdout\": \"\", \"stderr\": \"\", \"metadata\": {\"language\": \"html\", \"duration_ms\": 1454, \"console_warnings\": []}}</tool_result><final>O bug era especificidade: `#header .nav a` (1 id) tem especificidade (1,1,1), que vence `.nav a.active` (0,2,1) mesmo essa vindo depois no arquivo — um ID sempre pesa mais que classes, a ordem no arquivo só desempata especificidade IGUAL. Corrigi sem !important, incluindo #header no seletor do estado ativo (`#header .nav a.active`), que agora vence de forma limpa. Confirmei renderizando de verdade — o link ativo aplica o destaque.</final>"
+  }
+}
