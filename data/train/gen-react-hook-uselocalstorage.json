@@ -1,0 +1,30 @@
+{
+  "metadata": {
+    "id": "gen-react-hook-uselocalstorage",
+    "domain": "frontend",
+    "language": "typescript",
+    "difficulty": "medium",
+    "tools_used": [
+      "write_file",
+      "write_file",
+      "checker"
+    ],
+    "num_steps": 3,
+    "task_type": "multi_tool_call",
+    "source": "curated_manual_real_execution",
+    "license": "synthetic-no-license-needed",
+    "validation_status": "validated",
+    "execution_performed": true,
+    "split": "train",
+    "checker_used": "checker-typescript-1.0",
+    "expected_result": {
+      "passed": true
+    },
+    "execution_classification": "interpreted"
+  },
+  "trajectory": {
+    "system_prompt": "Você é Logos-3, um agente de engenharia de software da família de modelos Conatus. Raciocine em <think>, use <tool_call name=\"...\"> quando precisar de uma ferramenta, e responda ao usuário só dentro de <final>.",
+    "user_request": "Crie um hook customizado useLocalStorage que funciona como useState mas persiste o valor no localStorage automaticamente, tolerando localStorage indisponível (modo privado) sem quebrar a aplicação. Use-o num campo de nome.",
+    "raw_text": "<think>O hook precisa ler o valor inicial do localStorage só UMA VEZ (usando a forma lazy do useState — uma função inicializadora, não o valor direto — pra não ler o storage a cada render), e escrever de volta num useEffect toda vez que o valor mudar. Os dois lados (leitura e escrita) ficam em try/catch — localStorage pode lançar exceção em modo privado de alguns navegadores ou quando a quota estoura, e isso não deveria derrubar a aplicação, só significa que a persistência silenciosamente não funciona nessa sessão. Retorno a tupla [value, setValue] com `as const` pra manter a mesma ergonomia de useState.</think><tool_call name=\"write_file\">{\"path\": \"src/useLocalStorage.ts\", \"content\": \"import { useEffect, useState } from \\\"react\\\";\\n\\nexport function useLocalStorage<T>(key: string, initialValue: T) {\\n  const [value, setValue] = useState<T>(() => {\\n    try {\\n      const stored = window.localStorage.getItem(key);\\n      return stored !== null ? (JSON.parse(stored) as T) : initialValue;\\n    } catch {\\n      return initialValue;\\n    }\\n  });\\n\\n  useEffect(() => {\\n    try {\\n      window.localStorage.setItem(key, JSON.stringify(value));\\n    } catch {\\n      // storage indisponível (modo privado, quota) — não quebra a UI por isso\\n    }\\n  }, [key, value]);\\n\\n  return [value, setValue] as const;\\n}\\n\"}</tool_call><tool_result name=\"write_file\" status=\"ok\">{\"path\": \"src/useLocalStorage.ts\", \"bytes_written\": 609, \"mode\": \"overwrite\"}</tool_result><think>App usando o hook num campo de nome controlado.</think><tool_call name=\"write_file\">{\"path\": \"src/App.tsx\", \"content\": \"import { useLocalStorage } from \\\"./useLocalStorage\\\";\\n\\nexport default function App() {\\n  const [name, setName] = useLocalStorage(\\\"user-name\\\", \\\"\\\");\\n  return (\\n    <div style={{ padding: \\\"2rem\\\", fontFamily: \\\"sans-serif\\\" }}>\\n      <label>\\n        Seu nome:\\n        <input value={name} onChange={(e) => setName(e.target.value)} />\\n      </label>\\n      <p>Persistido: {name || \\\"(vazio)\\\"}</p>\\n    </div>\\n  );\\n}\\n\"}</tool_call><tool_result name=\"write_file\" status=\"ok\">{\"path\": \"src/App.tsx\", \"bytes_written\": 404, \"mode\": \"overwrite\"}</tool_result><think>Vou buildar e renderizar de verdade pra confirmar que compila e monta sem erro de console.</think><tool_call name=\"checker\">{\"language\": \"typescript\", \"operation\": \"run\", \"files\": [{\"path\": \"src/useLocalStorage.ts\", \"content\": \"import { useEffect, useState } from \\\"react\\\";\\n\\nexport function useLocalStorage<T>(key: string, initialValue: T) {\\n  const [value, setValue] = useState<T>(() => {\\n    try {\\n      const stored = window.localStorage.getItem(key);\\n      return stored !== null ? (JSON.parse(stored) as T) : initialValue;\\n    } catch {\\n      return initialValue;\\n    }\\n  });\\n\\n  useEffect(() => {\\n    try {\\n      window.localStorage.setItem(key, JSON.stringify(value));\\n    } catch {\\n      // storage indisponível (modo privado, quota) — não quebra a UI por isso\\n    }\\n  }, [key, value]);\\n\\n  return [value, setValue] as const;\\n}\\n\"}, {\"path\": \"src/App.tsx\", \"content\": \"import { useLocalStorage } from \\\"./useLocalStorage\\\";\\n\\nexport default function App() {\\n  const [name, setName] = useLocalStorage(\\\"user-name\\\", \\\"\\\");\\n  return (\\n    <div style={{ padding: \\\"2rem\\\", fontFamily: \\\"sans-serif\\\" }}>\\n      <label>\\n        Seu nome:\\n        <input value={name} onChange={(e) => setName(e.target.value)} />\\n      </label>\\n      <p>Persistido: {name || \\\"(vazio)\\\"}</p>\\n    </div>\\n  );\\n}\\n\"}], \"entrypoint\": \"index.html\", \"timeout_ms\": 60000}</tool_call><tool_result name=\"checker\" status=\"ok\">{\"passed\": true, \"errors\": [], \"stdout\": \"\\u001b[36mvite v5.4.21 \\u001b[32mbuilding for production...\\u001b[36m\\u001b[39m\\ntransforming...\\n\\u001b[32m✓\\u001b[39m 32 modules transformed.\\nrendering chunks...\\ncomputing gzip size...\\n\\u001b[2mdist/\\u001b[22m\\u001b[32mindex.html                \\u001b[39m\\u001b[1m\\u001b[2m  0.34 kB\\u001b[22m\\u001b[1m\\u001b[22m\\u001b[2m │ gzip:  0.25 kB\\u001b[22m\\n\\u001b[2mdist/\\u001b[22m\\u001b[36massets/index-0v0VxOk5.js  \\u001b[39m\\u001b[1m\\u001b[2m216.66 kB\\u001b[22m\\u001b[1m\\u001b[22m\\u001b[2m │ gzip: 54.68 kB\\u001b[22m\\n\\u001b[32m✓ built in 562ms\\u001b[39m\\n\", \"stderr\": \"\", \"metadata\": {\"language\": \"typescript\", \"duration_ms\": 3110, \"console_warnings\": []}}</tool_result><final>Criei useLocalStorage: lê o localStorage uma vez via inicializador lazy do useState, escreve de volta num useEffect a cada mudança, com os dois lados em try/catch pra tolerar localStorage indisponível sem quebrar a UI. Confirmei buildando e renderizando de verdade — sem erro de console.</final>"
+  }
+}
