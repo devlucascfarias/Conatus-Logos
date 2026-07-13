@@ -8,9 +8,17 @@ Reaproveita o loop canônico (`run_agent_loop`) sem alterá-lo: cada turno roda 
 ponta, e o script só formata o resultado pra leitura humana depois que o turno termina (sem
 streaming passo-a-passo, que exigiria mudar o loop em si).
 
+Dois backends de modelo, mutuamente exclusivos:
+    --adapter/--base-model/--device : carrega via `transformers`+`peft` no processo Python
+                                       (precisa de VRAM/RAM local pro modelo inteiro)
+    --ollama-model                  : usa um modelo já criado no Ollama local (`ollama create`),
+                                       via HTTP (`src.inference.OllamaModelRunner`) — mais leve
+                                       localmente, o Ollama cuida da quantização/execução GGUF
+
 Uso:
     python scripts/chat_cli.py --adapter outputs/adapter --base-model ibm-granite/granite-4.1-8b --device cuda
     python scripts/chat_cli.py --base-model ibm-granite/granite-4.1-8b --device cpu   # sem adapter, smoke-test
+    python scripts/chat_cli.py --ollama-model logos3                                  # via Ollama local
     python scripts/chat_cli.py --adapter outputs/adapter --device cuda --quiet         # só mostra <final>
 
 Comandos dentro da conversa: "sair"/"exit"/"quit" encerra; "novo"/"reset" começa uma conversa
@@ -54,6 +62,25 @@ def _build_runner(base_model: str, adapter_path: str | None, device: str):
     print(f"Carregando {label} (device={device})... isso pode levar alguns minutos.", flush=True)
     runner = TransformersModelRunner(base_model, adapter_path=adapter_path, device=device)
     print("Modelo carregado.\n", flush=True)
+    return runner
+
+
+def _build_ollama_runner(model: str, host: str):
+    from src.inference.ollama_runner import OllamaModelRunner
+
+    print(f"Conectando no Ollama local: modelo={model!r} host={host}", flush=True)
+    runner = OllamaModelRunner(model=model, host=host)
+    # Sondagem rápida e barata (1 token) só pra confirmar que o servidor Ollama está de pé e o
+    # modelo existe de verdade — sem isso, o primeiro erro só apareceria no meio da conversa,
+    # numa geração de verdade que já teria custado tempo.
+    try:
+        runner.generate(prompt="oi", stop=[], max_tokens=1)
+    except Exception as exc:  # noqa: BLE001
+        raise SystemExit(
+            f"Não consegui falar com o Ollama ({type(exc).__name__}: {exc}). Confirme que "
+            f"'ollama serve' está rodando e que '{model}' existe (rode `ollama list`)."
+        ) from exc
+    print("Ollama respondeu — conexão ok.\n", flush=True)
     return runner
 
 
@@ -103,9 +130,11 @@ def _print_turn_trace(trajectory, turn_start_len: int, quiet: bool) -> str:
 
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    parser.add_argument("--adapter", type=str, default=None, help="Caminho do adapter LoRA (opcional — omitido testa o modelo base cru, ou um modelo já mesclado apontado em --base-model)")
-    parser.add_argument("--base-model", type=str, default="ibm-granite/granite-4.1-8b", help="Modelo base ou caminho local de um modelo mesclado")
-    parser.add_argument("--device", type=str, default="cuda", help="'cuda' em GPU real; 'cpu' funciona mas é lento")
+    parser.add_argument("--adapter", type=str, default=None, help="Caminho do adapter LoRA (opcional — omitido testa o modelo base cru, ou um modelo já mesclado apontado em --base-model). Mutuamente exclusivo com --ollama-model")
+    parser.add_argument("--base-model", type=str, default="ibm-granite/granite-4.1-8b", help="Modelo base ou caminho local de um modelo mesclado (backend transformers)")
+    parser.add_argument("--device", type=str, default="cuda", help="'cuda' em GPU real; 'cpu' funciona mas é lento (backend transformers)")
+    parser.add_argument("--ollama-model", type=str, default=None, help="Nome de um modelo já criado no Ollama local (ex.: 'logos3', ver `ollama list`). Mutuamente exclusivo com --adapter/--base-model")
+    parser.add_argument("--ollama-host", type=str, default="http://localhost:11434", help="URL do servidor Ollama local")
     parser.add_argument("--quiet", action="store_true", help="Mostra só a resposta final (<final>), sem think/tool_call/tool_result")
     parser.add_argument("--max-steps", type=int, default=8, help="Limite de passos (tool_call) por turno antes de forçar <final>")
     parser.add_argument("--max-tokens-per-step", type=int, default=512, help="Teto de tokens gerados por passo")
@@ -114,7 +143,10 @@ def main() -> None:
     parser.add_argument("--no-environment", action="store_true", help="Não injeta bloco <environment> — o modelo fica sem saber o SO do host")
     args = parser.parse_args()
 
-    runner = _build_runner(args.base_model, args.adapter, args.device)
+    if args.ollama_model:
+        runner = _build_ollama_runner(args.ollama_model, args.ollama_host)
+    else:
+        runner = _build_runner(args.base_model, args.adapter, args.device)
     environment = None if args.no_environment else _detect_environment(args.env_os, args.env_shell, None)
     if environment:
         print(f"Ambiente detectado: os={environment['os']} shell={environment['shell']} cwd={environment['cwd']}\n")
