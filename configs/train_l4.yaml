@@ -83,7 +83,19 @@ training:
   learning_rate: 2.0e-4
   lr_scheduler_type: "cosine"
   warmup_ratio: 0.03
-  num_train_epochs: 3
+  # D-overfit-epoch3 (achado real, treino completo rodado no Colab/L4, dataset 2988 exemplos,
+  # Granite-4.1-8B): as 3 épocas COMPLETARAM (561 passos) e produziram um adapter funcional (4/6
+  # probes reais corretos), mas a curva mostra overfitting claro a partir da época 3: loss de
+  # validação caiu monotonicamente até o passo 304 (0.2235, dentro da época 2) e depois SUBIU nos
+  # dois checkpoints seguintes (0.2653 no passo 456, 0.2674 no passo 561/final), enquanto a loss
+  # de TREINO continuou caindo (até 0.155) e a entropia da política colapsou de 0.12 pra 0.038 —
+  # assinatura clássica de superconfiança/overfitting, não de aprendizado genuíno adicional.
+  # IMPORTANTE não confundir com D-maxsteps-cost-cap-reverted (histórico, comentário abaixo):
+  # aquele caso era interromper o treino ANTES de completar sequer 1 época (76-304 de 462 passos
+  # necessários), o que deixava a gramática instável; aqui o corte é depois de 2 ÉPOCAS
+  # COMPLETAS (o dataset inteiro visto 2x), só removendo a 3ª passada que estava piorando a
+  # generalização — situação oposta, não a mesma lição.
+  num_train_epochs: 2
   # D-maxsteps-v2 (histórico, ainda vale como lição): max_steps positivo SEMPRE sobrepõe
   # num_train_epochs no HF Trainer — ERRO CONFIRMADO NO COLAB quando um valor "de segurança"
   # alto (3000) virou ~100 épocas reais e ~12h de treino num dataset pequeno, sem essa intenção.

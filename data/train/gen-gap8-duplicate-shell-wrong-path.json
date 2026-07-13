@@ -1,0 +1,30 @@
+{
+  "metadata": {
+    "id": "gen-gap8-duplicate-shell-wrong-path",
+    "domain": "agent_loop_discipline",
+    "language": "python",
+    "difficulty": "hard",
+    "tools_used": [
+      "shell",
+      "shell",
+      "list_files",
+      "shell"
+    ],
+    "num_steps": 4,
+    "task_type": "hypothesis_revision_after_failure",
+    "source": "curated_manual_real_execution",
+    "license": "synthetic-no-license-needed",
+    "validation_status": "validated",
+    "execution_performed": true,
+    "split": "train",
+    "expected_result": {
+      "passed": true
+    },
+    "execution_classification": "tested"
+  },
+  "trajectory": {
+    "system_prompt": "Você é Logos-3, um agente de engenharia de software da família de modelos Conatus. Raciocine em <think>, use <tool_call name=\"...\"> quando precisar de uma ferramenta, e responda ao usuário só dentro de <final>.",
+    "user_request": "Conta quantas linhas tem o arquivo de log do projeto.",
+    "raw_text": "<tool_call name=\"shell\">{\"binary\": \"bash\", \"args\": [\"-c\", \"wc -l < app.log\"]}</tool_call><tool_result name=\"shell\" status=\"error\">{\"stdout\": \"\", \"stderr\": \"/bin/bash: line 1: app.log: No such file or directory\\n\", \"returncode\": 1, \"code\": \"RUNTIME_ERROR\", \"message\": \"comando saiu com código 1\"}</tool_result><tool_call name=\"shell\">{\"binary\": \"bash\", \"args\": [\"-c\", \"wc -l < app.log\"]}</tool_call><tool_result name=\"shell\" status=\"error\">{\"code\": \"MAX_STEPS_EXCEEDED\", \"message\": \"chamada repetida sem progresso\"}</tool_result><tool_call name=\"list_files\">{\"path\": \".\"}</tool_call><tool_result name=\"list_files\" status=\"ok\">{\"files\": [\"logs\", \"logs/app.log\"]}</tool_result><tool_call name=\"shell\">{\"binary\": \"bash\", \"args\": [\"-c\", \"wc -l < logs/app.log\"]}</tool_call><tool_result name=\"shell\" status=\"ok\">{\"stdout\": \"3\\n\", \"stderr\": \"\", \"returncode\": 0}</tool_result><final>O arquivo está em logs/app.log (não na raiz) — tem 3 linhas.</final>"
+  }
+}

@@ -1,0 +1,28 @@
+{
+  "metadata": {
+    "id": "gen-gap7-unsupported-php",
+    "domain": "checker_honesty",
+    "language": "python",
+    "difficulty": "medium",
+    "tools_used": [
+      "write_file",
+      "checker"
+    ],
+    "num_steps": 2,
+    "task_type": "checker_infra_unavailable",
+    "source": "curated_manual_real_execution",
+    "license": "synthetic-no-license-needed",
+    "validation_status": "validated",
+    "execution_performed": true,
+    "split": "train",
+    "expected_result": {
+      "passed": true
+    },
+    "execution_classification": "tested"
+  },
+  "trajectory": {
+    "system_prompt": "Você é Logos-3, um agente de engenharia de software da família de modelos Conatus. Raciocine em <think>, use <tool_call name=\"...\"> quando precisar de uma ferramenta, e responda ao usuário só dentro de <final>.",
+    "user_request": "Escreva um script formata.php que formata um valor em reais (ex.: 1234.5 -> 'R$ 1.234,50') e valide.",
+    "raw_text": "<think>Vou escrever formata.php atendendo o pedido.</think><tool_call name=\"write_file\">{\"path\": \"formata.php\", \"content\": \"<?php\\nfunction formataReais($valor) {\\n    return 'R$ ' . number_format($valor, 2, ',', '.');\\n}\\n\\necho formataReais(1234.5);\\n\"}</tool_call><tool_result name=\"write_file\" status=\"ok\">{\"path\": \"formata.php\", \"bytes_written\": 123, \"mode\": \"overwrite\"}</tool_result><think>Vou tentar validar com o checker usando language=\"php\".</think><tool_call name=\"checker\">{\"language\": \"php\", \"operation\": \"compile_and_test\", \"files\": [{\"path\": \"formata.php\", \"content\": \"<?php\\nfunction formataReais($valor) {\\n    return 'R$ ' . number_format($valor, 2, ',', '.');\\n}\\n\\necho formataReais(1234.5);\\n\"}]}</tool_call><tool_result name=\"checker\" status=\"error\">{\"code\": \"TOOL_ARGUMENT_SCHEMA_ERROR\", \"message\": \"'php' is not one of ['python', 'go', 'javascript', 'typescript', 'sql', 'shell', 'html', 'scss', 'node']\"}</tool_result><think>O checker rejeitou de verdade — \"php\" não está no conjunto de linguagens que esse checker suporta (não é uma dependência faltando, tipo Go sem toolchain; é uma linguagem que esse checker NUNCA vai reconhecer). Não faz sentido tentar de novo com argumentos parecidos, nem alegar que testei de outra forma — eu NÃO testei, e dizer o contrário seria inventar uma verificação que não aconteceu. A coisa honesta é entregar o código e ser claro sobre o que não pôde ser confirmado automaticamente.</think><final>Criei formata.php usando number_format pra formatação monetária brasileira. **Transparência sobre a validação**: este checker não suporta PHP — `language: \"php\"` foi rejeitado de verdade por não estar no conjunto de linguagens reconhecidas. Eu NÃO executei esse script por nenhum outro meio; não posso confirmar que roda, só que a sintaxe está correta pela minha leitura.</final>"
+  }
+}

@@ -1,0 +1,29 @@
+{
+  "metadata": {
+    "id": "gen-gap8-duplicate-shell-call-after-timeout",
+    "domain": "agent_loop_discipline",
+    "language": "python",
+    "difficulty": "hard",
+    "tools_used": [
+      "shell",
+      "shell",
+      "shell"
+    ],
+    "num_steps": 3,
+    "task_type": "hypothesis_revision_after_failure",
+    "source": "curated_manual_real_execution",
+    "license": "synthetic-no-license-needed",
+    "validation_status": "validated",
+    "execution_performed": true,
+    "split": "train",
+    "expected_result": {
+      "passed": true
+    },
+    "execution_classification": "tested"
+  },
+  "trajectory": {
+    "system_prompt": "Você é Logos-3, um agente de engenharia de software da família de modelos Conatus. Raciocine em <think>, use <tool_call name=\"...\"> quando precisar de uma ferramenta, e responda ao usuário só dentro de <final>.",
+    "user_request": "Roda o tarefa.py.",
+    "raw_text": "<tool_call name=\"shell\">{\"binary\": \"python\", \"args\": [\"tarefa.py\"], \"timeout_ms\": 1500}</tool_call><tool_result name=\"shell\" status=\"error\">{\"stdout\": \"trabalhando\\n\", \"stderr\": \"\", \"returncode\": -1, \"code\": \"TIMEOUT\", \"message\": \"comando excedeu o timeout\"}</tool_result><tool_call name=\"shell\">{\"binary\": \"python\", \"args\": [\"tarefa.py\"], \"timeout_ms\": 1500}</tool_call><tool_result name=\"shell\" status=\"error\">{\"code\": \"MAX_STEPS_EXCEEDED\", \"message\": \"chamada repetida sem progresso\"}</tool_result><tool_call name=\"shell\">{\"binary\": \"python\", \"args\": [\"tarefa.py\"], \"timeout_ms\": 8000}</tool_call><tool_result name=\"shell\" status=\"ok\">{\"stdout\": \"trabalhando\\npronto\\n\", \"stderr\": \"\", \"returncode\": 0}</tool_result><final>O script precisava de mais tempo que o timeout inicial de 1.5s — aumentei pra 8s (o stdout parcial já mostrava 'trabalhando', então era só demora, não travamento) e concluiu: 'pronto'.</final>"
+  }
+}

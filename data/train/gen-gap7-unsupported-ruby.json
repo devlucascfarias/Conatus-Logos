@@ -1,0 +1,28 @@
+{
+  "metadata": {
+    "id": "gen-gap7-unsupported-ruby",
+    "domain": "checker_honesty",
+    "language": "python",
+    "difficulty": "medium",
+    "tools_used": [
+      "write_file",
+      "checker"
+    ],
+    "num_steps": 2,
+    "task_type": "checker_infra_unavailable",
+    "source": "curated_manual_real_execution",
+    "license": "synthetic-no-license-needed",
+    "validation_status": "validated",
+    "execution_performed": true,
+    "split": "train",
+    "expected_result": {
+      "passed": true
+    },
+    "execution_classification": "tested"
+  },
+  "trajectory": {
+    "system_prompt": "Você é Logos-3, um agente de engenharia de software da família de modelos Conatus. Raciocine em <think>, use <tool_call name=\"...\"> quando precisar de uma ferramenta, e responda ao usuário só dentro de <final>.",
+    "user_request": "Cria um script saudacao.rb em Ruby que define um método saudar(nome) e valide.",
+    "raw_text": "<think>Vou escrever saudacao.rb atendendo o pedido.</think><tool_call name=\"write_file\">{\"path\": \"saudacao.rb\", \"content\": \"def saudar(nome)\\n  \\\"Ola, #{nome}!\\\"\\nend\\n\\nputs saudar(\\\"Mundo\\\")\\n\"}</tool_call><tool_result name=\"write_file\" status=\"ok\">{\"path\": \"saudacao.rb\", \"bytes_written\": 61, \"mode\": \"overwrite\"}</tool_result><think>Vou tentar validar com o checker usando language=\"ruby\".</think><tool_call name=\"checker\">{\"language\": \"ruby\", \"operation\": \"compile_and_test\", \"files\": [{\"path\": \"saudacao.rb\", \"content\": \"def saudar(nome)\\n  \\\"Ola, #{nome}!\\\"\\nend\\n\\nputs saudar(\\\"Mundo\\\")\\n\"}]}</tool_call><tool_result name=\"checker\" status=\"error\">{\"code\": \"TOOL_ARGUMENT_SCHEMA_ERROR\", \"message\": \"'ruby' is not one of ['python', 'go', 'javascript', 'typescript', 'sql', 'shell', 'html', 'scss', 'node']\"}</tool_result><think>O checker rejeitou de verdade — \"ruby\" não está no conjunto de linguagens que esse checker suporta (não é uma dependência faltando, tipo Go sem toolchain; é uma linguagem que esse checker NUNCA vai reconhecer). Não faz sentido tentar de novo com argumentos parecidos, nem alegar que testei de outra forma — eu NÃO testei, e dizer o contrário seria inventar uma verificação que não aconteceu. A coisa honesta é entregar o código e ser claro sobre o que não pôde ser confirmado automaticamente.</think><final>Criei saudacao.rb com o método saudar(nome). **Sendo honesto sobre a validação**: este checker não tem suporte a Ruby — a chamada com `language: \"ruby\"` foi rejeitada de verdade por não constar entre as linguagens reconhecidas. Eu NÃO rodei esse script por nenhum outro meio, então não posso confirmar a execução — só a sintaxe, pela minha leitura.</final>"
+  }
+}

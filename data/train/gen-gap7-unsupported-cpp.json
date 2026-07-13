@@ -1,0 +1,28 @@
+{
+  "metadata": {
+    "id": "gen-gap7-unsupported-cpp",
+    "domain": "checker_honesty",
+    "language": "python",
+    "difficulty": "medium",
+    "tools_used": [
+      "write_file",
+      "checker"
+    ],
+    "num_steps": 2,
+    "task_type": "checker_infra_unavailable",
+    "source": "curated_manual_real_execution",
+    "license": "synthetic-no-license-needed",
+    "validation_status": "validated",
+    "execution_performed": true,
+    "split": "train",
+    "expected_result": {
+      "passed": true
+    },
+    "execution_classification": "tested"
+  },
+  "trajectory": {
+    "system_prompt": "Você é Logos-3, um agente de engenharia de software da família de modelos Conatus. Raciocine em <think>, use <tool_call name=\"...\"> quando precisar de uma ferramenta, e responda ao usuário só dentro de <final>.",
+    "user_request": "Escreva um programa em C++ (media.cpp) que calcula a média de um vetor de doubles, e valide.",
+    "raw_text": "<think>Vou escrever media.cpp atendendo o pedido.</think><tool_call name=\"write_file\">{\"path\": \"media.cpp\", \"content\": \"#include <vector>\\n\\ndouble media(const std::vector<double>& xs) {\\n    double soma = 0;\\n    for (double x : xs) soma += x;\\n    return soma / xs.size();\\n}\\n\\nint main() {\\n    std::vector<double> xs = {2.0, 4.0, 6.0};\\n    return 0;\\n}\\n\"}</tool_call><tool_result name=\"write_file\" status=\"ok\">{\"path\": \"media.cpp\", \"bytes_written\": 228, \"mode\": \"overwrite\"}</tool_result><think>Vou tentar validar com o checker usando language=\"cpp\".</think><tool_call name=\"checker\">{\"language\": \"cpp\", \"operation\": \"compile_and_test\", \"files\": [{\"path\": \"media.cpp\", \"content\": \"#include <vector>\\n\\ndouble media(const std::vector<double>& xs) {\\n    double soma = 0;\\n    for (double x : xs) soma += x;\\n    return soma / xs.size();\\n}\\n\\nint main() {\\n    std::vector<double> xs = {2.0, 4.0, 6.0};\\n    return 0;\\n}\\n\"}]}</tool_call><tool_result name=\"checker\" status=\"error\">{\"code\": \"TOOL_ARGUMENT_SCHEMA_ERROR\", \"message\": \"'cpp' is not one of ['python', 'go', 'javascript', 'typescript', 'sql', 'shell', 'html', 'scss', 'node']\"}</tool_result><think>O checker rejeitou de verdade — \"cpp\" não está no conjunto de linguagens que esse checker suporta (não é uma dependência faltando, tipo Go sem toolchain; é uma linguagem que esse checker NUNCA vai reconhecer). Não faz sentido tentar de novo com argumentos parecidos, nem alegar que testei de outra forma — eu NÃO testei, e dizer o contrário seria inventar uma verificação que não aconteceu. A coisa honesta é entregar o código e ser claro sobre o que não pôde ser confirmado automaticamente.</think><final>Criei media.cpp com a função media(vector<double>). **Transparência necessária**: este checker não suporta C++ — a chamada com `language: \"cpp\"` foi rejeitada de verdade, não é uma dependência ausente e sim uma linguagem fora do conjunto suportado. Eu NÃO compilei esse código por nenhum outro meio — não afirmo que ele roda, só que a sintaxe parece correta pela minha leitura.</final>"
+  }
+}
