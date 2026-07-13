@@ -1,0 +1,30 @@
+{
+  "metadata": {
+    "id": "gen-timeout-reactive-infinite-loop-var-0",
+    "domain": "timeout_control",
+    "language": "shell",
+    "difficulty": "hard",
+    "tools_used": [
+      "shell",
+      "read_file",
+      "write_file",
+      "shell"
+    ],
+    "num_steps": 4,
+    "task_type": "model_fixes_after_error",
+    "source": "curated_manual_real_execution",
+    "license": "synthetic-no-license-needed",
+    "validation_status": "validated",
+    "execution_performed": true,
+    "split": "train",
+    "expected_result": {
+      "passed": true
+    },
+    "execution_classification": "tested"
+  },
+  "trajectory": {
+    "system_prompt": "Você é Logos-3, um agente de engenharia de software da família de modelos Conatus. Raciocine em <think>, use <tool_call name=\"...\"> quando precisar de uma ferramenta, e responda ao usuário só dentro de <final>.",
+    "user_request": "Roda o espera_bug.py, ele fica preso e não retorna.",
+    "raw_text": "<think>Confirmo o travamento com timeout curto de 3s.</think><tool_call name=\"shell\">{\"binary\": \"python\", \"args\": [\"espera_bug.py\"], \"timeout_ms\": 3000}</tool_call><tool_result name=\"shell\" status=\"error\">{\"stdout\": \"\", \"stderr\": \"\", \"returncode\": -1, \"code\": \"TIMEOUT\", \"message\": \"comando excedeu o timeout\"}</tool_result><think>Estourou o timeout com stdout vazio — sintoma de loop infinito, não de demora. Leio o código.</think><tool_call name=\"read_file\">{\"path\": \"espera_bug.py\"}</tool_call><tool_result name=\"read_file\" status=\"ok\">{\"content\": \"import time\\n\\ndef aguarda_pronto(estado):\\n    # BUG: espera 'estado' virar 'pronto', mas nada dentro do laço muda 'estado'\\n    while estado != 'pronto':\\n        time.sleep(0.01)\\n    return 'ok'\\n\\nprint(aguarda_pronto('processando'))\\n\", \"start_line\": 1, \"end_line\": 9, \"total_lines\": 9}</tool_result><think>A causa: o `while estado != 'pronto'` gira pra sempre porque nada dentro do laço muda `estado`. Corrijo a condição/atualização do laço e reexecuto.</think><tool_call name=\"write_file\">{\"path\": \"espera_bug.py\", \"content\": \"def aguarda_pronto(estado, max_tentativas=5):\\n    # sem um evento externo que mude o estado, um laço 'while estado != pronto' nunca termina;\\n    # a correção é limitar as tentativas e desistir com um retorno claro em vez de girar pra sempre\\n    tentativas = 0\\n    while estado != 'pronto' and tentativas < max_tentativas:\\n        tentativas += 1\\n    return 'ok' if estado == 'pronto' else 'timeout'\\n\\nprint(aguarda_pronto('processando'))\\n\"}</tool_call><tool_result name=\"write_file\" status=\"ok\">{\"path\": \"espera_bug.py\", \"bytes_written\": 441, \"mode\": \"overwrite\"}</tool_result><think>Rodo de novo com timeout normal pra confirmar que agora termina.</think><tool_call name=\"shell\">{\"binary\": \"python\", \"args\": [\"espera_bug.py\"], \"timeout_ms\": 5000}</tool_call><tool_result name=\"shell\" status=\"ok\">{\"stdout\": \"timeout\\n\", \"stderr\": \"\", \"returncode\": 0}</tool_result><final>Timeout com stdout vazio apontou loop infinito. Causa: o `while estado != 'pronto'` gira pra sempre porque nada dentro do laço muda `estado`. Corrigi e reexecutei — agora imprime timeout e termina.</final>"
+  }
+}

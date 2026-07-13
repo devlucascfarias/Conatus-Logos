@@ -1,0 +1,30 @@
+{
+  "metadata": {
+    "id": "gen-timeout-reactive-infinite-loop-queue",
+    "domain": "timeout_control",
+    "language": "shell",
+    "difficulty": "hard",
+    "tools_used": [
+      "shell",
+      "read_file",
+      "write_file",
+      "shell"
+    ],
+    "num_steps": 4,
+    "task_type": "model_fixes_after_error",
+    "source": "curated_manual_real_execution",
+    "license": "synthetic-no-license-needed",
+    "validation_status": "validated",
+    "execution_performed": true,
+    "split": "train",
+    "expected_result": {
+      "passed": true
+    },
+    "execution_classification": "tested"
+  },
+  "trajectory": {
+    "system_prompt": "Você é Logos-3, um agente de engenharia de software da família de modelos Conatus. Raciocine em <think>, use <tool_call name=\"...\"> quando precisar de uma ferramenta, e responda ao usuário só dentro de <final>.",
+    "user_request": "O fila.py não termina nunca quando eu rodo. Vê o que houve.",
+    "raw_text": "<think>Confirmo o travamento com um timeout curto de 3s.</think><tool_call name=\"shell\">{\"binary\": \"python\", \"args\": [\"fila.py\"], \"timeout_ms\": 3000}</tool_call><tool_result name=\"shell\" status=\"error\">{\"stdout\": \"\", \"stderr\": \"\", \"returncode\": -1, \"code\": \"TIMEOUT\", \"message\": \"comando excedeu o timeout\"}</tool_result><think>Timeout de 3s, stdout vazio — loop infinito, não demora. Leio o código pra achar por que o `while` nunca fica falso.</think><tool_call name=\"read_file\">{\"path\": \"fila.py\"}</tool_call><tool_result name=\"read_file\" status=\"ok\">{\"content\": \"def drena(fila):\\n    saida = []\\n    while fila:\\n        item = fila[0]\\n        saida.append(item)\\n        # BUG: nunca remove o item da fila, então `while fila` é sempre verdadeiro\\n    return saida\\n\\nprint(drena([1, 2, 3]))\\n\", \"start_line\": 1, \"end_line\": 9, \"total_lines\": 9}</tool_result><think>O `while fila` nunca termina porque o item é lido (`fila[0]`) mas NUNCA removido — a fila nunca esvazia. Corrijo trocando o acesso por `fila.pop(0)`, que remove o item processado. Reexecuto.</think><tool_call name=\"write_file\">{\"path\": \"fila.py\", \"content\": \"def drena(fila):\\n    saida = []\\n    while fila:\\n        item = fila.pop(0)   # remove de fato o item processado\\n        saida.append(item)\\n    return saida\\n\\nprint(drena([1, 2, 3]))\\n\"}</tool_call><tool_result name=\"write_file\" status=\"ok\">{\"path\": \"fila.py\", \"bytes_written\": 181, \"mode\": \"overwrite\"}</tool_result><think>Rodo de novo com timeout normal pra confirmar que agora termina.</think><tool_call name=\"shell\">{\"binary\": \"python\", \"args\": [\"fila.py\"], \"timeout_ms\": 5000}</tool_call><tool_result name=\"shell\" status=\"ok\">{\"stdout\": \"[1, 2, 3]\\n\", \"stderr\": \"\", \"returncode\": 0}</tool_result><final>Timeout com stdout vazio indicou loop infinito. A causa: o `while fila` lia `fila[0]` mas nunca removia o item, então a fila nunca esvaziava. Troquei por `fila.pop(0)` e reexecutei — agora imprime [1, 2, 3] e termina.</final>"
+  }
+}

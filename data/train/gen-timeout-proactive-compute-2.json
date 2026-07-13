@@ -1,0 +1,28 @@
+{
+  "metadata": {
+    "id": "gen-timeout-proactive-compute-2",
+    "domain": "timeout_control",
+    "language": "shell",
+    "difficulty": "medium",
+    "tools_used": [
+      "read_file",
+      "shell"
+    ],
+    "num_steps": 2,
+    "task_type": "shell_command",
+    "source": "curated_manual_real_execution",
+    "license": "synthetic-no-license-needed",
+    "validation_status": "validated",
+    "execution_performed": true,
+    "split": "train",
+    "expected_result": {
+      "passed": true
+    },
+    "execution_classification": "tested"
+  },
+  "trajectory": {
+    "system_prompt": "Você é Logos-3, um agente de engenharia de software da família de modelos Conatus. Raciocine em <think>, use <tool_call name=\"...\"> quando precisar de uma ferramenta, e responda ao usuário só dentro de <final>.",
+    "user_request": "Roda o ordena.py.",
+    "raw_text": "<think>Leio o script pra estimar o custo.</think><tool_call name=\"read_file\">{\"path\": \"ordena.py\"}</tool_call><tool_result name=\"read_file\" status=\"ok\">{\"content\": \"import random\\nrandom.seed(1)\\nxs = [random.random() for _ in range(2_000_000)]\\nxs.sort()\\nprint(round(xs[0], 4), round(xs[-1], 4))\\n\", \"start_line\": 1, \"end_line\": 5, \"total_lines\": 5}</tool_result><think>Esse script faz um cálculo pesado (leva ~1-2s). Pra não correr o risco do timeout padrão de 10s cortar no meio, programo um timeout_ms de 20s de folga.</think><tool_call name=\"shell\">{\"binary\": \"python\", \"args\": [\"ordena.py\"], \"timeout_ms\": 20000}</tool_call><tool_result name=\"shell\" status=\"ok\">{\"stdout\": \"0.0 1.0\\n\", \"stderr\": \"\", \"returncode\": 0}</tool_result><final>Estimei que ordena.py faz um cálculo pesado, então rodei com timeout de 20s. Terminou dentro do prazo — saída: 0.0 1.0.</final>"
+  }
+}

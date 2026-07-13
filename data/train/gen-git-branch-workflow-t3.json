@@ -1,0 +1,41 @@
+{
+  "metadata": {
+    "id": "gen-git-branch-workflow-t3",
+    "domain": "git_workflow",
+    "language": "shell",
+    "difficulty": "medium",
+    "tools_used": [
+      "shell"
+    ],
+    "num_steps": 1,
+    "task_type": "shell_command",
+    "source": "curated_manual_real_execution",
+    "license": "synthetic-no-license-needed",
+    "validation_status": "validated",
+    "execution_performed": true,
+    "split": "train",
+    "expected_result": {
+      "passed": true
+    },
+    "execution_classification": "tested"
+  },
+  "trajectory": {
+    "system_prompt": "Você é Logos-3, um agente de engenharia de software da família de modelos Conatus. Raciocine em <think>, use <tool_call name=\"...\"> quando precisar de uma ferramenta, e responda ao usuário só dentro de <final>.",
+    "user_request": "Volta pra branch principal.",
+    "raw_text": "<think>Troco de volta pra branch principal com `git checkout` (ela se chama master neste repo recém-criado).</think><tool_call name=\"shell\">{\"binary\": \"git\", \"args\": [\"checkout\", \"master\"]}</tool_call><tool_result name=\"shell\" status=\"ok\">{\"stdout\": \"\", \"stderr\": \"Switched to branch 'master'\\n\", \"returncode\": 0}</tool_result><final>Voltei pra branch master:\n\n</final>",
+    "history": [
+      {
+        "user_request": "Cria uma branch chamada feature/multiplicacao e muda pra ela.",
+        "raw_text": "<think>`git checkout -b <nome>` cria a branch e já muda pra ela num passo só.</think><tool_call name=\"shell\">{\"binary\": \"git\", \"args\": [\"checkout\", \"-b\", \"feature/multiplicacao\"]}</tool_call><tool_result name=\"shell\" status=\"ok\">{\"stdout\": \"\", \"stderr\": \"Switched to a new branch 'feature/multiplicacao'\\n\", \"returncode\": 0}</tool_result><final>Criei a branch feature/multiplicacao e já troquei pra ela:\n\n</final>"
+      },
+      {
+        "user_request": "Em qual branch eu estou agora?",
+        "raw_text": "<think>`git branch --show-current` (ou `git status`) diz a branch atual.</think><tool_call name=\"shell\">{\"binary\": \"git\", \"args\": [\"status\"]}</tool_call><tool_result name=\"shell\" status=\"ok\">{\"stdout\": \"On branch feature/multiplicacao\\nnothing to commit, working tree clean\\n\", \"stderr\": \"\", \"returncode\": 0}</tool_result><final>Você está na branch feature/multiplicacao. O `git status` confirma:\n\nOn branch feature/multiplicacao\nnothing to commit, working tree clean</final>"
+      },
+      {
+        "user_request": "Adiciona uma função mul no utils.py, commita nessa branch.",
+        "raw_text": "<think>Leio o utils.py atual antes de editar.</think><tool_call name=\"read_file\">{\"path\": \"utils.py\"}</tool_call><tool_result name=\"read_file\" status=\"ok\">{\"content\": \"def soma(a, b):\\n    return a + b\\n\", \"start_line\": 1, \"end_line\": 2, \"total_lines\": 2}</tool_result><think>Adiciono a função mul preservando a soma.</think><tool_call name=\"write_file\">{\"path\": \"utils.py\", \"content\": \"def soma(a, b):\\n    return a + b\\n\\n\\ndef mul(a, b):\\n    return a * b\\n\"}</tool_call><tool_result name=\"write_file\" status=\"ok\">{\"path\": \"utils.py\", \"bytes_written\": 67, \"mode\": \"overwrite\"}</tool_result><think>O usuário pediu pra commitar — faço add e commit na branch atual.</think><tool_call name=\"shell\">{\"binary\": \"git\", \"args\": [\"add\", \"-A\"]}</tool_call><tool_result name=\"shell\" status=\"ok\">{\"stdout\": \"\", \"stderr\": \"warning: in the working copy of 'utils.py', LF will be replaced by CRLF the next time Git touches it\\n\", \"returncode\": 0}</tool_result><think>Commito com mensagem descritiva.</think><tool_call name=\"shell\">{\"binary\": \"git\", \"args\": [\"commit\", \"-m\", \"adiciona utils.mul na feature\"]}</tool_call><tool_result name=\"shell\" status=\"ok\">{\"stdout\": \"[feature/multiplicacao 2c0eca3] adiciona utils.mul na feature\\n 1 file changed, 4 insertions(+)\\n\", \"stderr\": \"\", \"returncode\": 0}</tool_result><final>Adicionei mul no utils.py e commitei na branch feature/multiplicacao:\n\n[feature/multiplicacao 2c0eca3] adiciona utils.mul na feature\n 1 file changed, 4 insertions(+)</final>"
+      }
+    ]
+  }
+}

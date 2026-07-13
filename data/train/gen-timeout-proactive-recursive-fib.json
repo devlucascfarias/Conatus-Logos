@@ -1,0 +1,28 @@
+{
+  "metadata": {
+    "id": "gen-timeout-proactive-recursive-fib",
+    "domain": "timeout_control",
+    "language": "shell",
+    "difficulty": "medium",
+    "tools_used": [
+      "read_file",
+      "shell"
+    ],
+    "num_steps": 2,
+    "task_type": "shell_command",
+    "source": "curated_manual_real_execution",
+    "license": "synthetic-no-license-needed",
+    "validation_status": "validated",
+    "execution_performed": true,
+    "split": "train",
+    "expected_result": {
+      "passed": true
+    },
+    "execution_classification": "tested"
+  },
+  "trajectory": {
+    "system_prompt": "Você é Logos-3, um agente de engenharia de software da família de modelos Conatus. Raciocine em <think>, use <tool_call name=\"...\"> quando precisar de uma ferramenta, e responda ao usuário só dentro de <final>.",
+    "user_request": "Executa o fib.py.",
+    "raw_text": "<think>Vou ler o script antes de rodar pra dimensionar quanto tempo pode levar.</think><tool_call name=\"read_file\">{\"path\": \"fib.py\"}</tool_call><tool_result name=\"read_file\" status=\"ok\">{\"content\": \"def fib(n):\\n    return n if n < 2 else fib(n - 1) + fib(n - 2)\\n\\n# fib recursivo ingênuo: exponencial, fica lento rápido\\nprint(fib(30))\\n\", \"start_line\": 1, \"end_line\": 5, \"total_lines\": 5}</tool_result><think>É um fibonacci recursivo ingênuo com fib(30) — complexidade exponencial, então pode levar alguns segundos (não é instantâneo). Como sei de antemão que tende a ser lento, programo um timeout_ms folgado (20s) em vez de arriscar o padrão de 10s cortar antes de terminar.</think><tool_call name=\"shell\">{\"binary\": \"python\", \"args\": [\"fib.py\"], \"timeout_ms\": 20000}</tool_call><tool_result name=\"shell\" status=\"ok\">{\"stdout\": \"832040\\n\", \"stderr\": \"\", \"returncode\": 0}</tool_result><final>Reconheci que o fib.py é recursivo exponencial (fib(30)), então rodei com timeout de 20s de folga. Concluiu e imprimiu 832040.</final>"
+  }
+}

@@ -1,0 +1,33 @@
+{
+  "metadata": {
+    "id": "gen-git-branch-workflow-t1",
+    "domain": "git_workflow",
+    "language": "shell",
+    "difficulty": "medium",
+    "tools_used": [
+      "shell"
+    ],
+    "num_steps": 1,
+    "task_type": "shell_command",
+    "source": "curated_manual_real_execution",
+    "license": "synthetic-no-license-needed",
+    "validation_status": "validated",
+    "execution_performed": true,
+    "split": "train",
+    "expected_result": {
+      "passed": true
+    },
+    "execution_classification": "tested"
+  },
+  "trajectory": {
+    "system_prompt": "Você é Logos-3, um agente de engenharia de software da família de modelos Conatus. Raciocine em <think>, use <tool_call name=\"...\"> quando precisar de uma ferramenta, e responda ao usuário só dentro de <final>.",
+    "user_request": "Em qual branch eu estou agora?",
+    "raw_text": "<think>`git branch --show-current` (ou `git status`) diz a branch atual.</think><tool_call name=\"shell\">{\"binary\": \"git\", \"args\": [\"status\"]}</tool_call><tool_result name=\"shell\" status=\"ok\">{\"stdout\": \"On branch feature/multiplicacao\\nnothing to commit, working tree clean\\n\", \"stderr\": \"\", \"returncode\": 0}</tool_result><final>Você está na branch feature/multiplicacao. O `git status` confirma:\n\nOn branch feature/multiplicacao\nnothing to commit, working tree clean</final>",
+    "history": [
+      {
+        "user_request": "Cria uma branch chamada feature/multiplicacao e muda pra ela.",
+        "raw_text": "<think>`git checkout -b <nome>` cria a branch e já muda pra ela num passo só.</think><tool_call name=\"shell\">{\"binary\": \"git\", \"args\": [\"checkout\", \"-b\", \"feature/multiplicacao\"]}</tool_call><tool_result name=\"shell\" status=\"ok\">{\"stdout\": \"\", \"stderr\": \"Switched to a new branch 'feature/multiplicacao'\\n\", \"returncode\": 0}</tool_result><final>Criei a branch feature/multiplicacao e já troquei pra ela:\n\n</final>"
+      }
+    ]
+  }
+}

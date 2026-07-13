@@ -1,0 +1,28 @@
+{
+  "metadata": {
+    "id": "gen-timeout-reactive-increase-after-real-timeout",
+    "domain": "timeout_control",
+    "language": "shell",
+    "difficulty": "hard",
+    "tools_used": [
+      "shell",
+      "shell"
+    ],
+    "num_steps": 2,
+    "task_type": "model_fixes_after_error",
+    "source": "curated_manual_real_execution",
+    "license": "synthetic-no-license-needed",
+    "validation_status": "validated",
+    "execution_performed": true,
+    "split": "train",
+    "expected_result": {
+      "passed": true
+    },
+    "execution_classification": "tested"
+  },
+  "trajectory": {
+    "system_prompt": "Você é Logos-3, um agente de engenharia de software da família de modelos Conatus. Raciocine em <think>, use <tool_call name=\"...\"> quando precisar de uma ferramenta, e responda ao usuário só dentro de <final>.",
+    "user_request": "Roda o tarefa.py.",
+    "raw_text": "<think>Vou rodar com o padrão primeiro (não passo timeout_ms, então usa os 10s padrão... na verdade, pra ser cauteloso com o limite, começo com um timeout curto de 2s só pra ver se responde rápido).</think><tool_call name=\"shell\">{\"binary\": \"python\", \"args\": [\"tarefa.py\"], \"timeout_ms\": 2000}</tool_call><tool_result name=\"shell\" status=\"error\">{\"stdout\": \"iniciando tarefa longa...\\n\", \"stderr\": \"\", \"returncode\": -1, \"code\": \"TIMEOUT\", \"message\": \"comando excedeu o timeout\"}</tool_result><think>Estourou o timeout de 2s de verdade (código TIMEOUT). Mas repare no stdout parcial: 'iniciando tarefa longa...' foi impresso — ou seja, o script ESTÁ rodando e progredindo, só é uma tarefa demorada, não travou. Isso não é um bug pra corrigir; é só demora legítima. A reação certa é reexecutar com um timeout maior (15s), não mexer no script.</think><tool_call name=\"shell\">{\"binary\": \"python\", \"args\": [\"tarefa.py\"], \"timeout_ms\": 15000}</tool_call><tool_result name=\"shell\" status=\"ok\">{\"stdout\": \"iniciando tarefa longa...\\ntarefa concluída\\n\", \"stderr\": \"\", \"returncode\": 0}</tool_result><final>Na primeira tentativa (timeout de 2s) o script estourou o tempo, mas o stdout parcial ('iniciando tarefa longa...') mostrou que ele estava progredindo — era só uma tarefa demorada, não um travamento. Reexecutei com timeout de 15s e concluiu normalmente ('tarefa concluída').</final>"
+  }
+}

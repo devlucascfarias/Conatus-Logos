@@ -73,11 +73,27 @@ shell:
     - cmd
     - bash
     - sh
-  # Subcomandos permitidos quando o binário é "git" (somente leitura).
+  # Subcomandos permitidos quando o binário é "git". D-git-write-ops (docs/PLAN.md): além da
+  # inspeção somente-leitura original (status/diff/log/show), o dia-a-dia de escrita
+  # (add/commit/branch/checkout/switch/stash/merge/tag/init) — como o Claude Code faz. As formas
+  # DESTRUTIVAS ficam bloqueadas pela denylist abaixo (push, reset --hard, clean, checkout que
+  # descarta mudanças, branch -D, stash clear/drop) — a escrita liberada é a do fluxo normal, não
+  # a que perde trabalho. `commit` continua sendo ação que o modelo só faz quando o usuário pede.
   git_allowed_subcommands:
     - status
     - diff
     - log
+    - show
+    - add
+    - commit
+    - branch
+    - checkout
+    - switch
+    - stash
+    - merge
+    - tag
+    - init
+    - rev-parse
   # Padrões sempre bloqueados, mesmo que o binário base esteja na allowlist. Casados por
   # substring contra `binary + args` em minúsculas (nunca uma string de shell executada —
   # ver D-shell-v2). Cobrem os verbos destrutivos/de rede/de execução dos três shells.
@@ -91,7 +107,9 @@ shell:
     - "sudo"
     - "curl"
     - "wget"
-    - "dd "
+    # `dd if=`/`dd of=` (não só "dd ", que dava falso positivo em "git add ." — D-git-write-ops)
+    - "dd if="
+    - "dd of="
     - "mkfs"
     - "fdisk"
     - "shred "
@@ -109,10 +127,21 @@ shell:
     - "> /etc"
     - ">/etc"
     - "tee /etc"
-    # --- git destrutivo/remoto ---
+    # --- git destrutivo/remoto (bloqueado mesmo com escrita liberada, D-git-write-ops) ---
     - "git push"
     - "git reset --hard"
+    - "git reset --merge"
     - "git clean"
+    - "checkout -- "
+    - "checkout ."
+    - "branch -d"
+    - "branch --delete"
+    - "stash clear"
+    - "stash drop"
+    - "tag -d"
+    - "checkout -f"
+    - "branch -f"
+    - "git push --force"
     # --- PowerShell ---
     - "remove-item"
     - "remove-itemproperty"

@@ -1,0 +1,33 @@
+{
+  "metadata": {
+    "id": "gen-git-status-diff-commit-t1",
+    "domain": "git_workflow",
+    "language": "shell",
+    "difficulty": "medium",
+    "tools_used": [
+      "shell"
+    ],
+    "num_steps": 1,
+    "task_type": "shell_command",
+    "source": "curated_manual_real_execution",
+    "license": "synthetic-no-license-needed",
+    "validation_status": "validated",
+    "execution_performed": true,
+    "split": "train",
+    "expected_result": {
+      "passed": true
+    },
+    "execution_classification": "tested"
+  },
+  "trajectory": {
+    "system_prompt": "Você é Logos-3, um agente de engenharia de software da família de modelos Conatus. Raciocine em <think>, use <tool_call name=\"...\"> quando precisar de uma ferramenta, e responda ao usuário só dentro de <final>.",
+    "user_request": "O que exatamente mudou?",
+    "raw_text": "<think>Pra ver o conteúdo das mudanças (não só quais arquivos), uso `git diff`.</think><tool_call name=\"shell\">{\"binary\": \"git\", \"args\": [\"diff\"]}</tool_call><tool_result name=\"shell\" status=\"ok\">{\"stdout\": \"diff --git a/utils.py b/utils.py\\nindex 4df0686..bfce034 100644\\n--- a/utils.py\\n+++ b/utils.py\\n@@ -1,2 +1,5 @@\\n def soma(a, b):\\n     return a + b\\n+\\n+def sub(a, b):\\n+    return a - b\\n\", \"stderr\": \"warning: in the working copy of 'utils.py', LF will be replaced by CRLF the next time Git touches it\\n\", \"returncode\": 0}</tool_result><final>O `git diff` mostra a alteração:\n\ndiff --git a/utils.py b/utils.py\nindex 4df0686..bfce034 100644\n--- a/utils.py\n+++ b/utils.py\n@@ -1,2 +1,5 @@\n def soma(a, b):\n     return a + b\n+\n+def sub(a, b):\n+    return a - b</final>",
+    "history": [
+      {
+        "user_request": "Tem alguma coisa não commitada no repositório?",
+        "raw_text": "<think>Pergunta sobre o estado do working tree — `git status` é o comando de leitura pra isso.</think><tool_call name=\"shell\">{\"binary\": \"git\", \"args\": [\"status\"]}</tool_call><tool_result name=\"shell\" status=\"ok\">{\"stdout\": \"On branch master\\nChanges not staged for commit:\\n  (use \\\"git add <file>...\\\" to update what will be committed)\\n  (use \\\"git restore <file>...\\\" to discard changes in working directory)\\n\\tmodified:   utils.py\\n\\nno changes added to commit (use \\\"git add\\\" and/or \\\"git commit -a\\\")\\n\", \"stderr\": \"\", \"returncode\": 0}</tool_result><final>Sim, há mudanças não commitadas. O `git status` mostrou:\n\nOn branch master\nChanges not staged for commit:\n  (use \"git add <file>...\" to update what will be committed)\n  (use \"git restore <file>...\" to discard changes in working directory)\n\tmodified:   utils.py\n\nno changes added to commit (use \"git add\" and/or \"git commit -a\")</final>"
+      }
+    ]
+  }
+}

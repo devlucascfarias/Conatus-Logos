@@ -1,0 +1,28 @@
+{
+  "metadata": {
+    "id": "gen-timeout-reactive-legit-slow-1",
+    "domain": "timeout_control",
+    "language": "shell",
+    "difficulty": "hard",
+    "tools_used": [
+      "shell",
+      "shell"
+    ],
+    "num_steps": 2,
+    "task_type": "model_fixes_after_error",
+    "source": "curated_manual_real_execution",
+    "license": "synthetic-no-license-needed",
+    "validation_status": "validated",
+    "execution_performed": true,
+    "split": "train",
+    "expected_result": {
+      "passed": true
+    },
+    "execution_classification": "tested"
+  },
+  "trajectory": {
+    "system_prompt": "Você é Logos-3, um agente de engenharia de software da família de modelos Conatus. Raciocine em <think>, use <tool_call name=\"...\"> quando precisar de uma ferramenta, e responda ao usuário só dentro de <final>.",
+    "user_request": "Executa o backup_sim.py.",
+    "raw_text": "<think>Rodo com um timeout curto de 3s inicialmente pra sondar.</think><tool_call name=\"shell\">{\"binary\": \"python\", \"args\": [\"backup_sim.py\"], \"timeout_ms\": 3000}</tool_call><tool_result name=\"shell\" status=\"error\">{\"stdout\": \"processando...\\n\", \"stderr\": \"\", \"returncode\": -1, \"code\": \"TIMEOUT\", \"message\": \"comando excedeu o timeout\"}</tool_result><think>Timeout real de 3s. O stdout parcial ('processando...') indica que a tarefa está andando, só leva mais que 3s — demora legítima, não travamento. Reexecuto com um timeout bem maior (18s).</think><tool_call name=\"shell\">{\"binary\": \"python\", \"args\": [\"backup_sim.py\"], \"timeout_ms\": 18000}</tool_call><tool_result name=\"shell\" status=\"ok\">{\"stdout\": \"processando...\\nok, finalizado\\n\", \"stderr\": \"\", \"returncode\": 0}</tool_result><final>O backup_sim.py estourou o timeout curto de sondagem, mas o stdout parcial mostrou progresso — era demora legítima. Reexecutei com timeout de 18s e finalizou.</final>"
+  }
+}

@@ -1,0 +1,27 @@
+{
+  "metadata": {
+    "id": "gen-timeout-proactive-run-slow-script",
+    "domain": "timeout_control",
+    "language": "shell",
+    "difficulty": "medium",
+    "tools_used": [
+      "shell"
+    ],
+    "num_steps": 1,
+    "task_type": "shell_command",
+    "source": "curated_manual_real_execution",
+    "license": "synthetic-no-license-needed",
+    "validation_status": "validated",
+    "execution_performed": true,
+    "split": "train",
+    "expected_result": {
+      "passed": true
+    },
+    "execution_classification": "tested"
+  },
+  "trajectory": {
+    "system_prompt": "Você é Logos-3, um agente de engenharia de software da família de modelos Conatus. Raciocine em <think>, use <tool_call name=\"...\"> quando precisar de uma ferramenta, e responda ao usuário só dentro de <final>.",
+    "user_request": "Roda o agg.py pra mim — ele processa alguns dados e pode levar um tempinho.",
+    "raw_text": "<think>O usuário já avisou que o script 'pode levar um tempinho', e o nome (agg = agregação) reforça que faz trabalho real. O timeout padrão do shell é 10s; um script de processamento pode encostar nesse limite e ser cortado no meio à toa. Vou programar um timeout_ms generoso (25s) proativamente pra dar folga — melhor sobrar tempo do que abortar uma execução legítima que estava quase terminando.</think><tool_call name=\"shell\">{\"binary\": \"python\", \"args\": [\"agg.py\"], \"timeout_ms\": 25000}</tool_call><tool_result name=\"shell\" status=\"ok\">{\"stdout\": \"resultado 3\\n\", \"stderr\": \"\", \"returncode\": 0}</tool_result><final>Rodei agg.py com um timeout generoso de 25s (o padrão de 10s poderia cortar um processamento legítimo no meio). Terminou bem dentro do prazo — resultado: 3.</final>"
+  }
+}

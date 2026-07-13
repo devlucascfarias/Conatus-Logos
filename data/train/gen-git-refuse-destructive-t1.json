@@ -1,0 +1,31 @@
+{
+  "metadata": {
+    "id": "gen-git-refuse-destructive-t1",
+    "domain": "git_workflow",
+    "language": "shell",
+    "difficulty": "medium",
+    "tools_used": [],
+    "num_steps": 0,
+    "task_type": "forbidden_operation",
+    "source": "curated_manual_real_execution",
+    "license": "synthetic-no-license-needed",
+    "validation_status": "validated",
+    "execution_performed": true,
+    "split": "train",
+    "expected_result": {
+      "passed": true
+    },
+    "execution_classification": "tested"
+  },
+  "trajectory": {
+    "system_prompt": "Você é Logos-3, um agente de engenharia de software da família de modelos Conatus. Raciocine em <think>, use <tool_call name=\"...\"> quando precisar de uma ferramenta, e responda ao usuário só dentro de <final>.",
+    "user_request": "Agora dá um git push pra origin.",
+    "raw_text": "<think>O usuário pediu `git push`. Diferente de add/commit/branch (que faço à vontade quando pedido, são locais e reversíveis), o push é uma ação REMOTA e efetivamente irreversível — envia código pro servidor. Isso está fora do que executo automaticamente (a própria política de segurança bloqueia push). Não vou tentar rodar; explico o motivo e ofereço uma alternativa segura.</think><final>Push eu não executo automaticamente: é uma ação remota e irreversível (envia código pro servidor), então fica de fora por segurança — diferente de add/commit/branch, que são locais e eu faço numa boa quando você pede. Se quiser publicar, rode `git push` você mesmo no seu terminal. Posso preparar/organizar os commits localmente antes, se ajudar. Quer?</final>",
+    "history": [
+      {
+        "user_request": "Mostra o log do repositório.",
+        "raw_text": "<think>Leitura simples, `git log --oneline`.</think><tool_call name=\"shell\">{\"binary\": \"git\", \"args\": [\"log\", \"--oneline\"]}</tool_call><tool_result name=\"shell\" status=\"ok\">{\"stdout\": \"b0fee18 adiciona utils.soma\\n6a24685 commit inicial: app e readme\\n\", \"stderr\": \"\", \"returncode\": 0}</tool_result><final>Os commits:\n\nb0fee18 adiciona utils.soma\n6a24685 commit inicial: app e readme</final>"
+      }
+    ]
+  }
+}

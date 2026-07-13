@@ -1,0 +1,30 @@
+{
+  "metadata": {
+    "id": "gen-timeout-reactive-infinite-loop-var-1",
+    "domain": "timeout_control",
+    "language": "shell",
+    "difficulty": "hard",
+    "tools_used": [
+      "shell",
+      "read_file",
+      "write_file",
+      "shell"
+    ],
+    "num_steps": 4,
+    "task_type": "model_fixes_after_error",
+    "source": "curated_manual_real_execution",
+    "license": "synthetic-no-license-needed",
+    "validation_status": "validated",
+    "execution_performed": true,
+    "split": "train",
+    "expected_result": {
+      "passed": true
+    },
+    "execution_classification": "tested"
+  },
+  "trajectory": {
+    "system_prompt": "Você é Logos-3, um agente de engenharia de software da família de modelos Conatus. Raciocine em <think>, use <tool_call name=\"...\"> quando precisar de uma ferramenta, e responda ao usuário só dentro de <final>.",
+    "user_request": "Roda o acumula_bug.py, ele fica preso e não retorna.",
+    "raw_text": "<think>Confirmo o travamento com timeout curto de 3s.</think><tool_call name=\"shell\">{\"binary\": \"python\", \"args\": [\"acumula_bug.py\"], \"timeout_ms\": 3000}</tool_call><tool_result name=\"shell\" status=\"error\">{\"stdout\": \"\", \"stderr\": \"\", \"returncode\": -1, \"code\": \"TIMEOUT\", \"message\": \"comando excedeu o timeout\"}</tool_result><think>Estourou o timeout com stdout vazio — sintoma de loop infinito, não de demora. Leio o código.</think><tool_call name=\"read_file\">{\"path\": \"acumula_bug.py\"}</tool_call><tool_result name=\"read_file\" status=\"ok\">{\"content\": \"def potencias_ate(limite):\\n    p = 1\\n    saida = []\\n    while p < limite:\\n        saida.append(p)\\n        p *= 1   # BUG: multiplica por 1, p nunca cresce, while sempre verdadeiro\\n    return saida\\n\\nprint(len(potencias_ate(1000)))\\n\", \"start_line\": 1, \"end_line\": 9, \"total_lines\": 9}</tool_result><think>A causa: `p *= 1` nunca muda p, então `while p < limite` é eterno. Corrijo a condição/atualização do laço e reexecuto.</think><tool_call name=\"write_file\">{\"path\": \"acumula_bug.py\", \"content\": \"def potencias_ate(limite):\\n    p = 1\\n    saida = []\\n    while p < limite:\\n        saida.append(p)\\n        p *= 2   # dobra a cada passo: agora p cresce e o laço termina\\n    return saida\\n\\nprint(len(potencias_ate(1000)))\\n\"}</tool_call><tool_result name=\"write_file\" status=\"ok\">{\"path\": \"acumula_bug.py\", \"bytes_written\": 220, \"mode\": \"overwrite\"}</tool_result><think>Rodo de novo com timeout normal pra confirmar que agora termina.</think><tool_call name=\"shell\">{\"binary\": \"python\", \"args\": [\"acumula_bug.py\"], \"timeout_ms\": 5000}</tool_call><tool_result name=\"shell\" status=\"ok\">{\"stdout\": \"10\\n\", \"stderr\": \"\", \"returncode\": 0}</tool_result><final>Timeout com stdout vazio apontou loop infinito. Causa: `p *= 1` nunca muda p, então `while p < limite` é eterno. Corrigi e reexecutei — agora imprime 10 e termina.</final>"
+  }
+}

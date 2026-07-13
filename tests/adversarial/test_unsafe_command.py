@@ -99,6 +99,32 @@ def test_hardened_blocks_encoded_command_bypass_on_interpreters():
     assert not allowed and "codificado" in reason
 
 
+def test_git_write_subcommands_allowed_destructive_blocked():
+    """D-git-write-ops: add/commit/branch/checkout/switch liberados (fluxo do dia-a-dia), mas
+    as formas destrutivas/remotas seguem bloqueadas pela denylist."""
+    policy = SandboxPolicy.load().with_confirmation_mode("auto_approve_safe")
+    for args in (("add", "."), ("commit", "-m", "msg"), ("branch", "feature"),
+                 ("checkout", "-b", "nova"), ("switch", "main"), ("status",), ("stash",)):
+        ok, reason = policy.is_command_allowed("git", args)
+        assert ok, f"git {args} deveria ser permitido — {reason}"
+    for args in (("push",), ("reset", "--hard"), ("clean", "-fd"),
+                 ("checkout", "--", "arquivo.py"), ("branch", "-D", "x"), ("push", "--force"),
+                 ("stash", "clear")):
+        ok, reason = policy.is_command_allowed("git", args)
+        assert not ok, f"git {args} deveria ser BLOQUEADO"
+
+
+def test_git_add_not_false_blocked_by_dd_pattern():
+    """Regressão real: o padrão `dd ` (utilitário de disco) dava falso positivo em `git add .`
+    (\"a**dd** .\" contém \"dd \") — corrigido pra `dd if=`/`dd of=` (D-git-write-ops)."""
+    policy = SandboxPolicy.load().with_confirmation_mode("auto_approve_safe")
+    ok, _ = policy.is_command_allowed("git", ("add", "."))
+    assert ok
+    # e o `dd` de verdade continua bloqueado
+    ok2, _ = policy.is_command_allowed("bash", ("-c", "dd if=/dev/zero of=/dev/sda"))
+    assert not ok2
+
+
 def test_hardened_allows_real_read_only_native_commands():
     """O ponto da Fase H: comandos NATIVOS de inspeção (não destrutivos) devem PASSAR pela
     política — tanto PowerShell quanto cmd quanto bash — pra o modelo poder usá-los de verdade."""

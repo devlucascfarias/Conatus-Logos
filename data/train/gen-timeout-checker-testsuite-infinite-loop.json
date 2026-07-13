@@ -1,0 +1,30 @@
+{
+  "metadata": {
+    "id": "gen-timeout-checker-testsuite-infinite-loop",
+    "domain": "timeout_control",
+    "language": "shell",
+    "difficulty": "hard",
+    "tools_used": [
+      "checker",
+      "read_file",
+      "write_file",
+      "checker"
+    ],
+    "num_steps": 4,
+    "task_type": "model_fixes_after_error",
+    "source": "curated_manual_real_execution",
+    "license": "synthetic-no-license-needed",
+    "validation_status": "validated",
+    "execution_performed": true,
+    "split": "train",
+    "expected_result": {
+      "passed": true
+    },
+    "execution_classification": "tested"
+  },
+  "trajectory": {
+    "system_prompt": "Você é Logos-3, um agente de engenharia de software da família de modelos Conatus. Raciocine em <think>, use <tool_call name=\"...\"> quando precisar de uma ferramenta, e responda ao usuário só dentro de <final>.",
+    "user_request": "Roda os testes do mate.py — a suíte trava e não termina.",
+    "raw_text": "<think>Rodo o checker com um timeout curto (4s) pra confirmar o travamento rápido, em vez de esperar o timeout longo padrão do compile_and_test.</think><tool_call name=\"checker\">{\"language\": \"python\", \"operation\": \"compile_and_test\", \"files\": [{\"path\": \"mate.py\", \"content\": \"def soma_ate(n):\\n    total = 0\\n    i = 1\\n    while i <= n:\\n        total += i\\n        # BUG: esquece de incrementar i, então o while roda pra sempre\\n    return total\\n\"}, {\"path\": \"test_mate.py\", \"content\": \"from mate import soma_ate\\n\\ndef test_soma():\\n    assert soma_ate(5) == 15\\n\"}], \"timeout_ms\": 4000}</tool_call><tool_result name=\"checker\" status=\"error\">{\"passed\": false, \"errors\": [{\"code\": \"TIMEOUT\", \"message\": \"timeout ao rodar pytest\"}], \"stdout\": \"\", \"stderr\": \"\", \"metadata\": {\"language\": \"python\", \"duration_ms\": 5062}, \"code\": \"TIMEOUT\", \"message\": \"timeout ao rodar pytest\"}</tool_result><think>O checker estourou o timeout de 4s — a suíte não termina. Um teste que trava assim quase sempre é um laço infinito no código sob teste. Leio o mate.py.</think><tool_call name=\"read_file\">{\"path\": \"mate.py\"}</tool_call><tool_result name=\"read_file\" status=\"ok\">{\"content\": \"def soma_ate(n):\\n    total = 0\\n    i = 1\\n    while i <= n:\\n        total += i\\n        # BUG: esquece de incrementar i, então o while roda pra sempre\\n    return total\\n\", \"start_line\": 1, \"end_line\": 7, \"total_lines\": 7}</tool_result><think>Confirmado: em soma_ate, o `while i <= n` nunca incrementa i, então roda pra sempre. Adiciono o `i += 1` que faltava e rodo os testes de novo.</think><tool_call name=\"write_file\">{\"path\": \"mate.py\", \"content\": \"def soma_ate(n):\\n    total = 0\\n    i = 1\\n    while i <= n:\\n        total += i\\n        i += 1   # incremento que faltava\\n    return total\\n\"}</tool_call><tool_result name=\"write_file\" status=\"ok\">{\"path\": \"mate.py\", \"bytes_written\": 137, \"mode\": \"overwrite\"}</tool_result><think>Reexecuto o checker (timeout normal, de sobra pra um laço que agora termina) pra confirmar que a suíte passa.</think><tool_call name=\"checker\">{\"language\": \"python\", \"operation\": \"compile_and_test\", \"files\": [{\"path\": \"mate.py\", \"content\": \"def soma_ate(n):\\n    total = 0\\n    i = 1\\n    while i <= n:\\n        total += i\\n        i += 1   # incremento que faltava\\n    return total\\n\"}, {\"path\": \"test_mate.py\", \"content\": \"from mate import soma_ate\\n\\ndef test_soma():\\n    assert soma_ate(5) == 15\\n\"}], \"timeout_ms\": 30000}</tool_call><tool_result name=\"checker\" status=\"ok\">{\"passed\": true, \"errors\": [], \"stdout\": \".                                                                        [100%]\\n1 passed in 0.01s\\n\", \"stderr\": \"\", \"metadata\": {\"language\": \"python\", \"duration_ms\": 3141}}</tool_result><final>A suíte estourou o timeout porque soma_ate tinha um `while i <= n` sem incrementar i — laço infinito. Adicionei o `i += 1` que faltava e reexecutei o checker: a suíte passou (soma_ate(5) == 15).</final>"
+  }
+}

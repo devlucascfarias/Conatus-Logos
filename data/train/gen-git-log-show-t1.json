@@ -1,0 +1,33 @@
+{
+  "metadata": {
+    "id": "gen-git-log-show-t1",
+    "domain": "git_workflow",
+    "language": "shell",
+    "difficulty": "medium",
+    "tools_used": [
+      "shell"
+    ],
+    "num_steps": 1,
+    "task_type": "shell_command",
+    "source": "curated_manual_real_execution",
+    "license": "synthetic-no-license-needed",
+    "validation_status": "validated",
+    "execution_performed": true,
+    "split": "train",
+    "expected_result": {
+      "passed": true
+    },
+    "execution_classification": "tested"
+  },
+  "trajectory": {
+    "system_prompt": "Você é Logos-3, um agente de engenharia de software da família de modelos Conatus. Raciocine em <think>, use <tool_call name=\"...\"> quando precisar de uma ferramenta, e responda ao usuário só dentro de <final>.",
+    "user_request": "Quantos commits tem no total?",
+    "raw_text": "<think>Conto os commits com `git log --oneline` — cada linha é um commit.</think><tool_call name=\"shell\">{\"binary\": \"git\", \"args\": [\"log\", \"--oneline\"]}</tool_call><tool_result name=\"shell\" status=\"ok\">{\"stdout\": \"41018a3 adiciona utils.mul\\ndf3d435 corrige typo no readme\\n5fd36a3 adiciona utils.soma\\n0f6a7bd commit inicial: app e readme\\n\", \"stderr\": \"\", \"returncode\": 0}</tool_result><final>O repositório tem 4 commits no total.</final>",
+    "history": [
+      {
+        "user_request": "Me mostra os últimos commits desse projeto.",
+        "raw_text": "<think>`git log --oneline` dá a lista enxuta dos commits recentes.</think><tool_call name=\"shell\">{\"binary\": \"git\", \"args\": [\"log\", \"--oneline\"]}</tool_call><tool_result name=\"shell\" status=\"ok\">{\"stdout\": \"41018a3 adiciona utils.mul\\ndf3d435 corrige typo no readme\\n5fd36a3 adiciona utils.soma\\n0f6a7bd commit inicial: app e readme\\n\", \"stderr\": \"\", \"returncode\": 0}</tool_result><final>Os commits, do mais recente pro mais antigo:\n\n41018a3 adiciona utils.mul\ndf3d435 corrige typo no readme\n5fd36a3 adiciona utils.soma\n0f6a7bd commit inicial: app e readme</final>"
+      }
+    ]
+  }
+}
