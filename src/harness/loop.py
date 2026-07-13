@@ -23,7 +23,7 @@ from src.parsers.segments import FinalSegment, MalformedSegment, Segment, ThinkS
 from src.tools import ToolExecutorRegistry
 
 from .renderer import render
-from .trajectory import Trajectory
+from .trajectory import HistoryTurn, Trajectory
 
 
 @dataclass(frozen=True)
@@ -88,9 +88,20 @@ def run_agent_loop(
     sandbox,
     config: Optional[AgentLoopConfig] = None,
     environment: Optional[dict] = None,
+    history: Optional[list[HistoryTurn]] = None,
 ) -> AgentLoopResult:
+    """`history` (D-chat-cli-history-param, achado real): turnos JÁ CONCLUÍDOS desta mesma
+    sessão — mesmo papel que `Trajectory.history` (D-dataset-history-schema). Antes desta
+    mudança, `run_agent_loop` não tinha como recebê-lo, então qualquer consumidor do loop
+    canônico (não só a geração de dataset, que monta `Trajectory` manualmente) ficava sem
+    conversa multi-turno de verdade — cada chamada era sempre uma sessão nova pro modelo,
+    mesmo que o chamador guardasse o histórico em memória. Parâmetro opcional (default vazio),
+    não quebra nenhum chamador existente (probes/run_eval.py continuam de turno único)."""
     config = config or AgentLoopConfig()
-    trajectory = Trajectory(system_prompt=system_prompt, user_request=user_request, environment=environment)
+    trajectory = Trajectory(
+        system_prompt=system_prompt, user_request=user_request, environment=environment,
+        history=list(history) if history else [],
+    )
     seen_calls: set = set()
     forced_final = False
     steps_taken = 0

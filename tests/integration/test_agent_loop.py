@@ -211,3 +211,43 @@ def test_max_tokens_per_step_is_forwarded_to_model_runner(sandbox, registry):
     run_agent_loop("pergunta qualquer", "system", runner, registry, sandbox, config=config)
 
     assert runner.max_tokens_seen == [64]
+
+
+# --- D-chat-cli-history-param (achado real): run_agent_loop não tinha como receber history ---
+
+
+def test_history_param_reaches_rendered_prompt(sandbox, registry):
+    """Sem `history` no `run_agent_loop`, qualquer consumidor do loop canônico (ex.: um chat
+    interativo) ficava sem memória real entre turnos — cada chamada virava uma sessão nova pro
+    modelo, mesmo guardando o histórico em memória do lado de fora."""
+    from src.harness import HistoryTurn
+
+    history = [HistoryTurn(user_request="primeiro pedido", raw_text="<final>primeira resposta</final>")]
+    runner = ScriptedModelRunner(["<final>segunda resposta</final>"])
+    result = run_agent_loop("segundo pedido", "system", runner, registry, sandbox, history=history)
+
+    rendered = result.trajectory.render_for_model()
+    assert "primeiro pedido" in rendered
+    assert "primeira resposta" in rendered
+    assert rendered.index("primeiro pedido") < rendered.index("segundo pedido")
+
+
+def test_history_defaults_to_empty_unchanged_behavior(sandbox, registry):
+    """Sem passar `history` (comportamento antigo), o formato renderizado continua idêntico —
+    parâmetro aditivo, não deve mudar nenhum chamador existente (probes/run_eval.py)."""
+    runner = ScriptedModelRunner(["<final>ok</final>"])
+    result = run_agent_loop("pedido único", "system", runner, registry, sandbox)
+    assert result.trajectory.render_for_model() == "system\n\n[USER]\npedido único\n\n[ASSISTANT]\n<final>ok</final>"
+
+
+def test_history_multiple_turns_preserve_order(sandbox, registry):
+    from src.harness import HistoryTurn
+
+    history = [
+        HistoryTurn(user_request="turno 1", raw_text="<final>resposta 1</final>"),
+        HistoryTurn(user_request="turno 2", raw_text="<final>resposta 2</final>"),
+    ]
+    runner = ScriptedModelRunner(["<final>resposta 3</final>"])
+    result = run_agent_loop("turno 3", "system", runner, registry, sandbox, history=history)
+    rendered = result.trajectory.render_for_model()
+    assert rendered.index("turno 1") < rendered.index("turno 2") < rendered.index("turno 3")
